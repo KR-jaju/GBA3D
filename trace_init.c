@@ -1,15 +1,15 @@
 
 #include "gpi_private.h"
 
-t_trace	*trace_init(t_trace *self, i32 x, i32 y, i32 dx, i32 dy) {
-	i32 const	floor_x = ((x + 3) & ~0b111) + 4; //x보다 큰 픽셀의 중심
-	i32 const	floor_y = ((y + 3) & ~0b111) + 4;
+t_trace	*trace_init(t_trace *self, i32 x0, i32 y0, i32 x1, i32 y1) {
+	i32 const	dx = x1 - x0;
+	i32 const	dy = y1 - y0;
+	i32 const	floor_x = ((x0 + 3) & ~0b111) + 4; //x보다 큰 픽셀의 중심
+	i32 const	floor_y = ((y0 + 3) & ~0b111) + 4;
 
-	self->next = NULL;
-	self->pair = NULL;
 	self->dx = dx; // 이건 미정
 	self->dy = dy; // 이건 당연히 양수
-	self->error = dy * (floor_x - x) - dx * (floor_y - y); // 양수 * 양수 - ? * 양수 = ?
+	self->error = dy * (floor_x - x0) - dx * (floor_y - y0);
 	self->step = (dx < 0) ? -1 : 1; // 선의 진행방향
 	// error = dy * x - dx * y
 	// error < 0 // 선보다 x-
