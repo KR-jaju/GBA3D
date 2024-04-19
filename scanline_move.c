@@ -21,42 +21,24 @@ for a in active {
 
 */
 
-static
-void	swap_span(t_span *prev, t_span *next) {
-	next->prev = prev->prev;
-	prev->next = next->next;
-	prev->next = next;
-	next->prev = prev;
-}
-
 void	scanline_move(t_scanline *self) {
-	t_span	*curr = self->active->next;
 	t_span	*next;
 
 	self->y += 1;
-	while (curr != &self->aet_tail) {
+	for (t_span *curr = self->active; curr != NULL; curr = next) {
 		next = curr->next;
-		t_span	*prev = curr->prev;
 		if (span_end(curr)) {
-			prev->next = next;
-			next->prev = prev;
-		} else {
-			span_move(curr);
-			while (prev->left->x > curr->left->x) {
-				swap_span(prev, curr);
-				prev = curr->prev;
-			} //올바른 위치까지 스왑
-			t_span	*span = self->global;
-			while (span->y == self->y && span->left->x < curr->left->x) { // 넣을 조건
-				span->next = curr;
-				span->prev = prev;
-				prev->next = span;
-				curr->prev = span;
-				prev = span; // prev = curr->prev;
-				span = span->next; // GET.pop_front();
-			}
-			self->global = span; // dereference 줄이기
+			span_link(curr->prev, curr->next);
+			curr = next;
+			continue;
 		}
-		curr = next;
+		span_move(curr);
+		span_realign(curr);
+		t_span	*span = self->global;
+		while (span->y == self->y && span->left->x < curr->left->x) { // 넣을 조건
+			span_unshift(curr, span);
+			span = span->next; // GET.pop_front();
+		}
+		self->global = span; // dereference 줄이기
 	}
 }

@@ -1,6 +1,9 @@
 
 #include "gpi_private.h"
 
-t_scanline	*scanline_init(t_scanline *self, t_trace *global) {
-	span_init(&self->global_tail, 0, )
+t_scanline	*scanline_init(t_scanline *self) {
+	self->global = NULL;
+	self->active = NULL;
+	self->y = -1;
+	return (self);
 }
