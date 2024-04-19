@@ -23,4 +23,5 @@ t_trace	*trace_init(t_trace *self, i32 x0, i32 y0, i32 x1, i32 y1) {
 		self->error -= dy * 8; // 1픽셀 왼쪽으로
 		self->x -= 1;
 	}
+	return (self);
 }
