@@ -19,7 +19,7 @@ struct s_trace {
 	int	dx;
 	int	dy;
 	int	step;
-}; // 28
+};
 
 struct s_span {
 	t_span	*prev;
@@ -33,9 +33,6 @@ struct s_span {
 struct s_scanline {
 	t_span	*global;
 	t_span	*active;
-	t_span	global_tail;
-	t_span	aet_head;
-	t_span	aet_tail;
 	int		y;
 };
 
@@ -45,7 +42,12 @@ void	trace_move(t_trace *self);
 t_span	*span_init(t_span *self, t_trace *left, t_trace *right, i32 min_y, i32 max_y);
 void	span_move(t_span *self);
 i32		span_end(t_span *self);
+void	span_realign(t_span *self);
+void	span_link(t_span *self, t_span *next);
+void	span_unshift(t_span *self, t_span *other);
 
-t_scanline	*scanline_init(t_scanline *self, t_trace *global);
+t_scanline	*scanline_init(t_scanline *self);
+void		scanline_push(t_scanline *self, t_span *span);
+void		scanline_sort(t_scanline *self);
 void		scanline_move(t_scanline *self);
 
