@@ -47,7 +47,7 @@ void	scanline_test(void) {
 			points[1] = tmp;
 		}
 		if (points[1].y > points[2].y) {
-			t_point	tmp = points[2];
+			t_point	tmp = points[1];
 			points[1] = points[2];
 			points[2] = tmp;
 		}
@@ -69,14 +69,14 @@ void	scanline_test(void) {
 		points[0].x, points[0].y,
 		points[1].x, points[1].y
 	);
-	// trace_init(&ac,
-	// 	points[0].x, points[0].y,
-	// 	points[2].x, points[2].y
-	// );
-	// trace_init(&bc,
-	// 	points[1].x, points[1].y,
-	// 	points[2].x, points[2].y
-	// );
+	trace_init(&ac,
+		points[0].x, points[0].y,
+		points[2].x, points[2].y
+	);
+	trace_init(&bc,
+		points[1].x, points[1].y,
+		points[2].x, points[2].y
+	);
 
 	// int	high = ((points[0].y + 3) & ~0b111) + 4;
 	// int	mid = ((points[1].y + 3) & ~0b111) + 4;
