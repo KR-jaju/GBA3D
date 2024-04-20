@@ -33,6 +33,8 @@ struct s_span {
 struct s_scanline {
 	t_span	*global;
 	t_span	*active;
+	t_trace	end_trace;
+	t_span	active_end;
 	int		y;
 };
 
@@ -50,4 +52,8 @@ t_scanline	*scanline_init(t_scanline *self);
 void		scanline_push(t_scanline *self, t_span *span);
 void		scanline_sort(t_scanline *self);
 void		scanline_move(t_scanline *self);
+//private?
+void		scanline_realign(t_scanline *self, t_span *span);
+void		scanline_remove(t_scanline *self, t_span *span);
+void		scanline_splice(t_scanline *self, t_span *span);
 

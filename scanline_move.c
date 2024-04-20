@@ -25,20 +25,15 @@ void	scanline_move(t_scanline *self) {
 	t_span	*next;
 
 	self->y += 1;
-	for (t_span *curr = self->active; curr != NULL; curr = next) {
+	for (t_span *curr = self->active; curr != &self->active_end; curr = next) {
 		next = curr->next;
 		if (span_end(curr)) {
-			span_link(curr->prev, curr->next);
-			curr = next;
+			scanline_remove(self, curr);
 			continue;
 		}
 		span_move(curr);
-		span_realign(curr);
-		t_span	*span = self->global;
-		while (span->y == self->y && span->left->x < curr->left->x) { // 넣을 조건
-			span_unshift(curr, span);
-			span = span->next; // GET.pop_front();
-		}
-		self->global = span; // dereference 줄이기
+		scanline_realign(self, curr);
+		scanline_splice(self, curr);
 	}
+	scanline_splice(self, &self->active_end);
 }
