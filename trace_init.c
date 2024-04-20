@@ -1,5 +1,6 @@
 
 #include "gpi_private.h"
+#include <stdio.h>
 
 t_trace	*trace_init(t_trace *self, i32 x0, i32 y0, i32 x1, i32 y1) {
 	i32 const	dx = x1 - x0;
@@ -7,6 +8,8 @@ t_trace	*trace_init(t_trace *self, i32 x0, i32 y0, i32 x1, i32 y1) {
 	i32 const	floor_x = ((x0 + 3) & ~0b111) + 4; //x보다 큰 픽셀의 중심
 	i32 const	floor_y = ((y0 + 3) & ~0b111) + 4;
 
+	if (dy == 0)
+		return (self); // #E
 	self->dx = dx; // 이건 미정
 	self->dy = dy; // 이건 당연히 양수
 	self->error = dy * (floor_x - x0) - dx * (floor_y - y0);
