@@ -7,7 +7,7 @@ void	scanline_move(t_scanline *self) {
 	self->y += 1;
 	for (t_span *curr = self->active; curr != &self->active_end; curr = next) {
 		next = curr->next;
-		if (span_end(curr)) {
+		if (curr->max_y == self->y) {
 			scanline_remove(self, curr);
 			continue;
 		}

@@ -26,7 +26,7 @@ struct s_span {
 	t_span	*next;
 	t_trace *left;
 	t_trace *right;
-	int		y;
+	int		min_y;
 	int		max_y;
 };
 
@@ -43,7 +43,6 @@ void	trace_move(t_trace *self);
 
 t_span	*span_init(t_span *self, t_trace *left, t_trace *right, i32 min_y, i32 max_y);
 void	span_move(t_span *self);
-i32		span_end(t_span *self);
 void	span_realign(t_span *self);
 void	span_link(t_span *self, t_span *next);
 void	span_unshift(t_span *self, t_span *other);
