@@ -1,26 +1,6 @@
 
 #include "gpi_private.h"
 
-/*
-
-for a in active {
-	if a.end() {
-		remove(a);
-		continue;
-	}
-	a.move();
-	while (a.left.x < prev.left.x) {
-		swap(a, prev);
-		prev = a.prev;
-	} // 위치 맞추기
-	while (get.head.y == self.y && get.head.x < a.left.x) {
-		get.pop();
-		a.push_front(head);
-	} // get 넣기
-}
-
-*/
-
 void	scanline_move(t_scanline *self) {
 	t_span	*next;
 

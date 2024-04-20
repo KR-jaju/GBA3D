@@ -78,9 +78,9 @@ void	scanline_test(void) {
 		points[2].x, points[2].y
 	);
 
-	int	high = ((points[0].y + 3) & ~0b111) + 4;
-	int	mid = ((points[1].y + 3) & ~0b111) + 4;
-	int	low = ((points[2].y + 3) & ~0b111) + 4;
+	int	high = (((points[0].y + 3) & ~0b111) + 4) >> 3;
+	int	mid = ((((points[1].y + 3) & ~0b111) + 4) >> 3) - 1;
+	int	low = (((points[2].y + 3) & ~0b111) + 4) >> 3;
 
 	if (points[1].x < points[2].x) {
 		span_init(&top, &ab, &ac, high, mid);
@@ -91,12 +91,12 @@ void	scanline_test(void) {
 	}
 	scanline_init(&scanline);
 	scanline_push(&scanline, &bottom);
-	scanline_push(&scanline, &top);
+	scanline_push(&scanline, &top); // 리스트 앞에 넣는거라서 지금은 늦게 넣은게 먼저 나옴
 	scanline_sort(&scanline); //귀찮아서 아직 구현 안 함
 	for (int y = 0; y < 160; ++y) {
 		scanline_move(&scanline);
-		for (int x = 0; x < 240; ++x) {
-			if (scanline.active != NULL && scanline.active->left->x <= x && x < scanline.active->right->x)
+		for (int x = 0; x < 100; ++x) {
+			if (scanline.active != &scanline.active_end && scanline.active->left->x <= x && x < scanline.active->right->x)
 				printf("#");
 			else
 				printf(" ");

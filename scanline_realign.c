@@ -12,4 +12,6 @@ void	scanline_realign(t_scanline *self, t_span *span) {
 		span->next = prev;
 		prev = span->prev;
 	}
+	if (prev == NULL)
+		self->active = span;
 }
