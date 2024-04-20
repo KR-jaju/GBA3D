@@ -90,9 +90,9 @@ void	scanline_test(void) {
 		span_init(&bottom, &ac, &bc, mid, low);
 	}
 	scanline_init(&scanline);
+	scanline_push(&scanline, &top);
 	scanline_push(&scanline, &bottom);
-	scanline_push(&scanline, &top); // 리스트 앞에 넣는거라서 지금은 늦게 넣은게 먼저 나옴
-	scanline_sort(&scanline); //귀찮아서 아직 구현 안 함
+	scanline_sort(&scanline);
 	for (int y = 0; y < 160; ++y) {
 		scanline_move(&scanline);
 		for (int x = 0; x < 100; ++x) {
