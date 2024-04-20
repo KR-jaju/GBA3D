@@ -79,7 +79,7 @@ void	scanline_test(void) {
 	);
 
 	int	high = (((points[0].y + 3) & ~0b111) + 4) >> 3;
-	int	mid = ((((points[1].y + 3) & ~0b111) + 4) >> 3) - 1;
+	int	mid = (((points[1].y + 3) & ~0b111) + 4) >> 3;
 	int	low = (((points[2].y + 3) & ~0b111) + 4) >> 3;
 
 	if (points[1].x < points[2].x) {
