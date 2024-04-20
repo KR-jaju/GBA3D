@@ -41,7 +41,7 @@ void	scanline_test(void) {
 	};
 
 	{
-		if (points[0].y > points[0].y) {
+		if (points[0].y > points[1].y) {
 			t_point	tmp = points[0];
 			points[0] = points[1];
 			points[1] = tmp;
@@ -51,7 +51,7 @@ void	scanline_test(void) {
 			points[1] = points[2];
 			points[2] = tmp;
 		}
-		if (points[0].y > points[0].y) {
+		if (points[0].y > points[1].y) {
 			t_point	tmp = points[0];
 			points[0] = points[1];
 			points[1] = tmp;
@@ -78,36 +78,34 @@ void	scanline_test(void) {
 		points[2].x, points[2].y
 	);
 
-	// int	high = ((points[0].y + 3) & ~0b111) + 4;
-	// int	mid = ((points[1].y + 3) & ~0b111) + 4;
-	// int	low = ((points[2].y + 3) & ~0b111) + 4;
+	int	high = ((points[0].y + 3) & ~0b111) + 4;
+	int	mid = ((points[1].y + 3) & ~0b111) + 4;
+	int	low = ((points[2].y + 3) & ~0b111) + 4;
 
-	// if (points[1].y < points[2].x) {
-	// 	span_init(&top, &ab, &ac, high, mid);
-	// 	span_init(&bottom, &bc, &ac, mid, low);
-	// } else {
-	// 	span_init(&top, &ac, &ab, high, mid);
-	// 	span_init(&bottom, &ac, &bc, mid, low);
-	// }
-	// // scanline_init(&scanline);
-	// // scanline_push(&scanline, &bottom);
-	// // scanline_push(&scanline, &top);
-	// scanline_sort(&scanline); //귀찮아서 아직 구현 안 함
-	// for (int y = 0; y < 160; ++y) {
-	// 	scanline_move(&scanline);
-	// 	for (int x = 0; x < 240; ++x) {
-	// 		if (scanline.active == NULL)
-	// 			continue;
-	// 		if (scanline.active->left->x <= x && x < scanline.active->right->x)
-	// 			printf("#");
-	// 		else
-	// 			printf(" ");
-	// 	}
-	// 	printf("\n");
-	// }
+	if (points[1].x < points[2].x) {
+		span_init(&top, &ab, &ac, high, mid);
+		span_init(&bottom, &bc, &ac, mid, low);
+	} else {
+		span_init(&top, &ac, &ab, high, mid);
+		span_init(&bottom, &ac, &bc, mid, low);
+	}
+	scanline_init(&scanline);
+	scanline_push(&scanline, &bottom);
+	scanline_push(&scanline, &top);
+	scanline_sort(&scanline); //귀찮아서 아직 구현 안 함
+	for (int y = 0; y < 160; ++y) {
+		scanline_move(&scanline);
+		for (int x = 0; x < 240; ++x) {
+			if (scanline.active != NULL && scanline.active->left->x <= x && x < scanline.active->right->x)
+				printf("#");
+			else
+				printf(" ");
+		}
+		printf("\n");
+	}
 }
 
 int	main(void) {
-	span_test();
+	// span_test();
 	scanline_test();
 }
