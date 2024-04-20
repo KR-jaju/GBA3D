@@ -18,7 +18,6 @@ struct s_trace {
 	int	x;
 	int	dx;
 	int	dy;
-	int	step;
 };
 
 struct s_span {

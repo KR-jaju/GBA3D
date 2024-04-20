@@ -11,7 +11,6 @@ t_trace	*trace_init(t_trace *self, i32 x0, i32 y0, i32 x1, i32 y1) {
 	self->dx = dx; // 이건 미정
 	self->dy = dy; // 이건 당연히 양수
 	self->error = dy * (floor_x - x0) - dx * (floor_y - y0);
-	self->step = (dx < 0) ? -1 : 1; // 선의 진행방향
 	// error = dy * x - dx * y
 	// error < 0 // 선보다 x-
 	// error > 0 // 선보다 x+
