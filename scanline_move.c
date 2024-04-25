@@ -1,19 +1,22 @@
-
+ 
 #include "gpi_private.h"
 
-void	scanline_move(t_scanline *self) {
+void	scanline_move(t_scanline *self, i32 y) {
 	t_span	*next;
+	t_span	*curr;
 
-	self->y += 1;
-	for (t_span *curr = self->active; curr != &self->active_end; curr = next) {
+	curr = self->active;
+	while (curr != &self->active_end) {
 		next = curr->next;
-		if (curr->max_y == self->y) {
+		if (y == curr->y[2]) {
 			scanline_remove(self, curr);
-			continue;
+		} else {
+			span_move(curr, y);
+			scanline_realign(self, curr, y);
+			scanline_splice(self, curr, y);
 		}
-		span_move(curr);
-		scanline_realign(self, curr);
-		scanline_splice(self, curr);
+		curr = next;
 	}
-	scanline_splice(self, &self->active_end);
+	scanline_splice_back(self, y);
+	// scanline_splice(self, &self->active_end); // TODO: 대책마련 시급
 }

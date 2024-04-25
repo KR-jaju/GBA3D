@@ -14,14 +14,13 @@ void	push_front(t_scanline *self, t_span *dst, t_span *src) {
 		self->active = src;
 }
 
-void	scanline_splice(t_scanline *self, t_span *dst, i32 y) {
-	i32		dst_x = span_left(dst, y < dst->y[1])->x;
+void	scanline_splice_back(t_scanline *self, i32 y) {
 	t_span	*src = self->global;
 	t_span	*next;
 
-	while (src != NULL && (src->y[0] == y & span_left(src, y < src->y[1])->x < dst_x)) {
+	while (src != NULL && src->y[0] == y) {
 		next = src->next;
-		push_front(self, dst, src);
+		push_front(self, (t_span *)&self->active_end, src);
 		src = next;
 	}
 	self->global = src;

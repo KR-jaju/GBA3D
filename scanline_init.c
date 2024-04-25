@@ -1,16 +1,10 @@
 
 #include "gpi_private.h"
 
-t_scanline	*scanline_init(t_scanline *self) {
-	self->global = NULL;
-	self->active = &self->active_end;
-	self->end_trace = (t_trace) {
-		.dx = 0,
-		.dy = 0,
-		.error = 0,
-		.x = 2147483647
-	};
-	span_init(&self->active_end, &self->end_trace, NULL, 0, 0);
-	self->y = -1;
+t_scanline	*scanline_init(t_scanline *self, t_vertex *vertices, t_span *span_set) {
+	self->global = span_set;
+	self->active = (t_span *)&self->active_end;
+	self->active_end = NULL;
+	self->vertices = vertices;
 	return (self);
 }
