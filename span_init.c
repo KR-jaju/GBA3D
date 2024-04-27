@@ -1,10 +1,10 @@
 
 #include "gpi_private.h"
 
-t_span	*span_init(t_span *self, t_vertex *vertices, i32 indices[3]) {
-	t_vertex*const	a = &vertices[indices[0]];
-	t_vertex*const	b = &vertices[indices[1]];
-	t_vertex*const	c = &vertices[indices[2]];
+t_span	*span_init(t_span *self, t_vertex *vertices[3]) {
+	t_vertex*const	a = vertices[0];
+	t_vertex*const	b = vertices[1];
+	t_vertex*const	c = vertices[2];
 	t_trace*const	ab = &self->traces[0];
 	t_trace*const	ac = &self->traces[1];
 	t_trace*const	bc = &self->traces[2];
@@ -18,9 +18,9 @@ t_span	*span_init(t_span *self, t_vertex *vertices, i32 indices[3]) {
 	self->y[0] = ((a->y + 3) & ~0b111) >> 3; //TODO: &연산이 필요하지 않을것으로 보임
 	self->y[1] = ((b->y + 3) & ~0b111) >> 3;
 	self->y[2] = ((c->y + 3) & ~0b111) >> 3;
-	self->indices[0] = indices[0];
-	self->indices[1] = indices[1];
-	self->indices[2] = indices[2];
+	self->vertex[0] = vertices[0];
+	self->vertex[1] = vertices[1];
+	self->vertex[2] = vertices[2];
 	// TODO: normal설정하기
 	return (self);
 }

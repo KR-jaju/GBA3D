@@ -1,6 +1,14 @@
  
 #include "gpi_private.h"
 
+
+/*
+1. remove (first)
+2. move (second)
+3. realign (third opt)
+4. splice (else third opt)
+*/
+
 void	scanline_move(t_scanline *self, i32 y) {
 	t_span	*next;
 	t_span	*curr;
@@ -18,5 +26,4 @@ void	scanline_move(t_scanline *self, i32 y) {
 		curr = next;
 	}
 	scanline_splice_back(self, y);
-	// scanline_splice(self, &self->active_end); // TODO: 대책마련 시급
 }

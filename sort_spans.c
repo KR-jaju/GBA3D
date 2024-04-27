@@ -8,7 +8,7 @@ void	sort_spans(t_span *array, u32 n) {
 
 // #include "gpi_private.h"
 
-// //may a be in front of b?
+//may a be in front of b?
 // static
 // i32	compare(t_span const *a, t_span const *b) {
 // 	return (a->min_y < b->min_y || (a->min_y == b->min_y && a->left->x < b->left->x));

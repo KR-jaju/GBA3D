@@ -15,9 +15,9 @@ void	push_front(t_scanline *self, t_span *dst, t_span *src) {
 }
 
 void	scanline_splice(t_scanline *self, t_span *dst, i32 y) {
-	i32		dst_x = span_left(dst, y < dst->y[1])->x;
-	t_span	*src = self->global;
-	t_span	*next;
+	i32			dst_x = span_left(dst, y < dst->y[1])->x;
+	t_span		*src = self->global;
+	t_span		*next;
 
 	while (src != NULL && (src->y[0] == y & span_left(src, y < src->y[1])->x < dst_x)) {
 		next = src->next;
