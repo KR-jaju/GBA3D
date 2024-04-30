@@ -9,7 +9,8 @@ void	swap(t_span *prev, t_span *next) {
 	next->next = prev;
 }
 
-void	scanline_realign(t_scanline *self, t_span *span, i32 y) {
+void	scanline_realign(t_scanline *self, t_span *span) {
+	i32 const	y = self->y;
 	i32		curr_x = span_left(span, y < span->y[1])->x;
 	t_span	*prev = span->prev;
 

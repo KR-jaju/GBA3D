@@ -9,9 +9,10 @@
 4. splice (else third opt)
 */
 
-void	scanline_move(t_scanline *self, i32 y) {
-	t_span	*next;
-	t_span	*curr;
+void	scanline_move(t_scanline *self) {
+	i32 const	y = self->y;
+	t_span		*next;
+	t_span		*curr;
 
 	curr = self->active;
 	while (curr != &self->active_end) {
@@ -20,10 +21,11 @@ void	scanline_move(t_scanline *self, i32 y) {
 			scanline_remove(self, curr);
 		} else {
 			span_move(curr, y);
-			scanline_realign(self, curr, y);
-			scanline_splice(self, curr, y);
+			scanline_realign(self, curr); // prev
+			scanline_splice(self, curr);
 		}
 		curr = next;
 	}
-	scanline_splice_back(self, y);
+	scanline_splice_back(self);
+	self->y += 1;
 }

@@ -1,25 +1,25 @@
 
 #include "gpi_private.h"
 
-static
-t_span	*to_list(t_scanline *self, t_vao *vao) {
-	i32 const	n = vao->triangle_count;
-	t_span		*span = self->pool;
-	t_span		*prev = NULL;
+// static
+// t_span	*to_list(t_scanline *self, t_vao *vao) {
+// 	i32 const	n = vao->triangle_count;
+// 	t_span		*span = self->pool;
+// 	t_span		*prev = NULL;
 
-	for (i32 i = 0; i < n; ++i) {
-		span_init(span, vao->triangle[n].vertex);
-		if (prev != NULL)
-			prev->next = span;
-		span += 1;
-	}
-	return (self->pool);
-}
+// 	for (i32 i = 0; i < n; ++i) {
+// 		span_init(span, vao->triangle[n].vertex);
+// 		if (prev != NULL)
+// 			prev->next = span;
+// 		span += 1;
+// 	}
+// 	return (self->pool);
+// }
 
 static
 i32	compare(t_span const *a, t_span const *b) {
-	t_trace*const	a_begin = a->shape ? &a->traces[1] : &a->traces[0];
-	t_trace*const	b_begin = b->shape ? &b->traces[1] : &b->traces[0];
+	t_trace const*const	a_begin = a->shape ? &a->traces[1] : &a->traces[0];
+	t_trace const*const	b_begin = b->shape ? &b->traces[1] : &b->traces[0];
 
 	if (a->y[0] < b->y[0])
 		return (1);
@@ -87,21 +87,22 @@ void	merge_sort(t_span **head_ref) {
 	merge_sort(&a);
 	merge_sort(&b);
 	*head_ref = merge(a, b);
-	return (*head_ref);
 }
 
-static
-t_span	*convert(t_scanline *self, t_vao *vao) {
-	t_span	*unsorted = to_list(self, vao);
-	merge_sort(&unsorted);
+t_scanline	*scanline_init(t_scanline *self, t_triangle *triangles, i32 count) {
+	t_span	*span = self->pool;
+	t_span	*list = NULL;
 
-	return (unsorted);
-}
-
-t_scanline	*scanline_init(t_scanline *self, t_vao *vao) {
-	self->pool_end = self->pool;
-	self->global = convert(self, vao);
+	for (i32 i = 0; i < count; ++i, span += 1) {
+		span_init(span, triangles[i].vertex);
+		span->next = list;
+		list = span;
+	}
+	merge_sort(&list);
+	self->global = list;// TODO: sort list
 	self->active = (t_span *)&self->active_end;
 	self->active_end = NULL;
+	self->y = 0;
+	scanline_splice_back(self);
 	return (self);
 }

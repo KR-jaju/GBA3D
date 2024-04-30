@@ -14,9 +14,10 @@ void	push_front(t_scanline *self, t_span *dst, t_span *src) {
 		self->active = src;
 }
 
-void	scanline_splice_back(t_scanline *self, i32 y) {
+void	scanline_splice_back(t_scanline *self) {
 	t_span	*src = self->global;
 	t_span	*next;
+	i32 const	y = self->y;
 
 	while (src != NULL && src->y[0] == y) {
 		next = src->next;
