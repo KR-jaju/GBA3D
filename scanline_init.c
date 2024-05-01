@@ -18,13 +18,13 @@
 
 static
 i32	compare(t_span const *a, t_span const *b) {
-	t_trace const*const	a_begin = a->shape ? &a->traces[1] : &a->traces[0];
-	t_trace const*const	b_begin = b->shape ? &b->traces[1] : &b->traces[0];
+	i32 const	ax = a->x[0];
+	i32 const	bx = b->x[0];
 
 	if (a->y[0] < b->y[0])
 		return (1);
 	if (a->y[0] == b->y[0])
-		return (a_begin->x < b_begin->x);
+		return (ax < bx);
 	return (0);
 }
 

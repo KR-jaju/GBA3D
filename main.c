@@ -23,6 +23,12 @@ void	draw(t_triangle *triangle, i32 count) {
 }
 */
 
+char	pixel_shader(i32 x, i32 y, t_pixel *pixels, t_pixel *end) {
+	if (pixels == NULL)
+		return ' ';
+	return '#';
+}
+
 void	scanline_test(void) {
 	typedef struct {int	x; int	y;}	t_point;
 	t_vertex	points[] = {
@@ -34,26 +40,13 @@ void	scanline_test(void) {
 		{&points[0], &points[1], &points[2]}
 	};
 	t_scanline	scanline;
+	t_scanpixel	scanpixel;
 
-	// scanline_init(&scanline, triangles, 1);
-	// while (scanline.y < 160) {
-	for (scanline_init(&scanline, triangles, 1);
-		scanline.y < 160;
-		scanline_move(&scanline)) {
+	for (scanline_init(&scanline, triangles, 1); scanline.y < 160; scanline_move(&scanline)) {
 		i32 const	y = scanline.y;
-		for (int x = 0; x < 100; ++x) {
-			if (scanline.active != &scanline.active_end) {
-				t_span	*span = scanline.active;
-				t_trace	*left = span_left(span, y < span->y[1]);
-				t_trace	*right = span_right(span, y < span->y[1]);
-
-				if (left->x <= x && x < right->x)
-					printf("#");
-				else
-					printf(" ");
-			}
-			else
-				printf(" ");
+		for (scanpixel_init(&scanpixel, scanline.active); scanpixel.x < 100; scanpixel_move(&scanpixel)) {
+			i32 const	x = scanpixel.x;
+			printf("%c", pixel_shader(x, y, scanpixel.active, &scanpixel.active_end));
 		}
 		printf("\n");
 	}

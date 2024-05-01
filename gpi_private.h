@@ -5,6 +5,9 @@
 #  define NULL 0
 # endif
 
+# define MAX_TRIANGLE_COUNT 1024
+# define MAX_DEPTH_LAYER	32
+
 typedef unsigned char		u8;
 typedef unsigned short		u16;
 typedef unsigned int		u32;
@@ -21,6 +24,10 @@ typedef struct s_vertex		t_vertex;
 typedef struct s_span		t_span;
 typedef struct s_trace		t_trace;
 typedef struct s_scanline	t_scanline;
+
+typedef struct s_pixel		t_pixel;
+typedef struct s_scanpixel	t_scanpixel;
+
 typedef struct s_rasterizer	t_rasterizer;
 
 struct s_vertex {
@@ -31,6 +38,8 @@ struct s_vertex {
 
 struct s_triangle {
 	t_vertex	*vertex[3];
+	i32			dwdx[3];
+	i32			dwdy[3];
 };
 
 struct s_vao {
@@ -39,21 +48,30 @@ struct s_vao {
 	i32			triangle_count;
 };
 
-struct s_trace {
-	int	error;
-	int	x;
-	int	dx;
-	int	dy;
-};
+/*
+dx/dy * (y - y0) = (x - x0)
+dx/dy * (y - y0) = a|X| + b X
+1. dx/dy * Y = (a + b) X -> (dx/dy) / (a + b)
+2. dx/dy * Y = (-a + b)X -> (dx/dy) / (-a+b)
+
+dx * (y - y0) = dy * (x - x0)
+
+*/
 
 struct s_span {
+	t_triangle	*ref;
 	t_span		*prev;
 	t_span		*next;
-	t_trace		traces[3]; //ab, ac, bc 순으로 들어감
-	i32			shape; // ac가 왼쪽인가 오른쪽인가
-	i32			y[3]; //min_y, center_y, max_y 저장하는 곳, 이름 미정
-	t_vertex	*vertex[3];
-	i32			weight[3];
+	i32			dx[2][2];
+	i32			dy[2][2]; // up/down, left/right
+	i32			error[2];
+	i32			w[3]; // barycentric weight
+	i32			x[2]; // left, right x
+	i32			*y;
+	i32			z[2]; // left, right z
+	i32			y_start;
+	i32			y_center; // 8 precision
+	i32			y_end;
 };
 
 struct s_scanline {
@@ -64,15 +82,27 @@ struct s_scanline {
 	i32			y;
 };
 
-// t_drawcall	*drawcall_init(t_drawcall *self, t_vertex *vertices, int *indices);
+struct s_pixel {
+	t_span		*ref;
+	t_pixel		*prev;
+	t_pixel		*next;
+	i32			z;
+	i32			w[3];
+	i32			end_x;
+};
 
-t_trace		*trace_init(t_trace *self, i32 x0, i32 y0, i32 x1, i32 y1);
-void		trace_move(t_trace *self);
+struct s_scanpixel {
+	t_pixel	pool[MAX_TRIANGLE_COUNT];
+	t_pixel	*global;
+	t_pixel	*active;
+	t_pixel	*active_end;
+	i32		x;
+};
+
+// t_drawcall	*drawcall_init(t_drawcall *self, t_vertex *vertices, int *indices);
 
 t_span		*span_init(t_span *self, t_vertex *vertices[3]);
 void		span_move(t_span *self, i32 y);
-t_trace		*span_left(t_span *self, i32 is_upper);
-t_trace		*span_right(t_span *self, i32 is_upper);
 
 t_scanline	*scanline_init(t_scanline *self, t_triangle *triangles, i32 count);
 void		scanline_move(t_scanline *self);
@@ -82,3 +112,13 @@ void		scanline_realign(t_scanline *self, t_span *span);
 void		scanline_splice(t_scanline *self, t_span *span);
 void		scanline_splice_back(t_scanline *self);
 
+t_pixel		*pixel_init(t_pixel *self, t_span *span);
+void		pixel_move(t_pixel *self);
+
+t_scanpixel	*scanpixel_init(t_scanpixel *self, t_span *span);
+void		scanpixel_move(t_scanpixel *self);
+//private
+void		scanpixel_remove(t_scanpixel *self, t_pixel *pixel);
+void		scanpixel_realign(t_scanpixel *self, t_pixel *pixel);
+void		scanpixel_splice(t_scanpixel *self, t_pixel *pixel);
+void		scanpixel_splice_back(t_scanpixel *self);

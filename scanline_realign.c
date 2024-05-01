@@ -11,10 +11,10 @@ void	swap(t_span *prev, t_span *next) {
 
 void	scanline_realign(t_scanline *self, t_span *span) {
 	i32 const	y = self->y;
-	i32		curr_x = span_left(span, y < span->y[1])->x;
+	i32 const	curr_x = span->x[0];
 	t_span	*prev = span->prev;
 
-	while (prev != NULL && span_left(prev, y < prev->y[1])->x > curr_x) {
+	while (prev != NULL && prev->x[0] > curr_x) {
 		swap(prev, span);
 		prev = span->prev;
 	}
