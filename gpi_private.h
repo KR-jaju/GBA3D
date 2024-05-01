@@ -16,6 +16,51 @@ typedef signed char			i8;
 typedef signed short		i16;
 typedef signed int			i32;
 
+typedef struct s_vertex		t_vertex;
+typedef struct s_triangle	t_triangle;
+typedef struct s_trace		t_trace;
+typedef struct s_span		t_span;
+typedef struct s_scanline	t_scanline;
+
+
+struct s_vertex {
+	i32	x;
+	i32	y;
+	i32	z;
+};
+
+struct s_triangle {
+	t_vertex	*vertices[3];
+};
+
+struct s_trace {
+	i32	error;
+	i32	x;
+	i32	dx;
+	i32	dy;
+};
+
+struct s_span {
+	t_triangle	*triangle;
+	t_trace		trace[2];
+	i32			start;
+	i32			breakpoint;
+	i32			end;
+	i32			barycentric[3];
+};
+
+struct s_scanline {
+	t_span	*future_span;
+	t_span	*active_span;
+	t_span	*active_span_end;
+	i32		y;
+};
+
+
+
+
+
+
 // typedef struct 
 typedef struct s_vao		t_vao;
 typedef struct s_triangle	t_triangle;
