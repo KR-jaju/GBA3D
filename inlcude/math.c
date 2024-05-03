@@ -117,3 +117,8 @@ void matrix4x4rotateYPR(float matrix[16],Vec3 rotate) //회전
 
     matrix4x4Mul(matrix,tmp);
 }
+
+void matrix4x4transport(float matrix[16], Vec3 trans)
+{
+    
+}
