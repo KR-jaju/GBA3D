@@ -22,6 +22,25 @@ float getRadian(float num)
     return num*(PI/180.0f);
 }
 
+Vec3 make_vector(float x, float y, float z)
+{
+    Vec3 tmp;
+    tmp.x = x;
+    tmp.y = y;
+    tmp.z = z;
+    return tmp;
+}
+
+void print_obj(const t_obj* obj)
+{
+    printf("size: %d\n", obj->size);
+    for(int i = 0;i<obj->size;i++)
+    {
+        printf("%f ,%f ,%f \n",obj->vertex[i].x,obj->vertex[i].y,obj->vertex[i].z);
+    }
+    printf("\n");
+}
+
 Vec3 vecTransformed(const float matrix[16], Vec3 vec) //행렬 변환을 적용
 {
     Vec3 transformed;
@@ -46,7 +65,7 @@ void vecTransform(const float matrix[16], Vec3* vec) //행렬 변환을 적용
     transformed.y = (vec->x*matrix[4]) + (vec->y*matrix[5]) + (vec->z*matrix[6]) + matrix[7];
     transformed.z = (vec->x*matrix[8]) + (vec->y*matrix[9]) + (vec->z*matrix[10]) + matrix[11];
     float w = (vec->x * matrix[12]) + (vec->x * matrix[13]) + (vec->x * matrix[14]) + matrix[15];
-
+    *vec = transformed;
     if(w != 1.0f)
     {
         transformed.x = transformed.x/ w;
@@ -118,7 +137,18 @@ void matrix4x4rotateYPR(float matrix[16],Vec3 rotate) //회전
     matrix4x4Mul(matrix,tmp);
 }
 
-void matrix4x4transport(float matrix[16], Vec3 trans)
+void matrix4x4SetTranslation(float matrix[16], Vec3 trans) //이동
 {
-    
+    matrix[3] = trans.x;
+    matrix[7] = trans.y;
+    matrix[11] = trans.z;
 }
+
+
+
+
+
+
+
+
+

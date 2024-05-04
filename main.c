@@ -1,5 +1,6 @@
 
 #include "gpi_private.h"
+#include "inlcude\vertex.c"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -60,5 +61,19 @@ void	scanline_test(void) {
 }
 
 int	main(void) {
-	scanline_test();
+	//scanline_test();
+	t_obj obj;
+	obj.vertex[0] = make_vector(0.0f,0.0f,0.0f);
+	obj.vertex[1] = make_vector(1.0f,0.0f,0.0f);
+	obj.vertex[2] = make_vector(1.0f,1.0f,0.0f);
+	obj.size = 3;
+	print_obj(&obj);
+	Vec3 scale = make_vector(10.0f,10.0f,10.0f);
+	Vec3 rotate = make_vector(0.0f,90.0f,0.0f);
+	Vec3 trans = make_vector(0.0f,0.0f,0.0f);
+	for(int i =0;i<obj.size;i++)
+	{
+		vertex_to_world(&obj.vertex[i],&scale,&rotate,&trans);
+	}
+	print_obj(&obj);
 }
