@@ -12,7 +12,7 @@ Scanline::Scanline(RasterSubject const &subject): entry(), exit(), asl(), y(0) {
 			entry = &(*entry)->next;
 		}
 		event.next = *entry;
-		*entry = event.next;
+		*entry = &event;
 	}
 	// this->sortEntries();
 	Event	*&in = this->entry[this->y];
@@ -34,10 +34,6 @@ void	Scanline::move() {
 void	Scanline::update() {
 	this->detachOutgoing();
 	this->mergeIncoming();
-}
-
-void	Scanline::render(int *out) {
-	
 }
 
 Segment	*Scanline::begin() {
@@ -110,25 +106,3 @@ void	Scanline::insert(Segment *pos, Segment *src) {
 	src->prev = prev;
 	src->next = next;
 }
-
-// // Now bubble sort
-// void	Scanline::sortEntries() {
-// 	for (u32 i = 0; i < RENDERER_WIDTH; ++i) {
-// 		Event	*&begin = this->entry[i];
-// 		bool	swapped = false;
-
-// 		if (begin == NULL)
-// 			return ;
-// 		do {
-// 			swapped = false;
-// 			Event	*a = begin;
-// 			Event	*limit = NULL;
-// 			while (a->next != limit) {
-				
-// 				if (a->segment.edge[0].x > a->next->segment.edge[0].x) {
-					
-// 				}
-// 			}
-// 		} while (swapped);
-// 	}
-// }
