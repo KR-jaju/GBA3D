@@ -17,7 +17,8 @@ Segment	&Segment::init(Triangle const *triangle) {
 		triangle->vertex[1].y,
 		triangle->vertex[2].y
 	};
-	i32 const	ac_orientation = (x[1] * (y[2] - y[0]) < (x[2] - x[0]) * y[1]);
+	i32 const	ac_orientation = ((x[1] - x[0]) * (y[2] - y[0]) <= (x[2] - x[0]) * (y[1]- y[0]));
+
 	i32	const	breakpoint = y[1] - y[0];
 
 	if (breakpoint == 0)
