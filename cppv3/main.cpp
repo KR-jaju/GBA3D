@@ -66,14 +66,13 @@ void	testScanline() {
 
 void	testRasterizer() {
 	std::cout << "--testing rasterizer" << std::endl;
-	Mesh<4, 1>		mesh = {
-		{0, 0, 0,
-		100, 0, 0,
-		0, 100, 0,
-		100, 100, 0},
-		{1, 2, 3}
+	Mesh<4, 2>		mesh = {
+		{{0, 100, 0},
+		{234, 145, 0},
+		{560, 634, 0},
+		{650, 400, 0}},
+		{1, 2, 3, 0, 1, 2}
 	};
-	//  0, 1, 2
 	RasterSubject	rs;
 	rs.push(mesh);
 

@@ -15,19 +15,15 @@ Scanline::Scanline(RasterSubject const &subject): entry(), exit(), asl(), y(0) {
 		event.next = *entry;
 		*entry = &event;
 	}
-
-
-	Segment *p = this->begin();
-	for (int i = 0; i < 4; ++i) {
-		std::cout << p << ", ";
-		p = p->next;
-	}
-
 	Event	*&in = this->entry[0];
 	while (in != NULL) {
+		Event	*next = in->next;
+	
 		this->insert(this->end(), &in->segment);
-		{in = in->next;}
-		std::cerr << "Inserted : " << this->y << std::endl;
+		u32 y = in->segment.triangle->vertex[2].y >> 3;
+		in->next = this->exit[y];
+		this->exit[y] = in;
+		{in = next;}
 	} //insertion
 }
 
@@ -36,20 +32,11 @@ u32	Scanline::getY() const {
 }
 
 void	Scanline::move() {
+	this->detachOutgoing();
 	this->y += 1;
 	if (this->y >= RENDERER_HEIGHT)
 		return ;
-	// for (Segment *s = this->begin(); s != this->end(); s = s->next)
-	// 	std::cout << s << ", ";
-	// std::cout << this->end() << std::endl;
-	// this->detachOutgoing();
 	this->mergeIncoming();
-	std::cerr << this->begin() << "--" << this->begin()->next << ",," << this->y << std::endl;
-}
-
-void	Scanline::update() {
-	// this->detachOutgoing();
-	// this->mergeIncoming();
 }
 
 Segment	*Scanline::begin() {
@@ -67,7 +54,7 @@ Segment const	*Scanline::end() const {
 }
 
 void	Scanline::detachOutgoing() {
-	Event	*&out = this->exit[this->y - 1];
+	Event	*&out = this->exit[this->y];
 
 	while (out != NULL) {
 		Segment*const	c = &out->segment;
@@ -83,30 +70,29 @@ void	Scanline::detachOutgoing() {
 void	Scanline::mergeIncoming() {
 	Event	*&in = this->entry[this->y];
 	Segment	*curr = this->begin();
-
-
-// for (Segment *s = this->begin(); s != this->end(); s = s->next)
-// 		std::cout << s << ", ";
-		// <<"|"<< s->next<<"|"<<s->next->next << ", ";
-	// std::cout << this->end() << std::endl;
-
 	Segment	*next = curr->next;
 
 	while (curr != this->end()) {
 		curr->move(); //update segment
 		this->realign(curr);
-		// while (in != NULL && in->segment.edge[0].x < curr->edge[0].x) {
-		// 	this->insert(curr, &in->segment);
-		// 	{in = in->next;}
-		// 	std::cerr << "Inserted : 2" << this->y << std::endl;
-		// } //insertion
+		while (in != NULL && in->segment.edge[0].x < curr->edge[0].x) {
+			Event	*next = in->next;
+			this->insert(curr, &in->segment);
+			u32 y = in->segment.triangle->vertex[2].y >> 3;
+			in->next = this->exit[y];
+			this->exit[y] = in;
+			{in = next;}
+		} //insertion
 		{curr = next; next = next->next;}
 	}
-	// while (in != NULL) {
-	// 	this->insert(this->end(), &in->segment);
-	// 	{in = in->next;}
-	// 	std::cerr << "Inserted : " << this->y << std::endl;
-	// } //insertion
+	while (in != NULL) {
+		Event	*next = in->next;
+		this->insert(this->end(), &in->segment);
+		u32 y = in->segment.triangle->vertex[2].y >> 3;
+		in->next = this->exit[y];
+		this->exit[y] = in;
+		{in = next;}
+	} //insertion
 }
 
 void	Scanline::realign(Segment *s) {

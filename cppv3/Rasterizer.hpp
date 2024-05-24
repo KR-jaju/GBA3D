@@ -22,10 +22,12 @@ public:
 		while (scan.getY() < 160) {
 			x = 0;
 			clear(out);
-			this->renderRow(scan.begin(), scan.end(), x, out);
-			// for (int i = 0; i < 240; ++i)
-			// 	std::cout << out[i];
-			// std::cout << std::endl
+			for (Segment *s = scan.begin(); s != scan.end(); s = s->next) {
+				this->renderRow(s, scan.end(), x, out);	
+			}
+			for (int i = 0; i < 240; ++i)
+				std::cout << out[i];
+			std::cout << std::endl;
 			
 			scan.move();
 		}
@@ -39,9 +41,11 @@ private:
 
 			if (x == next->edge[0].x) {
 				renderRow(next, end, x, out);
-			} else {
-				out[x] = 1;
+				continue;
 			}
+			if (!(0 <= x && x < 240))
+				continue;
+			out[x] = 1;
 		}
 	}
 };

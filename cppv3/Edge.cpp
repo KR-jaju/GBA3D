@@ -7,6 +7,8 @@ Edge	&Edge::init(i32 x0, i32 y0, i32 x1, i32 y1) {
 	i32 const	round_x = (x0 & ~0b111) + 4;
 	i32 const	round_y = (y0 & ~0b111) + 4;
 	i32 const	step = (dx < 0) ? -1 : 1;
+	i32 const	scaled_dx = dx << 3;
+	i32 const	scaled_dy = dy << 3;
 	i32 		error = dy * (round_x - x0) - dx * (round_y - y0);
 	i32			x = round_x >> 3;
 
@@ -17,8 +19,8 @@ Edge	&Edge::init(i32 x0, i32 y0, i32 x1, i32 y1) {
 		}
 	}
 	// this->next = NULL;
-	this->scaled_dx = dx << 3;
-	this->scaled_dy = dy << 3;
+	this->scaled_dx = scaled_dx;
+	this->scaled_dy = scaled_dy;
 	this->step = step;
 	this->error = error;
 	this->x = x;

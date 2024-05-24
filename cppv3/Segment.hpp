@@ -19,9 +19,6 @@ struct Segment {
 	Segment();
 	Segment	&init(Triangle const *triangle);
 	void	move();
-	Segment &operator=(Segment const &a) {
-		std::cerr << "AAAAAAAA" << std::endl;
-	}
 };
 
 #endif
