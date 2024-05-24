@@ -4,6 +4,7 @@
 Segment::Segment() {
 	this->next = this;
 	this->prev = this;
+	this->triangle = NULL;
 }
 
 Segment	&Segment::init(Triangle const *triangle) {
@@ -42,10 +43,13 @@ void	Segment::move() {
 	this->breakpoint -= 1;
 	if (this->breakpoint == 0) {
 		i32 const	ac_orientation = this->ac_orientation;
-
+		std::cerr << ac_orientation << ": ACORIENTATION" << std::endl;
 		this->edge[!ac_orientation].init(v1.x, v1.y, v2.x, v2.y);
 		this->edge[ac_orientation].move();
 	} else {
+		for (int i = 0; i < 2; i++) {
+			std::cout << this->edge[i].x << std::endl;
+		}
 		this->edge[0].move();
 		this->edge[1].move();
 	}

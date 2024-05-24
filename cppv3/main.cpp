@@ -66,13 +66,14 @@ void	testScanline() {
 
 void	testRasterizer() {
 	std::cout << "--testing rasterizer" << std::endl;
-	Mesh<4, 2>		mesh = {
+	Mesh<4, 1>		mesh = {
 		{0, 0, 0,
 		100, 0, 0,
 		0, 100, 0,
 		100, 100, 0},
-		{1, 2, 3, 0, 1, 2}
+		{1, 2, 3}
 	};
+	//  0, 1, 2
 	RasterSubject	rs;
 	rs.push(mesh);
 
@@ -83,8 +84,8 @@ void	testRasterizer() {
 	std::cout << "--rasterizer test end--" << std::endl;
 }
 int	main() {
-	testEdge();
-	testSegment();
-	testScanline();
+	// testEdge();
+	// testSegment();
+	// testScanline();
 	testRasterizer();
 }

@@ -6,6 +6,7 @@
 # include "Triangle.hpp"
 # include "Segment.hpp"
 # include "RasterSubject.hpp"
+#include <iostream>
 
 class Scanline {
 public:
@@ -21,6 +22,9 @@ private:
 	struct Event {
 		Event	*next;
 		Segment	segment;
+		Event &operator=(Event const &a) {
+			std::cerr << "BBBBBBBB";
+		}
 	};
 	Event	event[512];
 	Event	*entry[160];

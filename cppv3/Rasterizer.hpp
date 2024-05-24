@@ -23,9 +23,10 @@ public:
 			x = 0;
 			clear(out);
 			this->renderRow(scan.begin(), scan.end(), x, out);
-			for (int i = 0; i < 240; ++i)
-				std::cout << out[i];
-			std::cout << std::endl;
+			// for (int i = 0; i < 240; ++i)
+			// 	std::cout << out[i];
+			// std::cout << std::endl
+			
 			scan.move();
 		}
 	}
