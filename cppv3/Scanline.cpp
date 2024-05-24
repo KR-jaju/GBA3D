@@ -51,8 +51,8 @@ Segment const	*Scanline::end() const {
 }
 
 void	Scanline::detachOutgoing() {
-	Event	*&out = this->exit[this->y];
-	
+	Event	*&out = this->exit[this->y - 1];
+
 	while (out != NULL) {
 		Segment*const	c = &out->segment;
 		Segment*const	p = c->prev;

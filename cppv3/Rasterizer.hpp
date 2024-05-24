@@ -6,7 +6,12 @@
 # include "Triangle.hpp"
 # include "Scanline.hpp"
 # include "RasterSubject.hpp"
-
+#include <iostream>
+static
+void	clear(int *o){
+	for (int i = 0; i <240; ++i)
+		o[i] = 0;
+}
 class Rasterizer {
 public:
 	void	render(RasterSubject const &subject) {
@@ -16,7 +21,11 @@ public:
 
 		while (scan.getY() < 160) {
 			x = 0;
+			clear(out);
 			this->renderRow(scan.begin(), scan.end(), x, out);
+			for (int i = 0; i < 240; ++i)
+				std::cout << out[i];
+			std::cout << std::endl;
 			scan.move();
 		}
 	}
