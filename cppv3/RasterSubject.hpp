@@ -31,7 +31,9 @@ public:
 	void	push(Triangle const &tri) {
 		// TODO: Backface culling
 		//Possible polygon clipping
-		this->polygon[this->polygon_count] = tri;
+		Triangle &triangle = this->polygon[this->polygon_count];
+		triangle = tri;
+		triangle.sort();
 		this->polygon_count += 1;
 	}
 private:
