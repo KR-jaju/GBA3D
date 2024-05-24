@@ -4,13 +4,17 @@
 Scanline::Scanline(RasterSubject const &subject): entry(), exit(), asl(), y(0) {
 	for (u32 i = 0; i < subject.polygon_count; ++i) {
 		u32 const	min_y = subject.polygon[i].vertex[0].y >> 3;
-
-		Event	&event = (this->event[i] = Event {
-			this->entry[y],
-			Segment().init(&subject.polygon[i])
-		});
-		this->entry[min_y] = &event;
+		Event		&event = this->event[i];
+		Event		**entry = &this->entry[min_y];
+	
+		event.segment.init(&subject.polygon[i]);
+		while (*entry != NULL && (*entry)->segment.edge[0].x < event.segment.edge[0].x) {
+			entry = &(*entry)->next;
+		}
+		event.next = *entry;
+		*entry = event.next;
 	}
+	// this->sortEntries();
 	Event	*&in = this->entry[this->y];
 	while (in != NULL) {
 		this->insert(this->end(), &in->segment);
@@ -71,7 +75,7 @@ void	Scanline::mergeIncoming() {
 
 	while (curr != this->end()) {
 		curr->move(); //update segment
-		while (in != NULL && in->segment.trace[0].x < curr->trace[0].x) {
+		while (in != NULL && in->segment.edge[0].x < curr->edge[0].x) {
 			this->insert(curr, &in->segment);
 			{in = in->next;}
 		} //insertion
@@ -85,7 +89,7 @@ void	Scanline::mergeIncoming() {
 }
 
 void	Scanline::realign(Segment *segment) {
-	while (segment != this->begin() && segment->trace[0].x < segment->prev->trace[0].x) {
+	while (segment != this->begin() && segment->edge[0].x < segment->prev->edge[0].x) {
 		Segment*const	prev = segment->prev;
 		Segment*const	pp = prev->prev;
 		Segment*const	nn = segment->next;
@@ -106,3 +110,25 @@ void	Scanline::insert(Segment *pos, Segment *src) {
 	src->prev = prev;
 	src->next = next;
 }
+
+// // Now bubble sort
+// void	Scanline::sortEntries() {
+// 	for (u32 i = 0; i < RENDERER_WIDTH; ++i) {
+// 		Event	*&begin = this->entry[i];
+// 		bool	swapped = false;
+
+// 		if (begin == NULL)
+// 			return ;
+// 		do {
+// 			swapped = false;
+// 			Event	*a = begin;
+// 			Event	*limit = NULL;
+// 			while (a->next != limit) {
+				
+// 				if (a->segment.edge[0].x > a->next->segment.edge[0].x) {
+					
+// 				}
+// 			}
+// 		} while (swapped);
+// 	}
+// }

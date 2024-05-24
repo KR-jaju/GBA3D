@@ -24,10 +24,10 @@ private:
 	void	renderRow(Segment const *begin, Segment const *end, int &x, int *out) {
 		if (begin == end)
 			return;
-		for (x = begin->trace[0].x; x < begin->trace[1].x; ++x) {
+		for (x = begin->edge[0].x; x < begin->edge[1].x; ++x) {
 			Segment const	*next = begin->next;
 
-			if (x == next->trace[0].x) {
+			if (x == next->edge[0].x) {
 				renderRow(next, end, x, out);
 			} else {
 				out[x] = 1;

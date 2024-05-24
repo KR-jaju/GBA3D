@@ -33,6 +33,7 @@ private:
 	void	mergeIncoming();
 	void	realign(Segment *segment);
 	void	insert(Segment *pos, Segment *src);
+	void	sortEntries();
 };
 
 #endif

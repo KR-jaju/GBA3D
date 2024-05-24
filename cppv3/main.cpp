@@ -27,10 +27,10 @@ void	testSegment() {
 	Segment	segment;
 
 	segment.init(&tri);
-	std::cout << "segment test 1, x : " << segment.trace[0].x << ", " << segment.trace[1].x << std::endl;
+	std::cout << "segment test 1, x : " << segment.edge[0].x << ", " << segment.edge[1].x << std::endl;
 	segment.move();
 	segment.move();
-	std::cout << "segment test 2, x : " << segment.trace[0].x << ", " << segment.trace[1].x << std::endl;
+	std::cout << "segment test 2, x : " << segment.edge[0].x << ", " << segment.edge[1].x << std::endl;
 	std::cout << "--segment test end--" << std::endl;
 }
 
@@ -50,12 +50,12 @@ void	testScanline() {
 
 	std::cout << "scanline test 1 :" << std::endl;
 	for (Segment *s = scan.begin(); s != scan.end(); s = s->next)
-		std::cout << "segment x: (" << s->trace[0].x << ", " << s->trace[1].x << ")" << std::endl;
+		std::cout << "segment x: (" << s->edge[0].x << ", " << s->edge[1].x << ")" << std::endl;
 	scan.move();
 	scan.move();
 	std::cout << "scanline test 2 :" << std::endl;
 	for (Segment *s = scan.begin(); s != scan.end(); s = s->next)
-		std::cout << "segment x: (" << s->trace[0].x << ", " << s->trace[1].x << ")" << std::endl;
+		std::cout << "segment x: (" << s->edge[0].x << ", " << s->edge[1].x << ")" << std::endl;
 	std::cout << "--scanline test end--" << std::endl;
 }
 

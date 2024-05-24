@@ -10,7 +10,7 @@ struct Segment {
 	Segment			*prev;
 	Segment			*next;
 	Triangle const	*triangle;
-	Edge			trace[2];
+	Edge			edge[2];
 	u32				breakpoint;
 	i32				ac_orientation; // TODO: u8에 저장해도 됨
 

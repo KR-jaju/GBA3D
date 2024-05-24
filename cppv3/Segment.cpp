@@ -21,10 +21,10 @@ Segment	&Segment::init(Triangle const *triangle) {
 	i32	const	breakpoint = y[1] - y[0];
 
 	if (breakpoint == 0)
-		this->trace[!ac_orientation].init(x[1], y[1], x[2], y[2]);
+		this->edge[!ac_orientation].init(x[1], y[1], x[2], y[2]);
 	else
-		this->trace[!ac_orientation].init(x[0], y[0], x[1], y[1]);
-	this->trace[ac_orientation].init(x[0], y[0], x[2], y[2]);
+		this->edge[!ac_orientation].init(x[0], y[0], x[1], y[1]);
+	this->edge[ac_orientation].init(x[0], y[0], x[2], y[2]);
 	this->prev = this;
 	this->next = this;
 	this->triangle = triangle;
@@ -42,10 +42,10 @@ void	Segment::move() {
 	if (this->breakpoint == 0) {
 		i32 const	ac_orientation = this->ac_orientation;
 
-		this->trace[!ac_orientation].init(v1.x, v1.y, v2.x, v2.y);
-		this->trace[ac_orientation].move();
+		this->edge[!ac_orientation].init(v1.x, v1.y, v2.x, v2.y);
+		this->edge[ac_orientation].move();
 	} else {
-		this->trace[0].move();
-		this->trace[1].move();
+		this->edge[0].move();
+		this->edge[1].move();
 	}
 }
