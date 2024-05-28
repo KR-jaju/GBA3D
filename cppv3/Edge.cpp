@@ -13,8 +13,8 @@ Edge	&Edge::init(i32 x0, i32 y0, i32 x1, i32 y1) {
 	i32			x = round_x >> 3;
 
 	if (scaled_dy != 0) {
-		while (error < 0 || error - (dy << 3) >= 0) {
-			error += step * (dy << 3);
+		while (error < 0 || error - scaled_dy >= 0) {
+			error += step * scaled_dy;
 			x += step;
 		}
 	}
