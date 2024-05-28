@@ -40,11 +40,11 @@ void	Scanline::move() {
 	this->mergeIncoming();
 }
 
-void	Scanline::render(int *out) const {
+void	Scanline::render(u16 *out) const {
 	this->render(0, 240, NULL, this->begin(), out);
 }
 
-void	Scanline::render(int l, int r, Segment const *current, Segment const *incoming, int *out) const {
+void	Scanline::render(int l, int r, Segment const *current, Segment const *incoming, u16 *out) const {
 	Segment const* const	end = this->end();
 	Segment const			*next;
 	static int				x; // TODO: threadlocal
