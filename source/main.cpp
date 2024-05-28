@@ -3,7 +3,6 @@
 #include "Segment.hpp"
 #include "Scanline.hpp"
 #include "Rasterizer.hpp"
-#include <tonc.h>
 
 /*
 00000,00000,11111 - 31
@@ -25,8 +24,7 @@ void	testRasterizer() {
 	rasterizer.render(rs);
 }
 int	main() {
-	REG_DISPCNT = DCNT_MODE3 | DCNT_BG2;
-	// pal_bg_mem[0] = CLR_BLACK;
-	// pal_bg_mem[1] = CLR_WHITE;
+	*(u16 *)(0x04000000) = 0b0000010000000011;
+	// REG_DISPCNT = DCNT_MODE3 | DCNT_BG2;
 	testRasterizer();
 }
