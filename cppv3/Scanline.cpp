@@ -1,5 +1,6 @@
 
 #include "Scanline.hpp"
+#include "Shader.hpp"
 #include <iostream>
 
 Scanline::Scanline(RasterSubject const &subject): entry(), exit(), asl(), y(0) {
@@ -38,6 +39,36 @@ void	Scanline::move() {
 		return ;
 	this->mergeIncoming();
 }
+
+void	Scanline::render(int *out) const {
+	this->render(0, 240, NULL, this->begin(), out);
+}
+
+void	Scanline::render(int l, int r, Segment const *current, Segment const *incoming, int *out) const {
+	Segment const* const	end = this->end();
+	Segment const			*next;
+	static int				x; // TODO: threadlocal
+
+	next = incoming;
+	x = l;
+	while (x < r) {
+		while (next != end && x > next->edge[0].x) {
+			next = next->next;
+		}
+		if (next != end && x == next->edge[0].x) {
+			int const	nl = next->edge[0].x;
+			int const	nr = next->edge[1].x;
+		
+			this->render(nl, nr, next, next->next, out);
+			next = next->next;
+			continue;
+		}
+		// out[x] = (current == NULL);
+		out[x] = Shader::pixelShader(current, x, this->y);
+		x += 1;
+	}
+}
+
 
 Segment	*Scanline::begin() {
 	return (this->asl.next); //TODO: asl.next

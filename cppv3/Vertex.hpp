@@ -10,6 +10,7 @@ struct Vertex {
 	i32		x;
 	i32		y;
 	i32		z;
+	u32		v;
 };
 
 #endif

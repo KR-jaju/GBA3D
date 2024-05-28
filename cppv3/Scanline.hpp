@@ -13,7 +13,7 @@ public:
 	Scanline(RasterSubject const &subject);
 	u32	getY() const;
 	void	move();
-	void	render(int *out);//size = 240
+	void	render(int *out) const;//size = 240
 	Segment	*begin();
 	Segment	*end();
 	Segment const	*begin() const;
@@ -29,14 +29,11 @@ private:
 	Segment	asl; //active_segment_list
 	u32		y;
 
-	void	update();
+	void	render(int l, int r, Segment const *current, Segment const *incoming, int *out) const;
 	void	detachOutgoing();
 	void	mergeIncoming();
 	void	realign(Segment *segment);
-	void	merge(Segment *pos, Segment *src);
 	void	insert(Segment *pos, Segment *src);
-	void	insertIncoming(Event *src);
-	void	insertOutgoing(Event *src);
 };
 
 #endif
