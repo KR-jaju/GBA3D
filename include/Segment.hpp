@@ -16,8 +16,11 @@ struct Segment {
 	u32				breakpoint;
 	i32				ac_orientation; // TODO: u8에 저장해도 됨
 
+	IWRAM_CODE
 	Segment();
+	IWRAM_CODE
 	Segment	&init(Triangle const *triangle);
+	IWRAM_CODE
 	void	move();
 };
 

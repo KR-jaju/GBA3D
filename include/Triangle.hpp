@@ -17,6 +17,7 @@ struct Triangle {
 
 
 	// 정렬기준: y 작을수록 앞, y가 같으면 x가 작은게 앞
+	IWRAM_CODE
 	void	sort() {
 		Vertex	&v0 = this->vertex[0];
 		Vertex	&v1 = this->vertex[1];

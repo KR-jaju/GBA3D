@@ -28,17 +28,13 @@ Scanline::Scanline(RasterSubject const &subject): entry(), exit(), asl(), y(0) {
 	} //insertion
 }
 
-u32	Scanline::getY() const {
-	return (this->y);
-}
-
-void	Scanline::move() {
-	this->detachOutgoing();
-	this->y += 1;
-	if (this->y >= RENDERER_HEIGHT)
-		return ;
-	this->mergeIncoming();
-}
+// void	Scanline::move() {
+// 	this->detachOutgoing();
+// 	this->y += 1;
+// 	if (this->y >= RENDERER_HEIGHT)
+// 		return ;
+// 	this->mergeIncoming();
+// }
 
 void	Scanline::render(u16 *out) const {
 	this->render(0, 240, NULL, this->begin(), out);
@@ -52,36 +48,23 @@ void	Scanline::render(int l, int r, Segment const *current, Segment const *incom
 	next = incoming;
 	x = l;
 	while (x < r) {
-		while (next != end && x > next->edge[0].x) {
-			next = next->next;
-		}
+		
 		if (next != end && x == next->edge[0].x) {
 			int const	nl = next->edge[0].x;
 			int const	nr = next->edge[1].x;
 		
 			this->render(nl, nr, next, next->next, out);
 			next = next->next;
+			while (next != end && x > next->edge[0].x) {
+				next = next->next;
+			}
 			continue;
 		}
 		// out[x] = (current == NULL);
-		out[x] = Shader::pixelShader(current, x, this->y);
+		// out[x] = (current == NULL) * 15;
+		// out[x] = Shader::pixelShader(current, x, this->y);
 		x += 1;
 	}
-}
-
-
-Segment	*Scanline::begin() {
-	return (this->asl.next); //TODO: asl.next
-}
-Segment	*Scanline::end() {
-	return (&this->asl);
-}
-
-Segment const	*Scanline::begin() const {
-	return (this->asl.next); //TODO: asl.next
-}
-Segment const	*Scanline::end() const {
-	return (&this->asl);
 }
 
 void	Scanline::detachOutgoing() {
@@ -126,27 +109,27 @@ void	Scanline::mergeIncoming() {
 	} //insertion
 }
 
-void	Scanline::realign(Segment *s) {
-	while (s != this->begin() && s->edge[0].x < s->prev->edge[0].x) {
-		Segment*const	p = s->prev;
-		Segment*const	pp = p->prev;
-		Segment*const	n = s->next;
+// void	Scanline::realign(Segment *s) {
+// 	while (s != this->begin() && s->edge[0].x < s->prev->edge[0].x) {
+// 		Segment*const	p = s->prev;
+// 		Segment*const	pp = p->prev;
+// 		Segment*const	n = s->next;
 		
-		pp->next = s;
-		s->prev = pp;
-		s->next = p;
-		p->prev = s;
-		p->next = n;
-		n->prev = p;
-	} //alignment
-}
+// 		pp->next = s;
+// 		s->prev = pp;
+// 		s->next = p;
+// 		p->prev = s;
+// 		p->next = n;
+// 		n->prev = p;
+// 	} //alignment
+// }
 
-void	Scanline::insert(Segment *pos, Segment *src) {
-	Segment*const	prev = pos->prev;
-	Segment*const	next = pos;
+// void	Scanline::insert(Segment *pos, Segment *src) {
+// 	Segment*const	prev = pos->prev;
+// 	Segment*const	next = pos;
 
-	prev->next = src;
-	next->prev = src;
-	src->prev = prev;
-	src->next = next;
-}
+// 	prev->next = src;
+// 	next->prev = src;
+// 	src->prev = prev;
+// 	src->next = next;
+// }

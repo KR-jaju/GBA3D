@@ -14,8 +14,11 @@
 
 class Shader {
 public:
-	static u16	pixelShader(Segment const *segment, u32 x, u32 y);
+	INLINE static u16	pixelShader(Segment const *segment, u32 x, u32 y) {
+		return ((segment == NULL) * 15);
+	}
 private:
+	IWRAM_CODE
 	static u16	pixelMain(Fragment const &fragment);
 };
 

@@ -14,6 +14,7 @@ public:
 
 	RasterSubject(): polygon_count(0) {}
 	template <u32 V, u32 F>
+	IWRAM_CODE
 	void	push(Mesh<V, F> const &mesh) {
 		for (u32 i = 0; i < V; ++i) {
 			Vertex const	&in = mesh.vertex[i];
@@ -28,6 +29,7 @@ public:
 			this->push(tri);
 		}
 	}
+	IWRAM_CODE
 	void	push(Triangle const &tri) {
 		// TODO: Backface culling
 		//Possible polygon clipping

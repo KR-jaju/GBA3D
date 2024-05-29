@@ -26,4 +26,8 @@ typedef signed int			i32;
 # define MAX_FACE_COUNT 1024
 #endif
 
+// #define IWRAM_CODE	
+#define IWRAM_CODE __attribute__((section(".iwram"), short_call))
+#define INLINE	__attribute__((always_inline))
+
 #endif

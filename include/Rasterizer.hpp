@@ -10,6 +10,7 @@
 
 class Rasterizer {
 public:
+	IWRAM_CODE
 	void	render(RasterSubject const &subject);
 private:
 };
