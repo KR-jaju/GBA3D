@@ -14,9 +14,9 @@ int	main() {
 	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2;
 	Mesh<4, 2>		mesh = {
 		{{0, 100, 0, 0, 0},
-		{234, 145, 0, 0xFF, 0},
-		{560, 634, 0, 0, 0xFF},
-		{650, 400, 0, 0xFF, 0xFF}},
+		{234, 145, 0, 0xFFFF, 0},
+		{560, 634, 0, 0, 0xFFFF},
+		{650, 400, 0, 0xFFFF, 0xFFFF}},
 		{1, 2, 3, 0, 1, 2}
 	};
 	RasterSubject	rs;

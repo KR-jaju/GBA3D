@@ -10,10 +10,8 @@ class Texture {
 public:
 	INLINE
 	static u8	sample(u32 u, u32 v) {
-		// return ((u + v) >> 5);
-		if ((v >> 9) > 1)
-			return (6);
-		return (5);
+		return u8(float(u + v)/ (1 << 14));
+		// return u8(v >> 4);
 		// u8((u + v) >> 14) & 0b111;
 		// u8((u + v) >> 8) & 0b11111111U;
 	}
