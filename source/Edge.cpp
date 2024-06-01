@@ -1,15 +1,15 @@
 
 #include "Edge.hpp"
 
-Edge	&Edge::init(i32 x0, i32 y0, i32 x1, i32 y1) {
-	i32 const	dx = x1 - x0;
-	i32 const	dy = y1 - y0;
-	i32 const	round_x = (x0 & ~0b111) + 4;
-	i32 const	round_y = (y0 & ~0b111) + 4;
-	i32 const	step = (dx < 0) ? -1 : 1;
+Edge	&Edge::init(Vertex const &a, Vertex const &b) {
+	i32 const	dx = b.x - a.x;
+	i32 const	dy = b.y - a.y;
+	i32 const	round_x = (a.x & ~0b111) + 4;
+	i32 const	round_y = (a.y & ~0b111) + 4;
+	i8 const	step = (dx < 0) ? -1 : 1;
 	i32 const	scaled_dx = dx << 3;
 	i32 const	scaled_dy = dy << 3;
-	i32 		error = dy * (round_x - x0) - dx * (round_y - y0);
+	i32 		error = dy * (round_x - a.x) - dx * (round_y - a.y);
 	i32			x = round_x >> 3;
 
 	if (scaled_dy != 0) {
@@ -18,28 +18,29 @@ Edge	&Edge::init(i32 x0, i32 y0, i32 x1, i32 y1) {
 			x += step;
 		}
 	}
-	// this->next = NULL;
 	this->scaled_dx = scaled_dx;
 	this->scaled_dy = scaled_dy;
-	this->step = step;
 	this->error = error;
-	this->x = x;
+	this->pack = (u8(step) << 24) | u16(x); //shade here
 	return (*this);
 }
 
 void	Edge::move() {
-	i32 const	step = this->step;
 	i32 const	dx = this->scaled_dx;
 	i32 const	dy = this->scaled_dy;
+	u32 const	pack = this->pack;
+	i32 const	step = i8(pack >> 24);
+	i32			x = i16(u16(pack));
 	i32			error = this->error - dx;
-	i32			x = this->x;
+	i32			x_move = 0;
 
 	if (this->scaled_dy == 0)
 		return ;
 	while (error < 0 || error - dy >= 0) {
 		error += step * dy;
-		x += step;
+		x_move += step;
 	}
+	x += x_move;
 	this->error = error;
-	this->x = x;
+	this->pack = (pack & 0xFFFF0000) | u16(x);
 }

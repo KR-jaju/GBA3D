@@ -40,31 +40,29 @@ void	Scanline::render(u16 *out) const {
 	this->render(0, 240, NULL, this->begin(), out);
 }
 
-void	Scanline::render(int l, int r, Segment const *current, Segment const *incoming, u16 *out) const {
+void	Scanline::render(u32 l, u32 r, Segment const *current, Segment const *incoming, u16 *out) const {
 	Segment const* const	end = this->end();
 	Segment const			*next;
-	static int				x; // TODO: threadlocal
-
+	static u32				x; // TODO: threadlocal
 	next = incoming;
 	x = l;
 	while (x < r) {
-		
-		if (next != end && x == next->edge[0].x) {
+		if ((next != end) && (x == next->edge[0].x)) {
 			int const	nl = next->edge[0].x;
 			int const	nr = next->edge[1].x;
 		
 			this->render(nl, nr, next, next->next, out);
 			next = next->next;
-			while (next != end && x > next->edge[0].x) {
+			while ((next != end) && (x > next->edge[0].x)) {
 				next = next->next;
 			}
 			continue;
 		}
-		// out[x] = (current == NULL);
-		// out[x] = (current == NULL) * 15;
-		// out[x] = Shader::pixelShader(current, x, this->y);
+		out[x] = Shader::pixelShader(current, x, this->y);
 		x += 1;
 	}
+	// for (int i = l; i < r; ++i)
+	// 	out[i] = Shader::pixelShader(next, x, this->y);
 }
 
 void	Scanline::detachOutgoing() {

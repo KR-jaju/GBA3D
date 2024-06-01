@@ -3,19 +3,28 @@
 # define EDGE_HPP
 
 # include "type.hpp"
+# include "Vertex.hpp"
+
+/*
+x = 240 * 8 < 16bit
+shade - 16bit
+uv = 32bit
+*/
 
 struct Edge {
 	i32	scaled_dx;
-	i32	scaled_dy;
-	i32	step;
+	i32	scaled_dy; // 너무 큰가??
 	i32	error;
-	i32	x;
-	i32	z;
+	u32	pack; // 31 {i8 step; u8 shade; u16 x;} 0
 
 	IWRAM_CODE
-	Edge	&init(i32 x0, i32 y0, i32 x1, i32 y1);
+	Edge	&init(Vertex const &a, Vertex const &b);
 	IWRAM_CODE
 	void	move();
+	INLINE
+	i32		x() const {
+		return (i16(u16(this->pack)));
+	}
 };
 
 #endif

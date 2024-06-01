@@ -53,7 +53,7 @@ private:
 	u32		y;
 
 	IWRAM_CODE
-	void	render(int l, int r, Segment const *current, Segment const *incoming, u16 *out) const;
+	void	render(u32 l, u32 r, Segment const *current, Segment const *incoming, u16 *out) const;
 	IWRAM_CODE
 	void	detachOutgoing();
 	IWRAM_CODE

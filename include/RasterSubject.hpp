@@ -10,6 +10,7 @@
 class RasterSubject {
 public:
 	Triangle	polygon[MAX_FACE_COUNT];
+	Triangle	*depth[DEPTH_LAYER_SIZE];
 	u32			polygon_count;
 
 	RasterSubject(): polygon_count(0) {}
@@ -21,23 +22,36 @@ public:
 			//run vertex shader
 		}
 		for (u32 i = 0; i < F * 3; i += 3) {
-			Triangle	tri = {
+			Triangle	&tri = this->allocatePolygon();
+			
+			// tri.vertex[0] = mesh.vertex[mesh.index[i]];
+			// tri.vertex[1] = mesh.vertex[mesh.index[i + 1]];
+			// tri.vertex[2] = mesh.vertex[mesh.index[i + 2]];
+			tri.init(
 				mesh.vertex[mesh.index[i]],
 				mesh.vertex[mesh.index[i + 1]],
 				mesh.vertex[mesh.index[i + 2]]
-			};
-			this->push(tri);
+			);
+			tri.next = this->depth[0];
+			this->depth[0] = &tri;
 		}
 	}
 	IWRAM_CODE
 	void	push(Triangle const &tri) {
 		// TODO: Backface culling
 		//Possible polygon clipping
-		Triangle &triangle = this->polygon[this->polygon_count];
-		triangle = tri;
-		triangle.sort();
-		this->polygon_count += 1;
+		Triangle	&allocated = this->allocatePolygon();
+			
+		allocated = tri;
+		allocated.next = this->depth[0];
+		this->depth[0] = &allocated;
 	}
 private:
+	Triangle	&allocatePolygon() {
+		Triangle &tri = this->polygon[this->polygon_count];
+
+		this->polygon_count += 1;
+		return (tri);
+	}
 };
 #endif
