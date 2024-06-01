@@ -35,21 +35,16 @@ struct Triangle {
 		Vertex const	&a = this->vertex[0];
 		Vertex const	&b = this->vertex[1];
 		Vertex const	&c = this->vertex[2];
-		i32 const		abx = b.x - a.x;
-		i32 const		aby = b.y - a.y;
-		i32 const		acx = c.x - a.x;
-		i32 const		acy = c.y - a.y;
-		i32 const		dau = (b.u - a.u);
-		i32 const		dav = (b.v - a.v);
-		i32 const		dbu = (c.u - a.u);
-		i32 const		dbv = (c.v - a.v);
-		i32 const		ab_mag = (abx * abx + aby * aby);
-		i32 const		ac_mag = (acx * acx + acy * acy);
+		i32 const		det_reciprocal = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+		i32 const		m11 = c.y - a.y;
+		i32 const		m12 = a.x - c.x;
+		i32 const		m21 = a.y - b.y;
+		i32 const		m22 = b.x - a.x;
 
-		this->dudx = (abx * dau * ac_mag + acx * dbu * ab_mag) / (ab_mag * ac_mag);
-		this->dudy = (aby * dau * ac_mag + acy * dbu * ab_mag) / (ab_mag * ac_mag);
-		this->dvdx = (abx * dav * ac_mag + acx * dbv * ab_mag) / (ab_mag * ac_mag);
-		this->dvdy = (aby * dav * ac_mag + acy * dbv * ab_mag) / (ab_mag * ac_mag);
+		this->dudx = (m11 * (b.u - a.u) + m21 * (c.u - a.u)) / det_reciprocal;
+		this->dudy = (m12 * (b.u - a.u) + m22 * (c.u - a.u)) / det_reciprocal;
+		this->dvdx = (m11 * (b.v - a.v) + m21 * (c.v - a.v)) / det_reciprocal;
+		this->dvdy = (m12 * (b.v - a.v) + m22 * (c.v - a.v)) / det_reciprocal;
 	} //x, y증가량에 따른 u, v증가량
 
 	// 정렬기준: y 작을수록 앞, y가 같으면 x가 작은게 앞
