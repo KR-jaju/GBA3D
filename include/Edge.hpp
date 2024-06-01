@@ -21,7 +21,6 @@ struct Edge {
 	Edge	&init(Vertex const &a, Vertex const &b);
 	IWRAM_CODE
 	void	move();
-	INLINE
 	i32		x() const {
 		return (i16(u16(this->pack)));
 	}

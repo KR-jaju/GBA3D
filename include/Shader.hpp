@@ -3,7 +3,6 @@
 # define SHADER_HPP
 
 # include "Triangle.hpp"
-# include "Fragment.hpp"
 # include "Texture.hpp"
 
 /*
@@ -14,12 +13,11 @@
 
 class Shader {
 public:
-	INLINE static u8	pixelShader(Triangle const *tri, u32 u, u32 v) {
+	IWRAM_CODE
+	static u8	pixelShader(Triangle const *tri, u32 u, u32 v) {
 		return (Texture::sample(u, v));
 	}
 private:
-	IWRAM_CODE
-	static u16	pixelMain(Fragment const &fragment);
 };
 
 #endif

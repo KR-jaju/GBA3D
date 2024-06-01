@@ -30,7 +30,7 @@ struct Triangle {
 		return (*this);
 	}
 
-	INLINE
+	IWRAM_CODE
 	void	precalculate() {
 		Vertex const	&a = this->vertex[0];
 		Vertex const	&b = this->vertex[1];
@@ -39,7 +39,7 @@ struct Triangle {
 		i32 const		m11 = c.y - a.y;
 		i32 const		m12 = a.x - c.x;
 		i32 const		m21 = a.y - b.y;
-		i32 const		m22 = b.x - a.x;
+		i32 const		m22 = b.x - a.x;// TODO: 추후 가독성 최적화
 
 		this->dudx = (m11 * (b.u - a.u) + m21 * (c.u - a.u)) / determinant;
 		this->dudy = (m12 * (b.u - a.u) + m22 * (c.u - a.u)) / determinant;
