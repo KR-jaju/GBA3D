@@ -32,7 +32,7 @@ INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y_min, u
 
 		if (width != 0) {
 			u8	*ptr = &out[y * 240 + x0];
-			if (x0 & 1 == 1) { // 홀수번째에서 시작
+			if ((x0 & 0b1) == 1) { // 홀수번째에서 시작
 				ptr -= 1; // 한 칸 이전으로 이동(2바이트 경계 맞춤)
 				*(u16 *)ptr = *ptr | (Shader::pixelShader(&triangle, u, v) << 8);
 				ptr += 2; // 다음 픽셀로 이동
@@ -40,7 +40,7 @@ INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y_min, u
 				u += triangle.dudx * 8;
 				v += triangle.dvdx * 8;
 			}
-			if (width & 1 == 1) { // 홀수번째에서 끝남
+			if ((width & 0b1) == 1) { // 홀수번째에서 끝남
 				*(u16 *)(ptr + width - 1) = (Shader::pixelShader(&triangle, u + triangle.dudx * 8 * (width - 1), v + triangle.dvdx * 8 * (width - 1))) | (ptr[width] << 8);
 			}
 			width >>= 1; // 시작도 2바이트 경계, 가야할 거리도 2의 배수이므로 반으로 나눔
