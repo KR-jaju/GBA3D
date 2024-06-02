@@ -23,10 +23,6 @@ public:
 		}
 		for (u32 i = 0; i < F * 3; i += 3) {
 			Triangle	&tri = this->allocatePolygon();
-			
-			// tri.vertex[0] = mesh.vertex[mesh.index[i]];
-			// tri.vertex[1] = mesh.vertex[mesh.index[i + 1]];
-			// tri.vertex[2] = mesh.vertex[mesh.index[i + 2]];
 			tri.init(
 				mesh.vertex[mesh.index[i]],
 				mesh.vertex[mesh.index[i + 1]],
