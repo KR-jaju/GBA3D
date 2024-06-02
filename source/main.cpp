@@ -20,12 +20,11 @@ int	main() {
 		{1, 2, 3, 0, 1, 2}
 	};
 	RasterSubject	rs;
-	Rasterizer	rasterizer;
 
 	rs.push(mesh);
 	init_palettes();
 	while(true) {
-		rasterizer.render(rs, (u8*)vid_page);
+		Rasterizer::render(rs, (u8*)vid_page);
 		vid_flip();
 	}
 }

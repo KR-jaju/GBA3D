@@ -8,13 +8,12 @@
 # include "Shader.hpp"
 # include "Edge.hpp"
 
-class Rasterizer {
-public:
+namespace Rasterizer {
 	IWRAM_CODE
-	static void	render(RasterSubject const &subject, u8 *out);
+	void	render(RasterSubject const &subject, u8 *out);
 	IWRAM_CODE
-	static void	render(Triangle const &triangle, u8 *out);
-private:
-};
+	void	render(Triangle const &triangle, u8 *out);
+}
+
 
 #endif
