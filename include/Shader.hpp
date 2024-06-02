@@ -11,13 +11,10 @@
 3. Rasterize (fragment shader)
 */
 
-class Shader {
-public:
-	IWRAM_CODE
-	static u8	pixelShader(Triangle const *tri, u32 u, u32 v) {
+namespace Shader {
+	INLINE u8	pixelShader(Triangle const *tri, u32 u, u32 v) {
 		return (Texture::sample(u, v));
 	}
-private:
-};
+}
 
 #endif
