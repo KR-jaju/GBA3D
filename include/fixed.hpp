@@ -2,69 +2,123 @@
 #ifndef FIXED_HPP
 # define FIXED_HPP
 
+# include "type.hpp"
+
 #define FIX_SHIFT   8
 
 struct fixed
 {
-    int num;
-    
-    fixed();
-    fixed(int d);
-    fixed(float f);
+	i32 num;
+	
+	constexpr	fixed(): num(0) {}
+	constexpr	fixed(int d): num(d << FIX_SHIFT) {}
+	constexpr	fixed(float f): num(f * (1 << FIX_SHIFT)) {}
 
-	explicit operator	float() const; 
-    explicit operator    int() const;
-    
-    fixed   operator-() const;
+	constexpr explicit operator	float() const {
+		return float(num) / (1 << FIX_SHIFT);
+	}
+	constexpr explicit operator    int() const {
+		return (num >> FIX_SHIFT);
+	}
+	
+	constexpr fixed	operator-() const {
+		return fixed::from(-this->num);
+	}
 
-    fixed operator+(fixed other) const;
-    fixed operator-(fixed other) const;
-    fixed operator*(fixed other) const;
-    fixed operator/(fixed other) const;
+	constexpr fixed	operator+(fixed other) const {
+		return fixed::from(num + other.num);
+	}
+	constexpr fixed	operator-(fixed other) const {
+		return fixed::from(num - other.num);
+	}
+	constexpr fixed	operator*(fixed other) const {
+		return fixed::from(int((i64(num) * other.num) >> FIX_SHIFT));
+	}
+	constexpr fixed	operator/(fixed other) const {
+		return fixed::from(int(((1 << FIX_SHIFT) * i64(num)) / other.num));
+	}
+	constexpr fixed	operator>>(int shift) const {
+		return fixed::from(this->num >> shift);
+	}
+	constexpr fixed	operator<<(int shift) const {
+		return fixed::from(this->num << shift);
+	}
 
-    fixed operator>>(int shift) const;
-    fixed operator<<(int shift) const;
-
-    template <typename T>
-    bool    operator<(T other) const {
-        return (this->num < (int(other) << FIX_SHIFT));
-    }
 	template <typename T>
-    bool    operator>(T other) const {
-        return (this->num > (int(other) << FIX_SHIFT));
-    }
-    template <typename T>
-    bool    operator<=(T other) const {
-        return (this->num <= (int(other) << FIX_SHIFT));
-    }
-    template <typename T>
-    bool    operator>=(T other) const {
-        return (this->num >= (int(other) << FIX_SHIFT));
-    }
-    template <typename T>
-    bool    operator==(T other) const {
-        return (this->num == (int(other) << FIX_SHIFT));
-    }
-    template <typename T>
-    bool    operator!=(T other) const {
-        return (this->num != (int(other) << FIX_SHIFT));
-    }
+	bool    operator<(T other) const {
+		return (this->num < (int(other) << FIX_SHIFT));
+	}
+	template <typename T>
+	bool    operator>(T other) const {
+		return (this->num > (int(other) << FIX_SHIFT));
+	}
+	template <typename T>
+	bool    operator<=(T other) const {
+		return (this->num <= (int(other) << FIX_SHIFT));
+	}
+	template <typename T>
+	bool    operator>=(T other) const {
+		return (this->num >= (int(other) << FIX_SHIFT));
+	}
+	template <typename T>
+	bool    operator==(T other) const {
+		return (this->num == (int(other) << FIX_SHIFT));
+	}
+	template <typename T>
+	bool    operator!=(T other) const {
+		return (this->num != (int(other) << FIX_SHIFT));
+	}
 
-	bool operator<(fixed other) const;
-    bool operator>(fixed other) const;
-    bool operator<=(fixed other) const;
-    bool operator>=(fixed other) const;
-	bool operator==(fixed other) const;
-    bool operator!=(fixed other) const;
+	constexpr bool	operator<(fixed other) const {
+		return (this->num < other.num);
+	}
+	constexpr bool	operator>(fixed other) const {
+		return (this->num > other.num);
+	}
+	constexpr bool	operator<=(fixed other) const {
+		return (this->num <= other.num);
+	}
+	constexpr bool	operator>=(fixed other) const {
+		return (this->num >= other.num);
+	}
+	constexpr bool	operator==(fixed other) const {
+		return (this->num == other.num);
+	}
+	constexpr bool	operator!=(fixed other) const {
+		return (this->num != other.num);
+	}
 
-	fixed &operator+=(fixed other);
-    fixed &operator-=(fixed other);
-    fixed &operator*=(fixed other);
-    fixed &operator/=(fixed other);
-    fixed &operator>>=(int shift);
-    fixed &operator<<=(int shift);
+	constexpr fixed	&operator+=(fixed other) {
+		*this = *this + other;
+		return (*this);
+	}
+	constexpr fixed	&operator-=(fixed other) {
+		*this = *this - other;
+		return (*this);
+	}
+	constexpr fixed	&operator*=(fixed other) {
+		*this = *this * other;
+		return (*this);
+	}
+	constexpr fixed	&operator/=(fixed other) {
+		*this = *this / other;
+		return (*this);
+	}
+	constexpr fixed	&operator>>=(int shift) {
+		*this = *this >> shift;
+		return (*this);
+	}
+	constexpr fixed	&operator<<=(int shift) {
+		*this = *this << shift;
+		return (*this);
+	}
 
-    static fixed    from(int other);
+	static constexpr fixed	from(int other) {
+		fixed   ret;
+
+		ret.num = other;
+		return (ret);
+	}
 };
 
 #endif
