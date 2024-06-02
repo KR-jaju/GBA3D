@@ -4,9 +4,9 @@
 Edge	&Edge::init(Vertex const &a, Vertex const &b) {
 	i32 const	dx = b.x - a.x;
 	i32 const	dy = b.y - a.y;
-	i32 const	round_x = (a.x & ~0b111) + 4;
-	i32 const	round_y = (a.y & ~0b111) + 4;
 	i8 const	step = (dx < 0) ? -1 : 1;
+	i32 const	round_x = (a.x & ~0b111) + 4 - step * 8;
+	i32 const	round_y = ((a.y + 3) & ~0b111) + 4;
 	i32 const	scaled_dx = dx << 3;
 	i32 const	scaled_dy = dy << 3;
 	i32 		error = dy * (round_x - a.x) - dx * (round_y - a.y);
