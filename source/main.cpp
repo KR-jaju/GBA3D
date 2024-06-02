@@ -2,7 +2,7 @@
 #include "Mesh.hpp"
 #include "Rasterizer.hpp"
 #include "GBAlib.hpp"
-
+#include "Camera.hpp"
 /*
 00000,00000,11111 - 31
 00000,00000,01111 - 15
@@ -12,19 +12,28 @@
 int	main() {
 	// *(u16 *)(0x04000000) = 0b0000010000000011;
 	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2;
+	// Mesh<4, 2>		mesh = {
+	// 	{{0, 100, 0, 0, 0},
+	// 	{234, 145, 0, 0xFFFF, 0},
+	// 	{560, 634, 0, 0, 0xFFFF},
+	// 	{650, 400, 0, 0xFFFF, 0xFFFF}},
+	// 	{1, 2, 3, 0, 1, 2}
+	// };
 	Mesh<4, 2>		mesh = {
-		{{0, 100, 0, 0, 0},
-		{234, 145, 0, 0xFFFF, 0},
-		{560, 634, 0, 0, 0xFFFF},
-		{650, 400, 0, 0xFFFF, 0xFFFF}},
-		{1, 2, 3, 0, 1, 2}
+		{{0, 204, 1000, 0, 0},
+		{-204, 0, 1000, 0xFFFF, 0},
+		{0, -204, 1000, 0, 0xFFFF},
+		{204, 0, 1000, 0xFFFF, 0xFFFF}},
+		{0, 1, 2, 0, 2, 3}
 	};
-	RasterSubject	rs;
+	Camera	camera;
 
-	rs.push(mesh);
 	init_palettes();
 	while(true) {
-		Rasterizer::render(rs, (u8*)vid_page);
+		camera.update();
+		camera.push(mesh);
+		camera.render((u8 *)vid_page);
+		// Rasterizer::render(rs, (u8*)vid_page);
 		vid_flip();
 	}
 }
@@ -35,19 +44,20 @@ int	main() {
 // 	clock_init();
 // 	debug_init();
 // 	Mesh<4, 2>		mesh = {
-// 		{{0, 100, 0, 0, 0},
-// 		{234, 145, 0, 0xFFFF, 0},
-// 		{560, 634, 0, 0, 0xFFFF},
-// 		{650, 400, 0, 0xFFFF, 0xFFFF}},
-// 		{1, 2, 3, 0, 1, 2}
+// 		{{0, 204, 1000, 0, 0},
+// 		{-204, 0, 1000, 0xFFFF, 0},
+// 		{0, -204, 1000, 0, 0xFFFF},
+// 		{204, 0, 1000, 0xFFFF, 0xFFFF}},
+// 		{0, 1, 2, 0, 2, 3}
 // 	};
-// 	RasterSubject	rs;
-// 	Rasterizer	rasterizer;
+// 	Camera	camera;
 
-// 	rs.push(mesh);
+// 	camera.update();
+// 	camera.push(mesh);
+// 	debug_view();
 // 	while(true) {
-// 		rasterizer.render(rs, (u8*)0x06000F00);
+// 		// camera.render((u8 *)0x06000F00);
 // 		debug_offset = 0;
-// 		debug_view();
+// 		// debug_view();
 // 	}
 // }

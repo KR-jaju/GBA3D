@@ -1,6 +1,6 @@
 
 //! Put function in IWRAM.
-#define IWRAM_CODE __attribute__((section(".iwram"), long_call))
+// #define IWRAM_CODE __attribute__((section(".iwram"), long_call))
 
 //! Put function in EWRAM.
 #define EWRAM_CODE __attribute__((section(".ewram"), long_call))

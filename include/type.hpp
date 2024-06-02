@@ -33,6 +33,6 @@ typedef signed long long	i64;
 
 #define IWRAM_CODE	
 // #define IWRAM_CODE __attribute__((section(".iwram"), short_call))
-#define INLINE	static __attribute__((always_inline))
+#define INLINE	inline __attribute__((always_inline))
 
 #endif

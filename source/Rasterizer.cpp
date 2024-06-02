@@ -10,9 +10,9 @@ void	Rasterizer::render(RasterSubject const &subject, u8 *out) {
 	int start = clock_get();
 	u16*const	result = (u16 *)out;
 
-	// for (u32 i = 0; i < 160 * 240 / 2; ++i) {
-	// 	result[i] = 0; //검은색 초기화
-	// } //dma로 대체
+	for (u32 i = 0; i < 160 * 240 / 2; ++i) {
+		result[i] = 0; //검은색 초기화
+	} //dma로 대체
 	for(u32 i = 0; i < DEPTH_LAYER_SIZE; ++i) {
 		for (Triangle *tri = subject.depth[i]; tri != NULL; tri = tri->next) {
 			Rasterizer::render(*tri, (u8 *)out);
@@ -22,7 +22,7 @@ void	Rasterizer::render(RasterSubject const &subject, u8 *out) {
 	sprintf(debug_text, "(%d) ", e0 - start);
 }
 
-INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y_min, u32 y_max, u8 *out) {	
+static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y_min, u32 y_max, u8 *out) {	
 	for (u32 y = y_min; y < y_max; ++y) {
 		u32 const	x0 = edge[0].x();
 		u32 const	x1 = edge[1].x();

@@ -7,6 +7,10 @@
 # include "Triangle.hpp"
 # include "Mesh.hpp"
 # include "Shader.hpp"
+# include "mat4.hpp"
+
+# include "debug.hpp"
+# include <stdio.h>
 
 class RasterSubject {
 public:
@@ -14,16 +18,17 @@ public:
 	Triangle	*depth[DEPTH_LAYER_SIZE];
 	u32			polygon_count;
 
-	RasterSubject(): polygon_count(0) {}
+	RasterSubject(): polygon_count(0) {
+		this->clear(); //TODO: 최적화
+	}
 	template <u32 V, u32 F>
 	IWRAM_CODE
-	void	push(Mesh<V, F> const &mesh) {
+	void	push(Mesh<V, F> const &mesh, mat4 const matrix) {
 		Vertex	processed[V];
 		for (u32 i = 0; i < V; ++i) {
 			Vertex const	&in = mesh.vertex[i];
 
-			processed[i] = Shader::vertexShader(in);
-			//run vertex shader
+			processed[i] = Shader::vertexShader(in, matrix);
 		}
 		for (u32 i = 0; i < F * 3; i += 3) {
 			Triangle	&tri = this->allocatePolygon();
@@ -37,14 +42,10 @@ public:
 		}
 	}
 	IWRAM_CODE
-	void	push(Triangle const &tri) {
-		// TODO: Backface culling
-		//Possible polygon clipping
-		Triangle	&allocated = this->allocatePolygon();
-			
-		allocated = tri;
-		allocated.next = this->depth[0];
-		this->depth[0] = &allocated;
+	void	clear() {
+		for (int i = 0; i < DEPTH_LAYER_SIZE; ++i)
+			this->depth[i] = NULL;
+		this->polygon_count = 0;
 	}
 private:
 	Triangle	&allocatePolygon() {
