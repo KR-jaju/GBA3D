@@ -9,13 +9,6 @@
 struct Triangle {
 	Triangle	*next; // RasterSubject에서 다음 삼각형에 대한 포인터
 	Vertex		vertex[3];
-	//u32 barycentric_all
-	/*
-	u32	barycentric_area; - 모든 질량중심좌표계 weight의 합
-	u32	db[2] - du/dx, du/dy, dv/dx, du/dy -- 메모리 너무 씀..?
-	u32	b[2] - u, v, 1 - u - v
-	x, y만 있으면 가져올 수는 있음.
-	*/
 	i32	dudx;
 	i32	dudy;
 	i32	dvdx;
@@ -32,19 +25,23 @@ struct Triangle {
 
 	IWRAM_CODE
 	void	precalculate() {
-		Vertex const	&a = this->vertex[0];
-		Vertex const	&b = this->vertex[1];
-		Vertex const	&c = this->vertex[2];
-		i32 const		determinant = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-		i32 const		m11 = c.y - a.y;
-		i32 const		m12 = a.x - c.x;
-		i32 const		m21 = a.y - b.y;
-		i32 const		m22 = b.x - a.x;// TODO: 추후 가독성 최적화
+		Vertex const	&v0 = this->vertex[0];
+		Vertex const	&v1 = this->vertex[1];
+		Vertex const	&v2 = this->vertex[2];
+		i32 const		a = v1.x - v0.x;
+		i32 const		b = v2.x - v0.x;
+		i32 const		c = v1.y - v0.y;
+		i32 const		d = v2.y - v0.y;
+		i32 const		det = a * d - b * c;
+		i32 const		v0v1u = v1.u - v0.u;
+		i32 const		v0v1v = v1.v - v0.v;
+		i32 const		v0v2u = v2.u - v0.u;
+		i32 const		v0v2v = v2.v - v0.v;
 
-		this->dudx = (m11 * (b.u - a.u) + m21 * (c.u - a.u)) / determinant;
-		this->dudy = (m12 * (b.u - a.u) + m22 * (c.u - a.u)) / determinant;
-		this->dvdx = (m11 * (b.v - a.v) + m21 * (c.v - a.v)) / determinant;
-		this->dvdy = (m12 * (b.v - a.v) + m22 * (c.v - a.v)) / determinant;
+		this->dudx = (d * v0v1u - c * v0v2u) / det;
+		this->dudy = (-b * v0v1u + a * v0v2u) / det;
+		this->dvdx = (d * v0v1v - c * v0v2v) / det;
+		this->dvdy = (-b * v0v1v + a * v0v2v) / det;
 	} //x, y증가량에 따른 u, v증가량
 
 	// 정렬기준: y 작을수록 앞, y가 같으면 x가 작은게 앞
