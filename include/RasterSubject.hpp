@@ -6,6 +6,7 @@
 # include "Vertex.hpp"
 # include "Triangle.hpp"
 # include "Mesh.hpp"
+# include "Shader.hpp"
 
 class RasterSubject {
 public:
@@ -17,16 +18,19 @@ public:
 	template <u32 V, u32 F>
 	IWRAM_CODE
 	void	push(Mesh<V, F> const &mesh) {
+		Vertex	processed[V];
 		for (u32 i = 0; i < V; ++i) {
 			Vertex const	&in = mesh.vertex[i];
+
+			processed[i] = Shader::vertexShader(in);
 			//run vertex shader
 		}
 		for (u32 i = 0; i < F * 3; i += 3) {
 			Triangle	&tri = this->allocatePolygon();
 			tri.init(
-				mesh.vertex[mesh.index[i]],
-				mesh.vertex[mesh.index[i + 1]],
-				mesh.vertex[mesh.index[i + 2]]
+				processed[mesh.index[i]],
+				processed[mesh.index[i + 1]],
+				processed[mesh.index[i + 2]]
 			);
 			tri.next = this->depth[0];
 			this->depth[0] = &tri;
