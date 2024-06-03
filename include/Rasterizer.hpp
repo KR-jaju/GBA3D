@@ -4,13 +4,13 @@
 
 # include "type.hpp"
 # include "Triangle.hpp"
-# include "RasterSubject.hpp"
 # include "Shader.hpp"
 # include "Edge.hpp"
+# include "DepthTable.hpp"
 
 namespace Rasterizer {
 	IWRAM_CODE
-	void	render(RasterSubject const &subject, u8 *out);
+	void	render(DepthTable const &table, u8 *out);
 	IWRAM_CODE
 	void	render(Triangle const &triangle, u8 *out);
 }

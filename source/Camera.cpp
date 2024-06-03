@@ -1,7 +1,7 @@
 
 #include "Camera.hpp"
 
-Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 1}), rs(), aspect(1) {
+Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 1}), aspect(1), table() {
 	this->near = 0.3f;
 	this->far = 100.0f;
 }
@@ -13,6 +13,12 @@ void	Camera::update() {
 	// this->position.y += fixed::from(1);
 	this->calculateProjectionMatrix();
 	this->calculateViewMatrix();
+}
+
+
+void	Camera::render(u8 *out) {
+	Rasterizer::render(this->table, out);
+	this->table.reset();
 }
 
 void	Camera::calculateProjectionMatrix() {
