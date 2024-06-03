@@ -4,7 +4,7 @@
 
 # include "type.hpp"
 
-#define FIX_SHIFT   8
+#define FIX_SHIFT   16
 
 struct fixed
 {

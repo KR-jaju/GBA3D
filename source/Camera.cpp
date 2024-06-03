@@ -7,7 +7,7 @@ Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 1}), rs(), aspect(1) {
 }
 
 void	Camera::update() {
-	this->position.z -= 0.1f;
+	this->position.z -= 0.001f;
 	this->calculateProjectionMatrix();
 	this->calculateViewMatrix();
 }
