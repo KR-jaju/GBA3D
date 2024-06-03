@@ -9,8 +9,6 @@ fixed	sqrt(fixed f) {
 	u64 const	a = u64(f.num) << FIX_SHIFT;
 	u64		l = 0;
 	u64		r = u64(f.num) + (1 << FIX_SHIFT);
-	// fixed   l = 0;
-	// fixed   r = f + 1;
 	u64   	m;
 
 	while(l != r - 1) {
@@ -22,10 +20,6 @@ fixed	sqrt(fixed f) {
 	}
 	return (fixed::from(l));
 }
-//  if (m * m <= ((long long)(f.num) << 16))
-//             l = fixed::from((int)m);
-//         else
-//             r = fixed::from((int)m);
 
 fixed	abs(fixed f) {
 	if (f > 0)
