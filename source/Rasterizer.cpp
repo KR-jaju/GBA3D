@@ -5,17 +5,19 @@
 #include <stdio.h>
 #include "debug.hpp"
 #include "clock.hpp"
+#include "DepthTable.hpp"
 
-void	Rasterizer::render(RasterSubject const &subject, u8 *out) {
+void	Rasterizer::render(DepthTable const &table, u8 *out) {
 	int start = clock_get();
-	u16*const	result = (u16 *)out;
+	Triangle const*const	*bucket = table.getBucket();
+	u16						*result = (u16 *)out;
 
 	for (u32 i = 0; i < 160 * 240 / 2; ++i) {
 		result[i] = 0; //검은색 초기화
 	} //dma로 대체
 	for(u32 i = 0; i < DEPTH_LAYER_SIZE; ++i) {
-		for (Triangle *tri = subject.depth[i]; tri != NULL; tri = tri->next) {
-			Rasterizer::render(*tri, (u8 *)out);
+		for (Triangle const *t = bucket[i]; t != NULL; t = t->next) {
+			Rasterizer::render(*t, (u8 *)out);
 		}
 	}
 	int e0 = clock_get();
@@ -59,9 +61,9 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y
 }
 
 void	Rasterizer::render(Triangle const & triangle, u8 *out) {
-	VertexAttribute const	&a = triangle.vertex[0];
-	VertexAttribute const	&b = triangle.vertex[1];
-	VertexAttribute const	&c = triangle.vertex[2];
+	Fragment const	&a = triangle.vertex[0];
+	Fragment const	&b = triangle.vertex[1];
+	Fragment const	&c = triangle.vertex[2];
 	u32 const		ac_orientation = ((b.x - a.x) * (c.y - a.y) <= (c.x - a.x) * (b.y - a.y));
 	Edge			edge[2];
 
