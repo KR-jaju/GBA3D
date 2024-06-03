@@ -18,7 +18,7 @@ public:
 	}
 	void	reset() {
 		for (int i = 0; i < 768; ++i)
-			this->bucket[i] = NULL;
+			this->bucket[i] = NULL; // TODO: DMA
 		this->allocated_count = 0;
 	}
 	Triangle const*const	*getBucket() const {
