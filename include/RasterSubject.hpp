@@ -9,6 +9,8 @@
 # include "Shader.hpp"
 # include "mat4.hpp"
 
+# include "VertexAttribute.hpp"
+
 # include "debug.hpp"
 # include <stdio.h>
 
@@ -23,8 +25,8 @@ public:
 	}
 	template <u32 V, u32 F>
 	IWRAM_CODE
-	void	push(Mesh<V, F> const &mesh, mat4 const matrix) {
-		Vertex	processed[V];
+	void	push(Mesh<V, F> const &mesh, mat4 const &matrix) {
+		VertexAttribute	processed[V];
 		for (u32 i = 0; i < V; ++i) {
 			Vertex const	&in = mesh.vertex[i];
 

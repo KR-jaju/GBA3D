@@ -3,13 +3,12 @@
 # define VERTEX_HPP
 
 # include "type.hpp"
-
-struct Edge;
+# include "fixed.hpp"
 
 struct Vertex {
-	i32		x;
-	i32		y;
-	i32		z;
+	fixed	x;
+	fixed	y;
+	fixed	z;
 	i32		u;
 	i32		v;
 };
