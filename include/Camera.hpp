@@ -9,6 +9,7 @@
 # include "Mesh.hpp"
 # include "Rasterizer.hpp"
 # include "DepthTable.hpp"
+# include "VertexShader.hpp"
 
 class Camera {
 public:
@@ -35,14 +36,16 @@ private:
 
 template <u32 V, u32 F>
 void	Camera::push(Mesh<V, F> const &mesh) {
-	Fragment	processed[V];
+	VertexShader::Output			processed[V];
 	
-	Shader::matrix[0] = this->projection * this->view;
+	VertexShader::matrix[0] = this->projection * this->view;
 	for (u32 i = 0; i < V; ++i) {
-		Fragment			&dst = processed[i];
+		VertexShader::Output				&dst = processed[i];
 		typename Mesh<V, F>::Vertex const	&in = mesh.vertex[i];
-	
-		dst = Shader::vertexShader<V, F>(in);
+
+		dst = VertexShader::main<V, F>(in);
+		dst.x = (i32)(dst.real_x / dst.z * 960) + 960;
+		dst.y = (i32)(-dst.real_y / dst.z * 640) + 640;
 	}
 	for (u32 i = 0; i < F * 3; i += 3) {
 		this->table.push(

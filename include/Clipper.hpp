@@ -7,7 +7,7 @@
 
 namespace Clipper
 {
-	vec4	&clampDepth(vec4 const &in, i32 near, i32 far);
+	vec4	clampDepth(vec4 const &in, i32 near, i32 far);
 }
 
 

@@ -61,9 +61,9 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y
 }
 
 void	Rasterizer::render(Triangle const & triangle, u8 *out) {
-	Fragment const	&a = triangle.vertex[0];
-	Fragment const	&b = triangle.vertex[1];
-	Fragment const	&c = triangle.vertex[2];
+	VertexShader::Output const	&a = triangle.vertex[0];
+	VertexShader::Output const	&b = triangle.vertex[1];
+	VertexShader::Output const	&c = triangle.vertex[2];
 	u32 const		ac_orientation = ((b.x - a.x) * (c.y - a.y) <= (c.x - a.x) * (b.y - a.y));
 	Edge			edge[2];
 

@@ -10,7 +10,7 @@ struct fixed
 {
 	i32 num;
 	
-	constexpr	fixed(): num(0) {}
+	fixed() = default;
 	constexpr	fixed(int d): num(d << FIX_SHIFT) {}
 	constexpr	fixed(float f): num(f * (1 << FIX_SHIFT)) {}
 

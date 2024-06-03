@@ -4,17 +4,18 @@
 
 # include "Fragment.hpp"
 # include "util.hpp"
+# include "VertexShader.hpp"
 # include <cmath>
 
 struct Triangle {
-	Triangle	*next; // RasterSubject에서 다음 삼각형에 대한 포인터
-	Fragment	vertex[3];
+	Triangle	*next;
+	VertexShader::Output	vertex[3];
 	i32	dudx;
 	i32	dudy;
 	i32	dvdx;
 	i32	dvdy;
 
-	Triangle	&init(Fragment const &a, Fragment const &b, Fragment const &c) {
+	Triangle	&init(VertexShader::Output const &a, VertexShader::Output const &b, VertexShader::Output const &c) {
 		this->vertex[0] = a;
 		this->vertex[1] = b;
 		this->vertex[2] = c;
@@ -25,9 +26,9 @@ struct Triangle {
 
 	IWRAM_CODE
 	void	precalculate() {
-		Fragment const	&v0 = this->vertex[0];
-		Fragment const	&v1 = this->vertex[1];
-		Fragment const	&v2 = this->vertex[2];
+		VertexShader::Output const	&v0 = this->vertex[0];
+		VertexShader::Output const	&v1 = this->vertex[1];
+		VertexShader::Output const	&v2 = this->vertex[2];
 		i32 const		a = v1.x - v0.x;
 		i32 const		b = v2.x - v0.x;
 		i32 const		c = v1.y - v0.y;
@@ -47,9 +48,9 @@ struct Triangle {
 	// 정렬기준: y 작을수록 앞, y가 같으면 x가 작은게 앞
 	IWRAM_CODE
 	void	sort() {
-		Fragment	&v0 = this->vertex[0];
-		Fragment	&v1 = this->vertex[1];
-		Fragment	&v2 = this->vertex[2];
+		VertexShader::Output	&v0 = this->vertex[0];
+		VertexShader::Output	&v1 = this->vertex[1];
+		VertexShader::Output	&v2 = this->vertex[2];
 
 		if (v0.y > v1.y || (v0.y == v1.y && v0.x > v1.x))
 			swap(v0, v1);

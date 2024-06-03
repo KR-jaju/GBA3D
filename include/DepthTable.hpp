@@ -4,11 +4,12 @@
 
 # include "Triangle.hpp"
 # include "type.hpp"
+# include "VertexShader.hpp"
 
 class DepthTable {
 public:
 	DepthTable(): bucket(), allocated_count(0) {}
-	Triangle	&push(Fragment const &a, Fragment const &b, Fragment const &c) {
+	Triangle	&push(VertexShader::Output const &a, VertexShader::Output const &b, VertexShader::Output const &c) {
 		Triangle	&triangle = this->pool[this->allocated_count++];
 
 		triangle.init(a, b, c);

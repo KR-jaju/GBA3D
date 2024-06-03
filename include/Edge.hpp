@@ -4,6 +4,7 @@
 
 # include "type.hpp"
 # include "Fragment.hpp"
+# include "Triangle.hpp"
 
 /*
 x = 240 * 8 < 16bit
@@ -18,7 +19,7 @@ struct Edge {
 	u32	pack; // 31 {i8 step; u8 shade; u16 x;} 0
 
 	IWRAM_CODE
-	Edge	&init(Fragment const &a, Fragment const &b);
+	Edge	&init(VertexShader::Output const &a, VertexShader::Output const &b);
 	IWRAM_CODE
 	void	move();
 	i32		x() const {
