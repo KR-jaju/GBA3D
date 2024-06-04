@@ -69,30 +69,32 @@ void	Clipper::clipX(Vertex *polygon, u32 &n) {
 	Vertex	buffer[7];
 	Vertex	*ptr = buffer;
 	u32		count = n;
+	Vertex const	*curr = polygon;
+	Vertex const	*prev = polygon + count - 1;
 
 	for (u32 i = 0; i < count; ++i) { // left clip
-		Vertex const	&curr = polygon[i];
-		Vertex const	&prev = polygon[(i - 1) % count]; // TODO: div
-		
-		if (curr.x >= 0) {
-			if (prev.x < 0)
-				*(ptr++) = intersectionLeft(prev, curr);
-			*(ptr++) = curr;
-		} else if (prev.x >= 0)
-			*(ptr++) = intersectionLeft(prev, curr);
+		if (curr->x >= 0) {
+			if (prev->x < 0)
+				*(ptr++) = intersectionLeft(*prev, *curr);
+			*(ptr++) = *curr;
+		} else if (prev->x >= 0)
+			*(ptr++) = intersectionLeft(*prev, *curr);
+		prev = curr;
+		curr += 1;
 	}
 	count = ptr - buffer;
 	ptr = polygon;
+	curr = buffer;
+	prev = buffer + count - 1;
 	for (u32 i = 0; i < count; ++i) { // right clip
-		Vertex const	&curr = buffer[i];
-		Vertex const	&prev = buffer[(i - 1) % count]; // TODO: div
-		
-		if (curr.x < SWIDTH) {
-			if (prev.x >= SWIDTH)
-				*(ptr++) = intersectionRight(prev, curr);
-			*(ptr++) = curr;
-		} else if (prev.x < SWIDTH)
-			*(ptr++) = intersectionRight(prev, curr);
+		if (curr->x < SWIDTH) {
+			if (prev->x >= SWIDTH)
+				*(ptr++) = intersectionRight(*prev, *curr);
+			*(ptr++) = *curr;
+		} else if (prev->x < SWIDTH)
+			*(ptr++) = intersectionRight(*prev, *curr);
+		prev = curr;
+		curr += 1;
 	}
 	n = ptr - polygon;
 }
@@ -101,30 +103,32 @@ void	Clipper::clipY(Vertex *polygon, u32 &n) {
 	Vertex	buffer[7];
 	Vertex	*ptr = buffer;
 	u32		count = n;
+	Vertex const	*curr = polygon;
+	Vertex const	*prev = polygon + count - 1;
 
 	for (u32 i = 0; i < count; ++i) {
-		Vertex const	&curr = polygon[i];
-		Vertex const	&prev = polygon[(i - 1) % count]; // TODO: div
-		
-		if (curr.y >= 0) {
-			if (prev.y < 0)
-				*(ptr++) = intersectionTop(prev, curr);
-			*(ptr++) = curr;
-		} else if (prev.y >= 0)
-			*(ptr++) = intersectionTop(prev, curr);
+		if (curr->y >= 0) {
+			if (prev->y < 0)
+				*(ptr++) = intersectionTop(*prev, *curr);
+			*(ptr++) = *curr;
+		} else if (prev->y >= 0)
+			*(ptr++) = intersectionTop(*prev, *curr);
+		prev = curr;
+		curr += 1;
 	}
 	count = ptr - buffer;
 	ptr = polygon;
+	curr = buffer;
+	prev = buffer + count - 1;
 	for (u32 i = 0; i < count; ++i) {
-		Vertex const	&curr = buffer[i];
-		Vertex const	&prev = buffer[(i - 1) % count]; // TODO: div
-		
-		if (curr.y < SHEIGHT) {
-			if (prev.y >= SHEIGHT)
-				*(ptr++) = intersectionBottom(prev, curr);
-			*(ptr++) = curr;
-		} else if (prev.y < SHEIGHT)
-			*(ptr++) = intersectionBottom(prev, curr);
+		if (curr->y < SHEIGHT) {
+			if (prev->y >= SHEIGHT)
+				*(ptr++) = intersectionBottom(*prev, *curr);
+			*(ptr++) = *curr;
+		} else if (prev->y < SHEIGHT)
+			*(ptr++) = intersectionBottom(*prev, *curr);
+		prev = curr;
+		curr += 1;
 	}
 	n = ptr - polygon;
 }
