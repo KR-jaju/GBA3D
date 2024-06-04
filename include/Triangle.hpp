@@ -40,7 +40,7 @@ struct Triangle {
 		i32 const		v0v2u = v2.attr.u - v0.attr.u;
 		i32 const		v0v2v = v2.attr.v - v0.attr.v;
 
-		this->dudx = (d * v0v1u - c * v0v2u) / det;
+		this->dudx = (d * v0v1u - c * v0v2u) / det; //TODO: div
 		this->dudy = (-b * v0v1u + a * v0v2u) / det;
 		this->dvdx = (d * v0v1v - c * v0v2v) / det;
 		this->dvdy = (-b * v0v1v + a * v0v2v) / det;

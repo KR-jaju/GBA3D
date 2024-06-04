@@ -16,14 +16,6 @@ public:
 		this->bucket[bucket_idx] = &triangle;
 		return (triangle);
 	}
-	// Triangle	&push(Vertex const &a, Vertex const &b, Vertex const &c) {
-	// 	Triangle	&triangle = this->pool[this->allocated_count++];
-
-	// 	triangle.init(a, b, c);
-	// 	triangle.next = this->bucket[0];
-	// 	this->bucket[0] = &triangle;
-	// 	return (triangle);
-	// }
 	void	reset() {
 		for (int i = 0; i < 768; ++i)
 			this->bucket[i] = NULL; // TODO: DMA

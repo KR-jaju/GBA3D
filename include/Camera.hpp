@@ -67,11 +67,11 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		Vertex const	&a = processed[mesh.index[i]];
 		Vertex const	&b = processed[mesh.index[i + 1]];
 		Vertex const	&c = processed[mesh.index[i + 2]];
-		Vertex			clipped[7]; // 최대 4번 잘리므로 3(각형) + 4 -> 7각형
-		u32				n = 3;
 		u32 const		discard_flag = a.flag & b.flag & c.flag;
 		u32	const		clip_flag = a.flag | b.flag | c.flag;
-		i32 const		depth = (a.z + b.z + c.z) / 3;
+		i32 const		depth = (a.z + b.z + c.z + c.z) >> 2;
+		Vertex			clipped[7]; // 최대 4번 잘리므로 3(각형) + 4 -> 7각형
+		u32				n = 3;
 
 		if (discard_flag & Vertex::DISCARDED) // 모든 정점이 화면 밖
 			continue;
@@ -88,7 +88,7 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 			Triangle	&triangle = this->table.aquire(depth);
 
 			triangle.init(clipped[0], clipped[i - 1], clipped[i]);
-		}
+		}6
 	}
 }
 

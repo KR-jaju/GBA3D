@@ -22,13 +22,14 @@ Vertex	intersectionLeft(Vertex const &a, Vertex const &b) {
 
 static
 Vertex	intersectionRight(Vertex const &a, Vertex const &b) {
-	Vertex	intersection;
+	i32 const	x = SWIDTH - 1;
+	Vertex		intersection;
 
-	intersection.x = 1920; // 240 * 8
-	intersection.y = (b.y - a.y) * (1920-a.x) / (b.x - a.x) + a.y; // div
+	intersection.x = x; // 240 * 8
+	intersection.y = (b.y - a.y) * (x-a.x) / (b.x - a.x) + a.y; // div
 	intersection.z = 0;
-	intersection.attr.u = (b.attr.u - a.attr.u) * (1920-a.x) / (b.x - a.x) + a.attr.u;
-	intersection.attr.v = (b.attr.v - a.attr.v) * (1920-a.x) / (b.x - a.x) + a.attr.v;
+	intersection.attr.u = (b.attr.u - a.attr.u) * (x-a.x) / (b.x - a.x) + a.attr.u;
+	intersection.attr.v = (b.attr.v - a.attr.v) * (x-a.x) / (b.x - a.x) + a.attr.v;
 	return (intersection);
 }
 

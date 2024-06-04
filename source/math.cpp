@@ -33,7 +33,8 @@ vec2	sincos(int angle) {
 	angle = angle << 16 >> 16;
 	int shift = (angle ^ (angle << 1)) & 0xC000;
 	int x = (angle + shift) << 17 >> 17;
-	fixed c = fixed::from((1 << FIX_SHIFT) - x * x / 3448);
+	fixed c = fixed::from((1 << FIX_SHIFT) - x * x / 3448); // TODO: div
+	
 	fixed s = sqrt(fixed(1) - c * c);
 
 	if (shift & 0x4000)
