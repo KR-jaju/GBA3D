@@ -1,7 +1,7 @@
 
 #include "Camera.hpp"
 
-Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 1}), aspect(1), table() {
+Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 1}), table(), aspect(1) {
 	this->near = 0.3f;
 	this->far = 100.0f;
 }
