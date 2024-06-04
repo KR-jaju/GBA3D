@@ -78,17 +78,17 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 
 		if (discard_flag & Vertex::DISCARDED) // 모든 정점이 화면 밖
 			continue;
-		// if (Clipper::isClockwise(a, b, c)) // 정점들이 시계방향이면 버림
-		// 	continue;
+		if (Clipper::isClockwise(a, b, c)) // 정점들이 시계방향이면 버림
+			continue;
 		clipped[0] = a;
 		clipped[1] = b;
 		clipped[2] = c;
-		// if (clip_flag & Vertex::CLIP_X) // 어떤 정점이 x 범위를 벗어남
-		// 	Clipper::clipX(clipped, n);
-		// if (clip_flag & Vertex::CLIP_Y)
-		// 	Clipper::clipY(clipped, n);
+		if (clip_flag & Vertex::CLIP_X) // 어떤 정점이 x 범위를 벗어남
+			Clipper::clipX(clipped, n);
+		if (clip_flag & Vertex::CLIP_Y)
+			Clipper::clipY(clipped, n);
 		for (u32 i = 2; i < n; ++i) {
-			table.push(clipped[0], clipped[1], clipped[i]);
+			table.push(clipped[0], clipped[i - 1], clipped[i]);
 		}
 	}
 }
