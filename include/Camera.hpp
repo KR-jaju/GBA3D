@@ -88,7 +88,7 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 			Triangle	&triangle = this->table.aquire(depth);
 
 			triangle.init(clipped[0], clipped[i - 1], clipped[i]);
-		}6
+		}
 	}
 }
 
