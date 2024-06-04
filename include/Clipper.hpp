@@ -4,10 +4,13 @@
 
 # include "vec4.hpp"
 # include "math.hpp"
+# include "Vertex.hpp"
 
 namespace Clipper
 {
-	vec4	clampDepth(vec4 const &in, i32 near, i32 far);
+	bool	isClockwise(Vertex const &a, Vertex const &b, Vertex const &c);
+	void	clipX(Vertex *polygon, u32 &n);
+	void	clipY(Vertex *polygon, u32 &n);
 }
 
 

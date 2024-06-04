@@ -9,7 +9,7 @@
 class DepthTable {
 public:
 	DepthTable(): bucket(), allocated_count(0) {}
-	Triangle	&push(VertexShader::Output const &a, VertexShader::Output const &b, VertexShader::Output const &c) {
+	Triangle	&push(Vertex const &a, Vertex const &b, Vertex const &c) {
 		Triangle	&triangle = this->pool[this->allocated_count++];
 
 		triangle.init(a, b, c);

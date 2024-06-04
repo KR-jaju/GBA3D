@@ -19,7 +19,7 @@ struct Edge {
 	u32	pack; // 31 {i8 step; u8 shade; u16 x;} 0
 
 	IWRAM_CODE
-	Edge	&init(VertexShader::Output const &a, VertexShader::Output const &b);
+	Edge	&init(Vertex const &a, Vertex const &b);
 	IWRAM_CODE
 	void	move();
 	i32		x() const {

@@ -1,7 +1,7 @@
 
 #include "Edge.hpp"
 
-Edge	&Edge::init(VertexShader::Output const &a, VertexShader::Output const &b) {
+Edge	&Edge::init(Vertex const &a, Vertex const &b) {
 	i32 const	dx = b.x - a.x;
 	i32 const	dy = b.y - a.y;
 	i8 const	step = (dx < 0) ? -1 : 1;

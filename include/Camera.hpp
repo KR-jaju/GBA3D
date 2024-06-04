@@ -36,23 +36,60 @@ private:
 
 template <u32 V, u32 F>
 void	Camera::push(Mesh<V, F> const &mesh) {
-	VertexShader::Output			processed[V];
+	Vertex		processed[V];
 	
 	VertexShader::matrix[0] = this->projection * this->view;
 	for (u32 i = 0; i < V; ++i) {
-		VertexShader::Output				&dst = processed[i];
 		typename Mesh<V, F>::Vertex const	&in = mesh.vertex[i];
+		Vertex	&out = processed[i];
+		VertexShader::main<V, F>(in, out.attr);
+		vec4	position = VertexShader::out_position;
+		
+		if (position.w < 0.3f) {
+			position.w = 0.3f;
+			out.flag |= Vertex::CLIP_NEAR;
+		} else if (position.w > 100.0f) {
+			position.w = 100.0f;
+			out.flag |= Vertex::CLIP_FAR;
+		}
+		position.x /= position.w;
+		position.y /= position.w;
+		if (position.x < -1) out.flag |= Vertex::CLIP_LEFT;
+		if (position.x > 1) out.flag |= Vertex::CLIP_RIGHT;
+		if (position.y < -1) out.flag |= Vertex::CLIP_TOP;
+		if (position.y > 1) out.flag |= Vertex::CLIP_BOTTOM;
 
-		dst = VertexShader::main<V, F>(in);
-		dst.x = (i32)(dst.real_x / dst.z * 960) + 960;
-		dst.y = (i32)(-dst.real_y / dst.z * 640) + 640;
+		out.x = (i32)(position.x * 960) + 960;
+		out.y = (i32)(-position.y * 640) + 640;
 	}
 	for (u32 i = 0; i < F * 3; i += 3) {
-		this->table.push(
-			processed[mesh.index[i]],
-			processed[mesh.index[i + 1]],
-			processed[mesh.index[i + 2]]
-		);
+		/*
+		1. winding order, backface culling
+		2. rect clipping
+		3. create triangle
+		*/
+		Vertex const	&a = processed[mesh.index[i]];
+		Vertex const	&b = processed[mesh.index[i + 1]];
+		Vertex const	&c = processed[mesh.index[i + 2]];
+		Vertex			clipped[7]; // 최대 4번 잘리므로 3(각형) + 4 -> 7각형
+		u32				n = 3;
+		u32 const		discard_flag = a.flag & b.flag & c.flag;
+		u32	const		clip_flag = a.flag | b.flag | c.flag;
+
+		if (discard_flag & Vertex::DISCARDED) // 모든 정점이 화면 밖
+			continue;
+		// if (Clipper::isClockwise(a, b, c)) // 정점들이 시계방향이면 버림
+		// 	continue;
+		clipped[0] = a;
+		clipped[1] = b;
+		clipped[2] = c;
+		// if (clip_flag & Vertex::CLIP_X) // 어떤 정점이 x 범위를 벗어남
+		// 	Clipper::clipX(clipped, n);
+		// if (clip_flag & Vertex::CLIP_Y)
+		// 	Clipper::clipY(clipped, n);
+		for (u32 i = 2; i < n; ++i) {
+			table.push(clipped[0], clipped[1], clipped[i]);
+		}
 	}
 }
 

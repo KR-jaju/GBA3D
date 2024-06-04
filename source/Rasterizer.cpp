@@ -25,12 +25,13 @@ void	Rasterizer::render(DepthTable const &table, u8 *out) {
 }
 
 static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y_min, u32 y_max, u8 *out) {	
+	Vertex const	&v0 = triangle.vertex[0];
 	for (u32 y = y_min; y < y_max; ++y) {
 		u32 const	x0 = edge[0].x();
 		u32 const	x1 = edge[1].x();
 		u32			width = x1 - x0;
-		u32			u = (triangle.dudx * (x0 * 8 - triangle.vertex[0].x) + triangle.dudy * (y * 8 - triangle.vertex[0].y)) + triangle.vertex[0].u;
-		u32			v = (triangle.dvdx * (x0 * 8 - triangle.vertex[0].x) + triangle.dvdy * (y * 8 - triangle.vertex[0].y)) + triangle.vertex[0].v;
+		u32			u = (triangle.dudx * (x0 * 8 - v0.x) + triangle.dudy * (y * 8 - v0.y)) + v0.attr.u;
+		u32			v = (triangle.dvdx * (x0 * 8 - v0.x) + triangle.dvdy * (y * 8 - v0.y)) + v0.attr.v;
 
 		if (width != 0) {
 			u8	*ptr = &out[y * 240 + x0];
@@ -60,10 +61,10 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y
 	}
 }
 
-void	Rasterizer::render(Triangle const & triangle, u8 *out) {
-	VertexShader::Output const	&a = triangle.vertex[0];
-	VertexShader::Output const	&b = triangle.vertex[1];
-	VertexShader::Output const	&c = triangle.vertex[2];
+void	Rasterizer::render(Triangle const &triangle, u8 *out) {
+	Vertex const	&a = triangle.vertex[0];
+	Vertex const	&b = triangle.vertex[1];
+	Vertex const	&c = triangle.vertex[2];
 	u32 const		ac_orientation = ((b.x - a.x) * (c.y - a.y) <= (c.x - a.x) * (b.y - a.y));
 	Edge			edge[2];
 
