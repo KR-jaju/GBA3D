@@ -9,9 +9,10 @@
 static
 Vertex	intersectionLeft(Vertex const &a, Vertex const &b) {
 	Vertex	intersection;
+	//TODO : x의 차이가 0인 경우 div by zero나옴
 
 	intersection.x = 0;
-	intersection.y = (b.y - a.y) * (-a.x) / (b.x - a.x) + a.y; // div
+	intersection.y = (b.y - a.y) * (-a.x) / (b.x - a.x) + a.y; // TODO : div
 	intersection.z = 0;
 	intersection.attr.u = (b.attr.u - a.attr.u) * (-a.x) / (b.x - a.x) + a.attr.u;
 	intersection.attr.v = (b.attr.v - a.attr.v) * (-a.x) / (b.x - a.x) + a.attr.v;

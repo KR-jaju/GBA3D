@@ -16,7 +16,7 @@ void	Rasterizer::render(DepthTable const &table, u8 *out) {
 		result[i] = 0; //검은색 초기화
 	} //dma로 대체
 	for(u32 i = 0; i < DEPTH_LAYER_SIZE; ++i) {
-		for (Triangle const *t = bucket[i]; t != NULL; t = t->next) {
+		for (Triangle const *t = bucket[DEPTH_LAYER_SIZE - i]; t != NULL; t = t->next) {
 			Rasterizer::render(*t, (u8 *)out);
 		}
 	}

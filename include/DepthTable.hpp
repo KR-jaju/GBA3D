@@ -9,14 +9,21 @@
 class DepthTable {
 public:
 	DepthTable(): bucket(), allocated_count(0) {}
-	Triangle	&push(Vertex const &a, Vertex const &b, Vertex const &c) {
+	Triangle	&aquire(int bucket_idx) {
 		Triangle	&triangle = this->pool[this->allocated_count++];
 
-		triangle.init(a, b, c);
-		triangle.next = this->bucket[0];
-		this->bucket[0] = &triangle;
+		triangle.next = this->bucket[bucket_idx];
+		this->bucket[bucket_idx] = &triangle;
 		return (triangle);
 	}
+	// Triangle	&push(Vertex const &a, Vertex const &b, Vertex const &c) {
+	// 	Triangle	&triangle = this->pool[this->allocated_count++];
+
+	// 	triangle.init(a, b, c);
+	// 	triangle.next = this->bucket[0];
+	// 	this->bucket[0] = &triangle;
+	// 	return (triangle);
+	// }
 	void	reset() {
 		for (int i = 0; i < 768; ++i)
 			this->bucket[i] = NULL; // TODO: DMA

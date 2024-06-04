@@ -56,18 +56,14 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		position.y /= position.w;
 		if (position.x < -1) out.flag |= Vertex::CLIP_LEFT;
 		if (position.x > 1) out.flag |= Vertex::CLIP_RIGHT;
-		if (position.y < -1) out.flag |= Vertex::CLIP_TOP;
-		if (position.y > 1) out.flag |= Vertex::CLIP_BOTTOM;
+		if (position.y < -1) out.flag |= Vertex::CLIP_BOTTOM;
+		if (position.y > 1) out.flag |= Vertex::CLIP_TOP;
 
 		out.x = (i32)(position.x * 960) + 960;
 		out.y = (i32)(-position.y * 640) + 640;
+		out.z = (i32)position.w;
 	}
 	for (u32 i = 0; i < F * 3; i += 3) {
-		/*
-		1. winding order, backface culling
-		2. rect clipping
-		3. create triangle
-		*/
 		Vertex const	&a = processed[mesh.index[i]];
 		Vertex const	&b = processed[mesh.index[i + 1]];
 		Vertex const	&c = processed[mesh.index[i + 2]];
@@ -75,6 +71,7 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		u32				n = 3;
 		u32 const		discard_flag = a.flag & b.flag & c.flag;
 		u32	const		clip_flag = a.flag | b.flag | c.flag;
+		i32 const		depth = (a.z + b.z + c.z) / 3;
 
 		if (discard_flag & Vertex::DISCARDED) // 모든 정점이 화면 밖
 			continue;
@@ -88,7 +85,9 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		if (clip_flag & Vertex::CLIP_Y)
 			Clipper::clipY(clipped, n);
 		for (u32 i = 2; i < n; ++i) {
-			table.push(clipped[0], clipped[i - 1], clipped[i]);
+			Triangle	&triangle = this->table.aquire(depth);
+
+			triangle.init(clipped[0], clipped[i - 1], clipped[i]);
 		}
 	}
 }
