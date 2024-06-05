@@ -1,6 +1,6 @@
 
-//! Put function in IWRAM.
-// #define IWRAM_CODE __attribute__((section(".iwram"), long_call))
+#ifndef GBA_HPP
+# define GBA_HPP
 
 //! Put function in EWRAM.
 #define EWRAM_CODE __attribute__((section(".ewram"), long_call))
@@ -110,97 +110,7 @@ typedef short       COLOR;
 
 #define pal_bg_mem		((COLOR*)MEM_PAL)
 
-// // Fast memcpy/set
-// void memset16(void *dst, unsigned short hw, unsigned int hwcount);
-// void memcpy16(void *dst, const void* src, unsigned int hwcount);
-
-// IWRAM_CODE void memset32(void *dst, unsigned int wd, unsigned int wcount);
-// IWRAM_CODE void memcpy32(void *dst, const void* src, unsigned int wcount);
-
-// typedef struct IRQ_REC	
-// {
-// 	unsigned int flag;	//!< Flag for interrupt in REG_IF, etc
-// 	fnptr isr;	//!< Pointer to interrupt routine
-// } IRQ_REC;
-
-// typedef struct IRQ_SENDER
-// {
-// 	unsigned short reg_ofs;	//!< sender reg - REG_BASE
-// 	unsigned short flag;		//!< irq-bit in sender reg
-// } ALIGN4 IRQ_SENDER;
-
-// typedef enum eIrqIndex
-// {
-// 	II_VBLANK=0,II_HBLANK,	II_VCOUNT,	II_TIMER0,
-// 	II_TIMER1,	II_TIMER2,	II_TIMER3,	II_SERIAL,
-// 	II_DMA0,	II_DMA1,	II_DMA2,	II_DMA3,
-// 	II_KEYPAD,	II_GAMEPAK,	II_MAX
-// } eIrqIndex;
-
-// IRQ_REC __isr_table[II_MAX+1];
-
-// static const IRQ_SENDER __irq_senders[] = 
-// {
-// 	{ 0x0004, 0x0008 },		// REG_DISPSTAT,	DSTAT_VBL_IRQ
-// 	{ 0x0004, 0x0010 },		// REG_DISPSTAT,	DSTAT_VHB_IRQ
-// 	{ 0x0004, 0x0020 },		// REG_DISPSTAT,	DSTAT_VCT_IRQ
-// 	{ 0x0102, 0x0040 },		// REG_TM0CNT,		TM_IRQ
-// 	{ 0x0106, 0x0040 },		// REG_TM1CNT,		TM_IRQ
-// 	{ 0x010A, 0x0040 },		// REG_TM2CNT,		TM_IRQ
-// 	{ 0x010E, 0x0040 },		// REG_TM3CNT,		TM_IRQ
-// 	{ 0x0128, 0x4000 },		// REG_SIOCNT		SIO_IRQ
-// 	{ 0x00BA, 0x4000 },		// REG_DMA0CNT_H,	DMA_IRQ>>16
-// 	{ 0x00C6, 0x4000 },		// REG_DMA1CNT_H,	DMA_IRQ>>16
-// 	{ 0x00D2, 0x4000 },		// REG_DMA2CNT_H,	DMA_IRQ>>16
-// 	{ 0x00DE, 0x4000 },		// REG_DMA3CNT_H,	DMA_IRQ>>16
-// 	{ 0x0132, 0x4000 },		// REG_KEYCNT,		KCNT_IRQ
-// 	{ 0x0000, 0x0000 },		// cart: none
-// };
-
-// IWRAM_CODE void isr_master(void);
-// IWRAM_CODE void isr_master_nest(void);
-
-// void irq_init(fnptr isr)
-// {
-// 	REG_IME= 0;	
-
-// 	// clear interrupt table (just in case)
-// 	// memset32(__isr_table, 0, (II_MAX+1)*sizeof(IRQ_REC)/4);
-
-// 	REG_ISR_MAIN= (isr) ? isr : (fnptr)isr_master;
-
-// 	REG_IME= 1;
-// }
-
-// fnptr irq_add(enum eIrqIndex irq_id, fnptr isr)
-// {
-// 	unsigned short ime= REG_IME;
-// 	REG_IME= 0;
-
-// 	int ii;
-// 	unsigned short irq_flag= BIT(irq_id);
-// 	fnptr old_isr;
-// 	IRQ_REC	*pir= __isr_table;
-
-// 	// Enable irq
-// 	const IRQ_SENDER *sender= &__irq_senders[irq_id];
-// 	*(unsigned short*)(REG_BASE+sender->reg_ofs) |= sender->flag;
-// 	REG_IE |= irq_flag;
-
-// 	// Search for previous occurance, or empty slot
-// 	for(ii=0; pir[ii].flag; ii++)
-// 		if(pir[ii].flag == irq_flag)
-// 			break;
-	
-// 	old_isr= pir[ii].isr;
-// 	pir[ii].isr= isr;
-// 	pir[ii].flag= irq_flag;
-
-// 	REG_IME= ime;
-// 	return old_isr;
-// }
-
-void init_palettes()
+static inline void init_palettes()
 {
 	static unsigned short	palette[] = {0x0000, 0x56B5, 0x318C, 0x6F7B, 0x64C8, 0x6E28, 0x6768, 0x4626, 0x1A28, 0x2368, 
     0x2379, 0x1A39, 0x463B, 0x20D9, 0x64D9, 0x6E39, 0x739C, 0x6F7B, 0x6F7B, 0x6318, 
@@ -234,27 +144,20 @@ void init_palettes()
 	}
 
 }
-
-// INLINE void m4_plot(int x, int y, u8 clrid)
-// {
-// 	unsigned short *dst= &vid_page[(y*M4_WIDTH+x)>>1];
-// 	if(x&1)
-// 		*dst= (*dst& 0xFF) | (clrid<<8);
-// 	else
-// 		*dst= (*dst&~0xFF) |  clrid;
-// }
-
 //! First page array
 #define vid_mem_front	((COLOR*)MEM_VRAM)
 
 //! Second page array
 #define vid_mem_back	((COLOR*)MEM_VRAM_BACK)
-COLOR *vid_page= vid_mem_back;
+extern COLOR *vid_page;
+// = vid_mem_back;
 
-COLOR *vid_flip(void)
+static inline COLOR *vid_flip(void)
 {
 	vid_page= (COLOR*)((unsigned int)vid_page ^ VRAM_PAGE_SIZE);
 	REG_DISPCNT ^= DCNT_PAGE;	// update control register	
 
 	return vid_page;
 }
+
+#endif
