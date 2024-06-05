@@ -6,10 +6,15 @@ Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 1}), table(), aspect(1) {
 	this->far = 100.0f;
 }
 
+int	g = 0;
+
 void	Camera::update() {
 	// this->position.z -= fixed::from(1000);
 	// this->position.z -= 0.1f;
-	this->position.x -= fixed::from(100);
+	// this->position.x -= fixed::from(100);
+	this->position.y = (sincos(g).y) * 0.3f;
+	this->position.x = (sincos(g).x) * 0.3f;
+	g += 500;
 	// this->position.y += fixed::from(1);
 	this->calculateProjectionMatrix();
 	this->calculateViewMatrix();

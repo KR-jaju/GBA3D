@@ -15,9 +15,16 @@ void	Rasterizer::render(DepthTable const &table, u8 *out) {
 	Triangle const*const	*bucket = table.getBucket();
 	u16						*result = (u16 *)out;
 
-	for (u32 i = 0; i < 160 * 240 / 2; ++i) {
-		result[i] = 0; //검은색 초기화
-	} //dma로 대체
+	// for (u32 i = 0; i < 160 * 240 / 2; ++i) {
+	// 	result[i] = 0; //검은색 초기화
+	// } //dma로 대체
+
+	// for (u32 i = 0; i < 160 * 240 / 2; ++i) {
+	// 	i16 *src = (i16*)((unsigned int)vid_page ^ VRAM_PAGE_SIZE);
+	// 	i16 *dst = vid_page;
+	// 	dst[i] = src[i];
+	// }
+
 	for(u32 i = 0; i < DEPTH_LAYER_SIZE; ++i) {
 		for (Triangle const *t = bucket[DEPTH_LAYER_SIZE - i]; t != NULL; t = t->next) {
 			Rasterizer::render(*t, (u8 *)out);
