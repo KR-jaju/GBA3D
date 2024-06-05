@@ -139,7 +139,7 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y
 			while (width != 0)
 			{
 				if ((x0 & 0b1) != 1 && ptr == &out[y * 240 + x0]) {
-					*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (3 << 8);
+					*(u16 *)ptr = 3 | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
 				} else if ((x1 & 0b1) != 1 && ptr == &out[y * 240 + (x1 - 2)]) {
 					*(u16 *)ptr = (Shader::pixelShader(&triangle, u, v)) | (7 << 8);
 				} else {
