@@ -13,8 +13,8 @@ void	Camera::update() {
 	// this->position.z -= 0.1f;
 	// this->position.x -= fixed::from(100);
 	this->position.y = (sincos(g).y) * 0.3f;
-	this->position.x = (sincos(g).x) * 0.3f;
-	g += 500;
+	this->position.x = (sincos(g).x) * 0.1f;
+	g += 100;
 	// this->position.y += fixed::from(1);
 	this->calculateProjectionMatrix();
 	this->calculateViewMatrix();

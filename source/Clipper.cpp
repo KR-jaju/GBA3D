@@ -47,13 +47,14 @@ Vertex	intersectionTop(Vertex const &a, Vertex const &b) {
 
 static
 Vertex	intersectionBottom(Vertex const &a, Vertex const &b) {
+	i32 const	y = SHEIGHT - 1;
 	Vertex	intersection;
 
-	intersection.x = (b.x - a.x) * (1280-a.y) / (b.y - a.y) + a.x; // div
-	intersection.y = 1280; // 160 * 8
+	intersection.x = (b.x - a.x) * (y-a.y) / (b.y - a.y) + a.x; // div
+	intersection.y = y; // 160 * 8
 	intersection.z = 0;
-	intersection.attr.u = (b.attr.u - a.attr.u) * (1280-a.y) / (b.y - a.y) + a.attr.u;
-	intersection.attr.v = (b.attr.v - a.attr.v) * (1280-a.y) / (b.y - a.y) + a.attr.v;
+	intersection.attr.u = (b.attr.u - a.attr.u) * (y-a.y) / (b.y - a.y) + a.attr.u;
+	intersection.attr.v = (b.attr.v - a.attr.v) * (y-a.y) / (b.y - a.y) + a.attr.v;
 	return (intersection);
 }
 

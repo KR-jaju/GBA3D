@@ -117,7 +117,7 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y
 	for (u32 y = y_min; y < y_max; ++y) {
 		u32 const	x0 = edge[0].x();
 		u32 const	x1 = edge[1].x();
-		u32			width = x1 - x0;
+		u32			width = x1 - x0; // 4 - 2 -> 2, 3
 		u32			u = (triangle.dudx * (x0 * 8 - v0.x) + triangle.dudy * (y * 8 - v0.y)) + v0.attr.u;
 		u32			v = (triangle.dvdx * (x0 * 8 - v0.x) + triangle.dvdy * (y * 8 - v0.y)) + v0.attr.v;
 
@@ -125,23 +125,37 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y
 			u8	*ptr = &out[y * 240 + x0];
 			if ((x0 & 0b1) == 1) { // 홀수번째에서 시작
 				ptr -= 1; // 한 칸 이전으로 이동(2바이트 경계 맞춤)
-				*(u16 *)ptr = *ptr | (Shader::pixelShader(&triangle, u, v) << 8);
+				*(u16 *)ptr = *ptr | (3 << 8);
+				// (Shader::pixelShader(&triangle, u, v) << 8);
 				ptr += 2; // 다음 픽셀로 이동
 				width -= 1;
 				u += triangle.dudx * 8;
 				v += triangle.dvdx * 8;
 			}
-			if ((width & 0b1) == 1) { // 홀수번째에서 끝남
-				*(u16 *)(ptr + width - 1) = (Shader::pixelShader(&triangle, u + triangle.dudx * 8 * (width - 1), v + triangle.dvdx * 8 * (width - 1))) | (ptr[width] << 8);
-			}
+			// if ((width & 0b1) == 1) { // 홀수번째에서 끝남
+			// 	*(u16 *)(ptr + width - 1) = (Shader::pixelShader(&triangle, u + triangle.dudx * 8 * (width - 1), v + triangle.dvdx * 8 * (width - 1))) | (ptr[width] << 8);
+			// }
 			width >>= 1; // 시작도 2바이트 경계, 가야할 거리도 2의 배수이므로 반으로 나눔
 			while (width != 0)
 			{
-				*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
+				if ((x0 & 0b1) != 1 && ptr == &out[y * 240 + x0]) {
+					*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (3 << 8);
+				} else if ((x1 & 0b1) != 1 && ptr == &out[y * 240 + (x1 - 2)]) {
+					*(u16 *)ptr = (Shader::pixelShader(&triangle, u, v)) | (7 << 8);
+				} else {
+					*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
+				}
 				ptr += 2; // 2픽셀 이동
 				width -= 1;
 				u += triangle.dudx * 2 * 8;
 				v += triangle.dvdx * 2 * 8;
+			}
+			// if ((width & 0b1) == 1) { // 홀수번째에서 끝남
+			// 	*(u16 *)(ptr + width - 1) = (Shader::pixelShader(&triangle, u + triangle.dudx * 8 * (width - 1), v + triangle.dvdx * 8 * (width - 1))) | (ptr[width] << 8);
+			// }
+			if ((x1 & 0b1) == 1) { // 홀수번째에서 끝남
+				// *(u16 *)ptr = (Shader::pixelShader(&triangle, u, v) | (ptr[1] << 8));
+				*(u16 *)ptr = (7) | (ptr[1] << 8);
 			}
 		}
 		edge[0].move();
