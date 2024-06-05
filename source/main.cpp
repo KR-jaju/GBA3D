@@ -31,9 +31,7 @@ int	main() {
 		while(REG_VCOUNT < 160);    // wait till VBlank
 		camera.update();
 		camera.push(mesh);
-		camera.render((u8 *)((u32)vid_page ^ VRAM_PAGE_SIZE));
-		// camera.render((u8 *)(vid_page));
-		// Rasterizer::render(rs, (u8*)vid_page);
+		camera.render((u8 *)(vid_page));
 		vid_flip();	
 	}
 }
