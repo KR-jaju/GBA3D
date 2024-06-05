@@ -45,6 +45,7 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		VertexShader::main<V, F>(in, out.attr);
 		vec4	position = VertexShader::out_position;
 		
+		out.flag = 0;
 		if (position.w < 0.3f) {
 			position.w = 0.3f;
 			out.flag |= Vertex::CLIP_NEAR;
@@ -52,12 +53,12 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 			position.w = 100.0f;
 			out.flag |= Vertex::CLIP_FAR;
 		}
+		if (position.x < -position.w) out.flag |= Vertex::CLIP_LEFT;
+		if (position.x > position.w) out.flag |= Vertex::CLIP_RIGHT;
+		if (position.y < -position.w) out.flag |= Vertex::CLIP_BOTTOM;
+		if (position.y > position.w) out.flag |= Vertex::CLIP_TOP;
 		position.x /= position.w;
 		position.y /= position.w;
-		if (position.x < -1) out.flag |= Vertex::CLIP_LEFT;
-		if (position.x > 1) out.flag |= Vertex::CLIP_RIGHT;
-		if (position.y < -1) out.flag |= Vertex::CLIP_BOTTOM;
-		if (position.y > 1) out.flag |= Vertex::CLIP_TOP;
 
 		out.x = (i32)(position.x * 960) + 960;
 		out.y = (i32)(-position.y * 640) + 640;

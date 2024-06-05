@@ -8,7 +8,7 @@
 # include "Edge.hpp"
 # include "DepthTable.hpp"
 
-#define INTERLACED_RENDERING
+// #define INTERLACED_RENDERING
 namespace Rasterizer {
 	IWRAM_CODE
 	void	render(DepthTable const &table, u8 *out);
