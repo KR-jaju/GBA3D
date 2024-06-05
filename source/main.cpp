@@ -3,11 +3,7 @@
 #include "Rasterizer.hpp"
 #include "GBAlib.hpp"
 #include "Camera.hpp"
-/*
-00000,00000,11111 - 31
-00000,00000,01111 - 15
-// */
-
+COLOR *vid_page= vid_mem_back;
 
 int	main() {
 	// *(u16 *)(0x04000000) = 0b0000010000000011;
