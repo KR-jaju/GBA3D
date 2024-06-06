@@ -51,9 +51,6 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y
 				u += triangle.dudx * 8;
 				v += triangle.dvdx * 8;
 			}
-			// if ((width & 0b1) == 1) { // 홀수번째에서 끝남
-			// 	*(u16 *)(ptr + width - 1) = (Shader::pixelShader(&triangle, u + triangle.dudx * 8 * (width - 1), v + triangle.dvdx * 8 * (width - 1))) | (ptr[width] << 8);
-			// }
 			width >>= 1; // 시작도 2바이트 경계, 가야할 거리도 2의 배수이므로 반으로 나눔
 			while (width != 0)
 			{

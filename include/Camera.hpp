@@ -78,7 +78,7 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 
 		if (discard_flag & Vertex::DISCARDED) // 모든 정점이 화면 밖
 			continue;
-		if (!Clipper::isClockwise(a, b, c)) // 정점들이 시계방향이면 버림
+		if (Clipper::isClockwise(a, b, c)) // 정점들이 시계방향이면 버림
 			continue;
 		clipped[0] = a;
 		clipped[1] = b;
