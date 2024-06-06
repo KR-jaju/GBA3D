@@ -15,9 +15,9 @@ void	Rasterizer::render(DepthTable const &table, u8 *out) {
 	Triangle const*const	*bucket = table.getBucket();
 	u16						*result = (u16 *)out;
 
-	// for (u32 i = 0; i < 160 * 240 / 2; ++i) {
-	// 	result[i] = 0; //검은색 초기화
-	// } //dma로 대체
+	for (u32 i = 0; i < 160 * 240 / 2; ++i) {
+		result[i] = 0; //검은색 초기화
+	} //dma로 대체
 
 	// for (u32 i = 0; i < 160 * 240 / 2; ++i) {
 	// 	i16 *src = (i16*)((unsigned int)vid_page ^ VRAM_PAGE_SIZE);
@@ -112,9 +112,15 @@ void	Rasterizer::render(DepthTable const &table, u8 *out) {
 	sprintf(debug_text, "(%d) ", e0 - start);
 }
 
-static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y_min, u32 y_max, u8 *out) {	
+static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y_min, i32 y_max, u8 *out) {	
 	Vertex const	&v0 = triangle.vertex[0];
-	for (u32 y = y_min; y < y_max; ++y) {
+	y_max = min(y_max, 1919); //TODO : Refactor
+	for (i32 y = y_min; y < y_max; ++y) {
+		if (y < 0) {
+			edge[0].move();
+			edge[1].move();
+			continue;
+		}
 		u32 const	x0 = edge[0].x();
 		u32 const	x1 = edge[1].x();
 		u32			width = x1 - x0; // 4 - 2 -> 2, 3
@@ -150,9 +156,6 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], u32 y
 				u += triangle.dudx * 2 * 8;
 				v += triangle.dvdx * 2 * 8;
 			}
-			// if ((width & 0b1) == 1) { // 홀수번째에서 끝남
-			// 	*(u16 *)(ptr + width - 1) = (Shader::pixelShader(&triangle, u + triangle.dudx * 8 * (width - 1), v + triangle.dvdx * 8 * (width - 1))) | (ptr[width] << 8);
-			// }
 			if ((x1 & 0b1) == 1) { // 홀수번째에서 끝남
 				// *(u16 *)ptr = (Shader::pixelShader(&triangle, u, v) | (ptr[1] << 8));
 				*(u16 *)ptr = (7) | (ptr[1] << 8);

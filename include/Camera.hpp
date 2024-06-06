@@ -81,8 +81,8 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		clipped[0] = a;
 		clipped[1] = b;
 		clipped[2] = c;
-		if (clip_flag & Vertex::CLIP_Y)
-			Clipper::clipY(clipped, n);
+		// if (clip_flag & Vertex::CLIP_Y)
+		// 	Clipper::clipY(clipped, n);
 		// if (clip_flag & Vertex::CLIP_X) // 어떤 정점이 x 범위를 벗어남
 		// 	Clipper::clipX(clipped, n);
 		for (u32 i = 2; i < n; ++i) {
