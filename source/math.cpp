@@ -29,7 +29,7 @@ fixed	abs(fixed f) {
 
 //FIX_SHIFT가 16 -> 3448
 //FIX_SHIFT가 8 ->882673
-vec2	sincos(int angle) {
+void	sincos(int angle, fixed &cosine, fixed &sine) {
 	angle = angle << 16 >> 16;
 	int shift = (angle ^ (angle << 1)) & 0xC000;
 	int x = (angle + shift) << 17 >> 17;
@@ -43,5 +43,6 @@ vec2	sincos(int angle) {
 		s = -s;
 	if (shift & 0x8000)
 		c = -c;
-	return {c, s};
+	cosine = c;
+	sine = s;
 }

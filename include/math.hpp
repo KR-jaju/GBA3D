@@ -7,10 +7,6 @@
 # include "fixed.hpp"
 # include "util.hpp"
 
-struct vec2;
-struct vec3;
-struct vec4;
-
 // #define PI_FLT 3.14159265f
 # define TAU 0xFFFF
 # define PI 0x8000 // round(TAU / 2)
@@ -21,6 +17,6 @@ fixed	sqrt(fixed f);
 
 fixed	abs(fixed f);
 
-vec2	sincos(int angle);
+void	sincos(int angle, fixed &sine, fixed &cosine);
 
 #endif

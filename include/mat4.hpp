@@ -94,31 +94,37 @@ struct mat4 {
 		};
 	}
 	static mat4	rotateX(int angle) {
-		vec2	t = sincos(angle);
+		fixed	s;
+		fixed	c;
+		sincos(angle, s, c);
 
 		return {
 			1, 0, 0, 0,
-			0, t.x, t.y, 0,
-			0, -t.y, t.x, 0,
+			0, c, s, 0,
+			0, -s, c, 0,
 			0, 0, 0, 1
 		};
 	}
 	static mat4	rotateY(int angle) {
-		vec2	t = sincos(angle);
+		fixed	s;
+		fixed	c;
+		sincos(angle, s, c);
 
 		return {
-			t.x, 0, -t.y, 0,
+			c, 0, -s, 0,
 			0, 1, 0, 0,
-			t.y, 0, t.x, 0,
+			s, 0, c, 0,
 			0, 0, 0, 1
 		};
 	}
 	static mat4	rotateZ(int angle) {
-		vec2	t = sincos(angle);
+		fixed	s;
+		fixed	c;
+		sincos(angle, s, c);
 
 		return {
-			t.x, -t.y, 0, 0,
-			t.y, t.x, 0, 0,
+			c, -s, 0, 0,
+			s, c, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1
 		};
