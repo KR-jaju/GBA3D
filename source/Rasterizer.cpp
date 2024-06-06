@@ -144,13 +144,14 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y
 			width >>= 1; // 시작도 2바이트 경계, 가야할 거리도 2의 배수이므로 반으로 나눔
 			while (width != 0)
 			{
-				if ((x0 & 0b1) != 1 && ptr == &out[y * 240 + x0]) {
-					*(u16 *)ptr = 3 | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
-				} else if ((x1 & 0b1) != 1 && ptr == &out[y * 240 + (x1 - 2)]) {
-					*(u16 *)ptr = (Shader::pixelShader(&triangle, u, v)) | (7 << 8);
-				} else {
-					*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
-				}
+				// if ((x0 & 0b1) != 1 && ptr == &out[y * 240 + x0]) {
+				// 	*(u16 *)ptr = 3 | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
+				// } else if ((x1 & 0b1) != 1 && ptr == &out[y * 240 + (x1 - 2)]) {
+				// 	*(u16 *)ptr = (Shader::pixelShader(&triangle, u, v)) | (7 << 8);
+				// } else {
+				// 	*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
+				// }
+				*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
 				ptr += 2; // 2픽셀 이동
 				width -= 1;
 				u += triangle.dudx * 2 * 8;

@@ -11,16 +11,10 @@
 # include "Clipper.hpp"
 # include "Fragment.hpp"
 
-/*
-1. MVP mul (Vertex shader)
-2. clip
-3. Rasterize (fragment shader)
-*/
-
 namespace Shader {
 	static INLINE u8	pixelShader(Triangle const *tri, u32 u, u32 v) {
-		return (5);
-		// return (Texture::sample(u, v));
+		// return (5);
+		return (Texture::sample(u, v));
 	}
 }
 
