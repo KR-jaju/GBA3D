@@ -3,6 +3,7 @@
 #include "Rasterizer.hpp"
 #include "GBAlib.hpp"
 #include "Camera.hpp"
+#include "Screen.hpp"
 #define REG_VCOUNT *(volatile u16*)0x04000006
 COLOR *vid_page= vid_mem_back;
 
@@ -24,7 +25,9 @@ int	main() {
 		while(REG_VCOUNT < 160);    // wait till VBlank
 		camera.update();
 		camera.push(mesh);
-		camera.render((u8 *)(vid_page));
-		vid_flip();	
+		camera.render(Screen::current);
+		// camera.render((u8 *)(vid_page));
+		Screen::flip();
+		// vid_flip();	
 	}
 }
