@@ -62,7 +62,7 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 
 		out.x = (i32)(position.x * 960) + 960;
 		out.y = (i32)(-position.y * 640) + 640;
-		out.z = (i32)position.w;
+		out.z = (i32)(position.w * 5);
 	}
 	for (u32 i = 0; i < F * 3; i += 3) {
 		Vertex const	&a = processed[mesh.index[i]];
@@ -70,13 +70,15 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		Vertex const	&c = processed[mesh.index[i + 2]];
 		u32 const		discard_flag = a.flag & b.flag & c.flag;
 		u32	const		clip_flag = a.flag | b.flag | c.flag;
-		i32 const		depth = (a.z + b.z + c.z + c.z) >> 2;
+		i32 const		depth = (a.z + b.z + c.z);
+		// + c.z);
+		//  >> 2;
 		Vertex			clipped[7]; // 최대 4번 잘리므로 3(각형) + 4 -> 7각형
 		u32				n = 3;
 
 		if (discard_flag & Vertex::DISCARDED) // 모든 정점이 화면 밖
 			continue;
-		if (Clipper::isClockwise(a, b, c)) // 정점들이 시계방향이면 버림
+		if (!Clipper::isClockwise(a, b, c)) // 정점들이 시계방향이면 버림
 			continue;
 		clipped[0] = a;
 		clipped[1] = b;

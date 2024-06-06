@@ -1,7 +1,7 @@
 
 #include "Camera.hpp"
 
-Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 1}), table(), aspect(1) {
+Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 0}), table(), aspect(1) {
 	this->near = 0.3f;
 	this->far = 100.0f;
 }
@@ -12,8 +12,12 @@ void	Camera::update() {
 	// this->position.z -= fixed::from(1000);
 	// this->position.z -= 0.1f;
 	// this->position.x -= fixed::from(100);
-	this->position.y = (sincos(g).y) * 0.3f;
-	this->position.x = (sincos(g).x) * 0.1f;
+	// this->position.y = (sincos(g).y) * 5.3f;
+	// this->position.x = (sincos(g).x) * 5.1f;
+	// this->position.z = -20;
+	this->position.x = (sincos(g).x) * 20.0f;
+	this->position.z = (sincos(g).y) * 20.0f;
+	this->position.y = 5.0f;
 	g += 100;
 	// this->position.y += fixed::from(1);
 	this->calculateProjectionMatrix();

@@ -8,7 +8,7 @@
 
 namespace Texture {
 	static INLINE u8	sample(u32 u, u32 v) {
-		return u8((u + v) >> 14);
+		return u8((u + v) >> 10);
 	}
 }
 
