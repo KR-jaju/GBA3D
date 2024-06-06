@@ -19,8 +19,8 @@ void	Camera::update() {
 	fixed	s;
 	fixed	c;
 	sincos(g, s, c);
-	this->position.x = (c) * 70.0f;
-	this->position.z = (s) * 70.0f;
+	this->position.x = (c) * 7.0f;
+	this->position.z = (s) * 7.0f;
 	this->position.y = 5.0f;
 	g += 100;
 	// this->position.y += fixed::from(1);
@@ -38,15 +38,12 @@ void	Camera::calculateProjectionMatrix() {
 	fixed const	n = this->near;
 	fixed const	f = this->far;
 	fixed const	a = fixed(1) / near; // TODO: 나눗셈
-	// float(1.0f / float(near));
-	// fixed(1.0f / float(near * tan(float(this->fov) / 2.0f)));
-	// fixed(1) / (fixed(tan(float(this->fov) / 2.0f )) * near);
 	fixed const	b = (n + f) / (f - n);
 	fixed const	c = fixed(-2) * f * n / (f - n);
 
 	this->projection = (mat4){
-		a * i32(Screen::height * 8), 0, 0, 0,
-		0, a * i32(Screen::height * 8), 0, 0,
+		a * i32(Screen::height * Screen::subpixel / 2), 0, 0, 0,
+		0, a * i32(Screen::height * Screen::subpixel / 2), 0, 0,
 		0, 0, b, c,
 		0, 0, 1, 0
 	};

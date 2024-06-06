@@ -64,7 +64,7 @@ struct mat4 {
 			this->element[0] * other.x + this->element[1] * other.y + this->element[2] * other.z + this->element[3] * other.w,
 			this->element[4] * other.x + this->element[5] * other.y + this->element[6] * other.z + this->element[7] * other.w,
 			this->element[8] * other.x + this->element[9] * other.y + this->element[10] * other.z + this->element[11] * other.w,
-			this->element[12] * other.x + this->element[13] * other.y + this->element[14] * other.z + this->element[15] * other.w,
+			this->element[12] * other.x + this->element[13] * other.y + this->element[14] * other.z + this->element[15] * other.w
 		};
 	}
 	static mat4	identity() {

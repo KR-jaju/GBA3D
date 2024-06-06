@@ -34,8 +34,8 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y
 			edge[1].move();
 			continue;
 		}
-		u32 const	x0 = edge[0].x();
-		u32 const	x1 = edge[1].x();
+		u32 const	x0 = clamp(edge[0].x(), 0, 240);
+		u32 const	x1 = clamp(edge[1].x(), 0, 240);
 		u32			width = x1 - x0; // 4 - 2 -> 2, 3
 		u32			u = (triangle.dudx * (x0 * 8 - v0.x) + triangle.dudy * (y * 8 - v0.y)) + v0.attr.u;
 		u32			v = (triangle.dvdx * (x0 * 8 - v0.x) + triangle.dvdy * (y * 8 - v0.y)) + v0.attr.v;

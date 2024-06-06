@@ -89,8 +89,8 @@ Mesh<10, 12> box = {
 		camera.update();
 		// camera.push(Pyramid2_mesh);
 		// camera.push(untitled_mesh);
-		camera.push(sword_mesh);
-		// camera.push(box);
+		// camera.push(sword_mesh);
+		camera.push(box);
 		camera.render(Screen::current);
 		// camera.render((u8 *)(vid_page));
 		Screen::flip();
