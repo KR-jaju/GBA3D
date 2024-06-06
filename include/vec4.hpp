@@ -2,7 +2,8 @@
 #ifndef VEC4_HPP
 # define VEC4_HPP
 
-#include "fixed.hpp"
+# include "fixed.hpp"
+# include "math.hpp"
 
 struct vec4
 {
@@ -39,5 +40,17 @@ struct vec4
 		return {1, 1, 1, 1};
 	}
 };
+
+static INLINE fixed	dot(vec4 const &a, vec4 const &b) {
+	return (a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w);
+}
+
+static INLINE fixed	length(vec4 const &a) {
+	return (sqrt(dot(a, a)));
+}
+
+static INLINE vec4	normalize(vec4 const &a) {
+	return (a / length(a));
+}
 
 #endif

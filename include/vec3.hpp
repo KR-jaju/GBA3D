@@ -2,7 +2,8 @@
 #ifndef VEC3_HPP
 # define VEC3_HPP
 
-#include "fixed.hpp"
+# include "fixed.hpp"
+# include "math.hpp"
 
 struct vec3
 {
@@ -39,5 +40,21 @@ struct vec3
 	}
 };
 
+static INLINE fixed	dot(vec3 const &a, vec3 const &b) {
+	return (a.x * b.x + a.y * b.y + a.z * b.z);
+}
+static INLINE vec3	cross(vec3 const &a, vec3 const &b) {
+	return {
+		a.y * b.z - a.z * b.y,
+		a.z * b.x - a.x * b.z,
+		a.x * b.y - a.y * b.x,
+	};
+}
+static INLINE fixed	length(vec3 const &a) {
+	return (sqrt(dot(a, a)));
+}
+static INLINE vec3	normalize(vec3 const &a) {
+	return (a / length(a));
+}
 
 #endif

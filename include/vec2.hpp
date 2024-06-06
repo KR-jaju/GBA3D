@@ -2,7 +2,9 @@
 #ifndef VEC2_HPP
 # define VEC2_HPP
 
-#include "fixed.hpp"
+# include "type.hpp"
+# include "fixed.hpp"
+# include "math.hpp"
 
 struct vec2
 {
@@ -36,5 +38,14 @@ struct vec2
 	}
 };
 
+static INLINE fixed	dot(vec2 const &a, vec2 const &b) {
+	return (a.x * b.x + a.y * b.y);
+}
+static INLINE fixed	length(vec2 const &a) {
+	return (sqrt(dot(a, a)));
+}
+static INLINE vec2	normalize(vec2 const &a) {
+	return (a / length(a));
+}
 
 #endif

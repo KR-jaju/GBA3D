@@ -23,18 +23,4 @@ fixed	abs(fixed f);
 
 vec2	sincos(int angle);
 
-fixed	dot(vec2 const &a, vec2 const &b);
-fixed	dot(vec3 const &a, vec3 const &b);
-fixed	dot(vec4 const &a, vec4 const &b);
-
-vec3	cross(vec3 const &a, vec3 const &b);
-
-fixed	length(vec2 const &a);
-fixed	length(vec3 const &a);
-fixed	length(vec4 const &a);
-
-vec2	normalize(vec2 const &a);
-vec3	normalize(vec3 const &a);
-vec4	normalize(vec4 const &a);
-
 #endif
