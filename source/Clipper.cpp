@@ -64,7 +64,7 @@ bool	Clipper::isClockwise(Vertex const &a, Vertex const &b, Vertex const &c) {
 	i32 const	acx = c.x - a.x;
 	i32 const	acy = c.y - a.y;
 
-	return (abx * acy - aby * acx >= 0);
+	return (abx * acy - aby * acx <= 0);
 }
 
 void	Clipper::clipX(Vertex *polygon, u32 &n) {

@@ -5,6 +5,9 @@
 # include "type.hpp"
 
 namespace Screen {
+	static constexpr u32	width = 240;
+	static constexpr u32	height = 160;
+	static constexpr u32	subpixel = 8;
 	static constexpr u32	size = 0xA000;
 	static constexpr u32	page_flag = 0x0010;
 	static constexpr u32	front = 0x06000000;

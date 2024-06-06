@@ -16,6 +16,7 @@ struct Triangle {
 	i32	dvdx;
 	i32	dvdy;
 
+	IWRAM_CODE
 	Triangle	&init(Vertex const &a, Vertex const &b, Vertex const &c) {
 		this->vertex[0] = a;
 		this->vertex[1] = b;
@@ -25,7 +26,8 @@ struct Triangle {
 		return (*this);
 	}
 
-	IWRAM_CODE
+	// IWRAM_CODE
+	INLINE
 	void	precalculate() {
 		Vertex const	&v0 = this->vertex[0];
 		Vertex const	&v1 = this->vertex[1];
@@ -47,7 +49,8 @@ struct Triangle {
 	} //x, y증가량에 따른 u, v증가량
 
 	// 정렬기준: y 작을수록 앞, y가 같으면 x가 작은게 앞
-	IWRAM_CODE
+	// IWRAM_CODE
+	INLINE
 	void	sort() {
 		Vertex	&v0 = this->vertex[0];
 		Vertex	&v1 = this->vertex[1];

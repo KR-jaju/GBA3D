@@ -1,5 +1,6 @@
 
 #include "Camera.hpp"
+#include "Screen.hpp"
 
 Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 0}), table(), aspect(1) {
 	this->near = 0.3f;
@@ -18,8 +19,8 @@ void	Camera::update() {
 	fixed	s;
 	fixed	c;
 	sincos(g, s, c);
-	this->position.x = (c) * 20.0f;
-	this->position.z = (s) * 20.0f;
+	this->position.x = (c) * 70.0f;
+	this->position.z = (s) * 70.0f;
 	this->position.y = 5.0f;
 	g += 100;
 	// this->position.y += fixed::from(1);
@@ -36,7 +37,6 @@ void	Camera::render(u8 *out) {
 void	Camera::calculateProjectionMatrix() {
 	fixed const	n = this->near;
 	fixed const	f = this->far;
-	fixed const	aspect = this->aspect;
 	fixed const	a = fixed(1) / near; // TODO: 나눗셈
 	// float(1.0f / float(near));
 	// fixed(1.0f / float(near * tan(float(this->fov) / 2.0f)));
@@ -45,8 +45,8 @@ void	Camera::calculateProjectionMatrix() {
 	fixed const	c = fixed(-2) * f * n / (f - n);
 
 	this->projection = (mat4){
-		a / aspect, 0, 0, 0,
-		0, a, 0, 0,
+		a * i32(Screen::height * 8), 0, 0, 0,
+		0, a * i32(Screen::height * 8), 0, 0,
 		0, 0, b, c,
 		0, 0, 1, 0
 	};

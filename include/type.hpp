@@ -31,8 +31,9 @@ typedef signed long long	i64;
 # define DEPTH_LAYER_SIZE	512
 #endif
 
-#define IWRAM_CODE	
-// #define IWRAM_CODE __attribute__((section(".iwram"), short_call))
+// #define IWRAM_CODE	
+#define IWRAM_CODE __attribute__((section(".iwram"), long_call))
+#define IWRAM __attribute__((section(".iwram")))
 #define INLINE	inline __attribute__((always_inline))
 
 #endif

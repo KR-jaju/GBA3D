@@ -24,4 +24,13 @@ T	max(T a, T b) {
 	return (b);
 }
 
+template <typename T>
+T	clamp(T a, T low, T high) {
+	if (a < low)
+		return (low);
+	if (high < a)
+		return (high);
+	return (a);
+}
+
 #endif

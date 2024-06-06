@@ -8,7 +8,9 @@
 # include "Vertex.hpp"
 
 namespace VertexShader {
+	IWRAM
 	extern mat4	matrix[10];
+	IWRAM
 	extern vec4	out_position; // out
 	
 	template <u32 V, u32 F>
