@@ -25,11 +25,6 @@ Edge	&Edge::init(Vertex const &a, Vertex const &b) {
 	this->scaled_dy = scaled_dy;
 	this->error = error;
 	this->pack = (u8(step) << 24) | u16(x); //shade here
-	#ifdef INTERLACED_RENDERING
-	if (((round_y >> 3) & 0b1) == (vid_page == vid_mem_back)) { //홀수번째에서 시작하면 다음으로
-		this->move();
-	}
-	#endif
 	return (*this);
 }
 
