@@ -30,8 +30,8 @@ void	Camera::update() {
 
 
 void	Camera::render(u8 *out) {
-	Rasterizer::render(this->table, out);
-	this->table.reset();
+	Rasterizer::render(this->table, out); // 모아놓은 삼각형 그리기
+	this->table.reset(); // 다 지우고 리셋
 }
 
 void	Camera::calculateProjectionMatrix() {

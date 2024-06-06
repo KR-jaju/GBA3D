@@ -2,6 +2,8 @@
 #include <tonc.h>
 #include "debug.hpp"
 
+// 모드0용 텍스트 찍기 --- 유기됨
+
 char	debug_text[320];
 int		debug_offset;
 

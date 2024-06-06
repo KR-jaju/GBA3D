@@ -5,6 +5,8 @@
 #define SHEIGHT 1280
 //TODO : 이거 어떻게든 해줘
 
+//-----------------이 소스파일은 성능 문제로 사용되지 않습니다------------
+//-----------------일단 명목 상 유지 중-----------------
 
 static
 Vertex	intersectionLeft(Vertex const &a, Vertex const &b) {

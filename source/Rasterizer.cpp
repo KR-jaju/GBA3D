@@ -9,27 +9,27 @@
 #include "GBAlib.hpp"
 
 void	Rasterizer::render(DepthTable const &table, u8 *out) {
-	int start = clock_get();
+	// int start = clock_get();
 	Triangle const*const	*bucket = table.getBucket();
 	u16						*result = (u16 *)out;
 
 	for (u32 i = 0; i < 160 * 240 / 2; ++i) {
 		result[i] = 0; //검은색 초기화
-	} //dma로 대체
-	for(u32 i = 0; i < DEPTH_LAYER_SIZE; ++i) {
+	} //TODO: dma로 대체
+	for(u32 i = 0; i < DEPTH_LAYER_SIZE; ++i) { // 멀리있는 삼각형부터
 		for (Triangle const *t = bucket[DEPTH_LAYER_SIZE - i - 1]; t != NULL; t = t->next) {
-			Rasterizer::render(*t, (u8 *)out);
+			Rasterizer::render(*t, (u8 *)out); // 그리기
 		}
 	}
-	int e0 = clock_get();
-	sprintf(debug_text, "(%d) ", e0 - start);
+	// int e0 = clock_get();
+	// sprintf(debug_text, "(%d) ", e0 - start); // 모드0에서 시간 출력 가능, 모드4에서는 못함
 }
 
 static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y_min, i32 y_max, u8 *out) {	
 	Vertex const	&v0 = triangle.vertex[0];
 	y_max = min(y_max, 160); //TODO : Refactor
 	for (i32 y = y_min; y < y_max; ++y) {
-		if (y < 0) {
+		if (y < 0) { // y시작이 0보다 작으면 스킵
 			edge[0].move();
 			edge[1].move();
 			continue;
@@ -44,7 +44,6 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y
 			u8	*ptr = &out[y * 240 + x0];
 			if ((x0 & 0b1) == 1) { // 홀수번째에서 시작
 				ptr -= 1; // 한 칸 이전으로 이동(2바이트 경계 맞춤)
-				// *(u16 *)ptr = *ptr | (3 << 8);
 				*(u16 *)ptr = *ptr | (Shader::pixelShader(&triangle, u, v) << 8);
 				ptr += 2; // 다음 픽셀로 이동
 				width -= 1;
@@ -54,13 +53,6 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y
 			width >>= 1; // 시작도 2바이트 경계, 가야할 거리도 2의 배수이므로 반으로 나눔
 			while (width != 0)
 			{
-				// if ((x0 & 0b1) != 1 && ptr == &out[y * 240 + x0]) {
-				// 	*(u16 *)ptr = 3 | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
-				// } else if ((x1 & 0b1) != 1 && ptr == &out[y * 240 + (x1 - 2)]) {
-				// 	*(u16 *)ptr = (Shader::pixelShader(&triangle, u, v)) | (7 << 8);
-				// } else {
-				// 	*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
-				// }
 				*(u16 *)ptr = Shader::pixelShader(&triangle, u, v) | (Shader::pixelShader(&triangle, u + triangle.dudx * 8, v + triangle.dvdx * 8) << 8);
 				ptr += 2; // 2픽셀 이동
 				width -= 1;
@@ -69,10 +61,9 @@ static INLINE void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y
 			}
 			if ((x1 & 0b1) == 1) { // 홀수번째에서 끝남
 				*(u16 *)ptr = (Shader::pixelShader(&triangle, u, v) | (ptr[1] << 8));
-				// *(u16 *)ptr = (7) | (ptr[1] << 8);
 			}
 		}
-		edge[0].move();
+		edge[0].move(); //다음 y로 이동
 		edge[1].move();
 	}
 }
@@ -81,12 +72,12 @@ void	Rasterizer::render(Triangle const &triangle, u8 *out) {
 	Vertex const	&a = triangle.vertex[0];
 	Vertex const	&b = triangle.vertex[1];
 	Vertex const	&c = triangle.vertex[2];
-	u32 const		ac_orientation = ((b.x - a.x) * (c.y - a.y) <= (c.x - a.x) * (b.y - a.y));
-	Edge			edge[2];
+	u32 const		ac_orientation = ((b.x - a.x) * (c.y - a.y) <= (c.x - a.x) * (b.y - a.y)); // y축 방향으로 가장 긴 변이 왼쪽에 있는가 오른쪽에 있는가
+	Edge			edge[2]; // [0]은 왼쪽, [1]은 오른쪽
 
 	edge[ac_orientation].init(a, c);
-	edge[!ac_orientation].init(a, b);
+	edge[!ac_orientation].init(a, b); // 삼각형을 중간점을 기준으로 갈랐을 때 윗 삼각형 그리기
 	renderTrapezoid(triangle, edge, (a.y + 3) >> 3, (b.y + 3) >> 3, out);
 	edge[!ac_orientation].init(b, c);
-	renderTrapezoid(triangle, edge, (b.y + 3) >> 3, (c.y + 3) >> 3, out);
+	renderTrapezoid(triangle, edge, (b.y + 3) >> 3, (c.y + 3) >> 3, out);// 아랫삼각형 그리기
 }
