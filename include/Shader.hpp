@@ -13,8 +13,8 @@
 
 namespace Shader {
 	static INLINE u8	pixelShader(Triangle const *tri, u32 u, u32 v) {
-		// return (5);
-		return (Texture::sample(u, v));
+		return (5);
+		// return (Texture::sample(u, v));
 	}
 }
 

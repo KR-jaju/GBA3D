@@ -11,6 +11,7 @@
 struct Triangle {
 	Triangle	*next;
 	Vertex	vertex[3];
+	u32		ac_orientation;
 	i32	dudx;
 	i32	dudy;
 	i32	dvdx;
@@ -46,6 +47,7 @@ struct Triangle {
 		this->dudy = (-b * v0v1u + a * v0v2u) / det;
 		this->dvdx = (d * v0v1v - c * v0v2v) / det;
 		this->dvdy = (-b * v0v1v + a * v0v2v) / det;
+		this->ac_orientation = ((v1.x - v0.x) * (v2.y - v0.y) <= (v2.x - v0.x) * (v1.y - v0.y));
 	} //x, y증가량에 따른 u, v증가량
 
 	// 정렬기준: y 작을수록 앞, y가 같으면 x가 작은게 앞

@@ -1,6 +1,9 @@
 
 #include "Camera.hpp"
 #include "Screen.hpp"
+#include "clock.hpp"
+#include "debug.hpp"
+#include <stdio.h>
 
 Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 0}), table(), aspect(1) {
 	this->near = 0.3f;
@@ -30,8 +33,12 @@ void	Camera::update() {
 
 
 void	Camera::render(u8 *out) {
+	int start = clock_get();
 	Rasterizer::render(this->table, out); // 모아놓은 삼각형 그리기
+	log_ptr += sprintf(log_ptr, "After render : %d", clock_get() - start);
+	start = clock_get();
 	this->table.reset(); // 다 지우고 리셋
+	log_ptr += sprintf(log_ptr, "After reset : %d", clock_get() - start);
 }
 
 void	Camera::calculateProjectionMatrix() {

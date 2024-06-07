@@ -2,10 +2,10 @@
 #ifndef DEBUG_HPP
 # define DEBUG_HPP
 
-extern char	debug_text[320];
-extern int	debug_offset;
+extern char	debug_log[2048];
+extern char	*log_ptr;
 
-void	debug_init();
-void	debug_view();
+// void	debug_init();
+// void	debug_view();
 
 #endif
