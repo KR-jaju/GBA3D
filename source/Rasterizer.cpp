@@ -13,59 +13,80 @@ void	Rasterizer::render(DepthTable const &table, u8 *out) {
 	Triangle const*const	*bucket = table.getBucket();
 	u16						*result = (u16 *)out;
 
-	// for (u32 i = 0; i < 160 * 240 / 16; ++i) {
-	// 	result[i * 8] = 0; //검은색 초기화
-	// 	result[i * 8 + 1] = 0; //검은색 초기화
-	// 	result[i * 8 + 2] = 0; //검은색 초기화
-	// 	result[i * 8 + 3] = 0; //검은색 초기화
-	// 	result[i * 8 + 4] = 0; //검은색 초기화
-	// 	result[i * 8 + 5] = 0; //검은색 초기화
-	// 	result[i * 8 + 6] = 0; //검은색 초기화
-	// 	result[i * 8 + 7] = 0; //검은색 초기화
-	// } //TODO: dma로 대체
 	for (u32 i = 0; i < 160 * 240 / 32; ++i) {
 		((u32*)result)[i * 8] = 0; //검은색 초기화
-		((u32*)result)[i * 8 + 1] = 0; //검은색 초기화
-		((u32*)result)[i * 8 + 2] = 0; //검은색 초기화
-		((u32*)result)[i * 8 + 3] = 0; //검은색 초기화
-		((u32*)result)[i * 8 + 4] = 0; //검은색 초기화
-		((u32*)result)[i * 8 + 5] = 0; //검은색 초기화
-		((u32*)result)[i * 8 + 6] = 0; //검은색 초기화
-		((u32*)result)[i * 8 + 7] = 0; //검은색 초기화
+		((u32*)result)[i * 8 + 1] = 0;
+		((u32*)result)[i * 8 + 2] = 0;
+		((u32*)result)[i * 8 + 3] = 0;
+		((u32*)result)[i * 8 + 4] = 0;
+		((u32*)result)[i * 8 + 5] = 0;
+		((u32*)result)[i * 8 + 6] = 0;
+		((u32*)result)[i * 8 + 7] = 0;
 	} //TODO: dma로 대체
 	log_ptr += sprintf(log_ptr, "clear : %d\n", clock_get() - start);
 	start = clock_get();
-	// for (u32 i = DEPTH_LAYER_SIZE - 1; i != u32(-1); --i) { // 멀리 있는 삼각형부터
-	// 	for (Triangle const *t = bucket[i]; t != NULL; t = t->next) {
-	// 		Rasterizer::render(*t, (u8 *)out); // 그리기
-	// 	}
-	// }
-
-	for (u32 i = DEPTH_LAYER_SIZE - 1; i != u32(-1); i -= 4) { // 멀리 있는 삼각형부터
+	for (u32 i = DEPTH_LAYER_SIZE - 1; i != u32(-1); i -= 1) { // 멀리 있는 삼각형부터
 		for (Triangle const *t = bucket[i]; t != NULL; t = t->next) {
 			Rasterizer::render(*t, (u8 *)out); // 그리기
 		}
-		for (Triangle const *t = bucket[i + 1]; t != NULL; t = t->next) {
-			Rasterizer::render(*t, (u8 *)out); // 그리기
-		}
-		for (Triangle const *t = bucket[i + 2]; t != NULL; t = t->next) {
-			Rasterizer::render(*t, (u8 *)out); // 그리기
-		}
-		for (Triangle const *t = bucket[i + 3]; t != NULL; t = t->next) {
-			Rasterizer::render(*t, (u8 *)out); // 그리기
-		}
 	}
-
-
-
-
-
 	log_ptr += sprintf(log_ptr, "render : %d\n", clock_get() - start);
 }
 
-IWRAM_CODE
-static void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y_min, i32 y_max, u8 *out) {	
+static IWRAM_CODE
+void	renderSpan(u32 x0, u32 x1, u32 y, u8 *out, Triangle const &triangle) {
 	Vertex const	&v0 = triangle.vertex[0];
+	u32			u = (triangle.dudx * (x0 * 8 - v0.x) + triangle.dudy * (y * 8 - v0.y)) + v0.attr.u;
+	u32			v = (triangle.dvdx * (x0 * 8 - v0.x) + triangle.dvdy * (y * 8 - v0.y)) + v0.attr.v;
+	u32			*ptr = (u32 *)&out[y * 240 + (x0 & ~0b11)];
+	u32 		color = *ptr;
+	u32			count;
+
+	if (count = (x1 >> 2) - (x0 >> 2), count != 0) {
+		u32	x = x0;
+		switch (x0 & 0b11) // x0의 위치
+		{
+		case 0: do {
+					color = (color & 0xFFFFFF00) | Shader::pixelShader(&triangle, u, v);
+					u += triangle.dudx * 8;
+					v += triangle.dvdx * 8;
+		case 1:	
+					color = (color & 0xFFFF00FF) | (Shader::pixelShader(&triangle, u, v) << 8);
+					u += triangle.dudx * 8;
+					v += triangle.dvdx * 8;
+		case 2:		
+					color = (color & 0xFF00FFFF) | (Shader::pixelShader(&triangle, u, v) << 16);
+					u += triangle.dudx * 8;
+					v += triangle.dvdx * 8;
+		case 3:		
+					color = (color & 0x00FFFFFF) | (Shader::pixelShader(&triangle, u, v) << 24);
+					u += triangle.dudx * 8;
+					v += triangle.dvdx * 8;
+					*ptr = color;
+					ptr += 1;
+				} while (--count > 0);
+		}
+		// color = *ptr;
+		// switch (x1 & 0b11)
+		// {
+		// case 3:
+		// 	color |= Shader::pixelShader(&triangle, u, v) << 16;
+		// case 2:
+		// 	color |= Shader::pixelShader(&triangle, u, v) << 8;
+		// case 1:
+		// 	color |= Shader::pixelShader(&triangle, u, v);
+		// }
+		// 	*ptr = color;
+	} else {
+		for (int i = x0 & 0b11; i < (x1 & 0b11); ++i) {
+			color |= Shader::pixelShader(&triangle, u, v) << (i * 8);
+		}
+		*ptr = color;
+	}
+}
+
+IWRAM_CODE
+static void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y_min, i32 y_max, u8 *out) {
 	y_max = min(y_max, 160); //TODO : Refactor
 	while (y_min < 0) {
 		edge[0].move();
@@ -75,39 +96,14 @@ static void	renderTrapezoid(Triangle const &triangle, Edge edge[2], i32 y_min, i
 	for (i32 y = y_min; y < y_max; ++y) {
 		u32 const	x0 = clamp(edge[0].x(), 0, 240);
 		u32 const	x1 = clamp(edge[1].x(), 0, 240);
-		u32			u = (triangle.dudx * (x0 * 8 - v0.x) + triangle.dudy * (y * 8 - v0.y)) + v0.attr.u;
-		u32			v = (triangle.dvdx * (x0 * 8 - v0.x) + triangle.dvdy * (y * 8 - v0.y)) + v0.attr.v;
-
-		if (x0 != x1) {
-			u32	x = x0; 
-			u8	*ptr = &out[y * 240 + x0];
-
-			if (x & 0b1) {
-				ptr -= 1;
-				*(u16 *)ptr = *ptr | (Shader::pixelShader(&triangle, u, v) << 8);
-				ptr += 2;
-				x += 1;
-				u += triangle.dudx * 8;
-				v += triangle.dvdx * 8;
-			}
-			while (x += 2, x <= x1) { // x를 2 증가했을 때 x1보다 작아야
-				u16	color = Shader::pixelShader(&triangle, u, v);
-				u += triangle.dudx * 8;
-				v += triangle.dvdx * 8;
-				color |= Shader::pixelShader(&triangle, u, v) << 8;
-				u += triangle.dudx * 8;
-				v += triangle.dvdx * 8;
-				*(u16 *)ptr = color;
-				ptr += 2; // 2픽셀 이동
-			}
-			if (x1 & 0b1) { // 홀수번째에서 끝남
-				*(u16 *)ptr = (Shader::pixelShader(&triangle, u, v) | (ptr[1] << 8));
-			}
-		}
+		renderSpan(x0, x1, y, out, triangle);
 		edge[0].move(); //다음 y로 이동
 		edge[1].move();
 	}
 }
+
+
+
 
 void	Rasterizer::render(Triangle const &triangle, u8 *out) {
 	Vertex const	&a = triangle.vertex[0];
