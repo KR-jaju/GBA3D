@@ -24,7 +24,7 @@ Vertex	intersectionLeft(Vertex const &a, Vertex const &b) {
 
 static
 Vertex	intersectionRight(Vertex const &a, Vertex const &b) {
-	i32 const	x = SWIDTH - 1;
+	fixed const	x = SWIDTH - 1;
 	Vertex		intersection;
 
 	intersection.x = x; // 240 * 8
@@ -49,7 +49,7 @@ Vertex	intersectionTop(Vertex const &a, Vertex const &b) {
 
 static
 Vertex	intersectionBottom(Vertex const &a, Vertex const &b) {
-	i32 const	y = SHEIGHT - 1;
+	fixed const	y = SHEIGHT - 1;
 	Vertex	intersection;
 
 	intersection.x = (b.x - a.x) * (y-a.y) / (b.y - a.y) + a.x; // div
@@ -61,10 +61,10 @@ Vertex	intersectionBottom(Vertex const &a, Vertex const &b) {
 }
 
 bool	Clipper::isClockwise(Vertex const &a, Vertex const &b, Vertex const &c) {
-	i32 const	abx = b.x - a.x;
-	i32 const	aby = b.y - a.y;
-	i32 const	acx = c.x - a.x;
-	i32 const	acy = c.y - a.y;
+	fixed const	abx = b.x - a.x;
+	fixed const	aby = b.y - a.y;
+	fixed const	acx = c.x - a.x;
+	fixed const	acy = c.y - a.y;
 
 	return (abx * acy - aby * acx <= 0);
 }

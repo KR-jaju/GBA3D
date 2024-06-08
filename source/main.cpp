@@ -87,9 +87,9 @@ Mesh<10, 12> box = { // 정상적인 그냥 상자
 		// while(REG_VCOUNT < 160);    // wait till VBlank
 		log_ptr += sprintf(log_ptr, "--------------------log start ----------------- ");
 		camera.update();
-		camera.push(Pyramid2_mesh);
+		// camera.push(Pyramid2_mesh);
 		// camera.push(untitled_mesh);
-		// camera.push(sword_mesh);
+		camera.push(sword_mesh);
 		// camera.push(box);
 		camera.render(Screen::current);
 		Screen::flip();

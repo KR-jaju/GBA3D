@@ -12,7 +12,7 @@
 # include "Fragment.hpp"
 
 namespace Shader {
-	static INLINE u8	pixelShader(Triangle const *tri, u32 u, u32 v) {
+	static inline u8	pixelShader(Triangle const *tri, fixed u, fixed v) {
 		return (5);
 		// return (Texture::sample(u, v));
 	}

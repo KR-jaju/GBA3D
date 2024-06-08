@@ -22,8 +22,8 @@ void	Camera::update() {
 	fixed	s;
 	fixed	c;
 	sincos(g, s, c);
-	this->position.x = (c) * 7.0f;
-	this->position.z = (s) * 7.0f;
+	this->position.x = (c) * 10.0f;
+	this->position.z = (s) * 10.0f;
 	this->position.y = 5.0f;
 	g += 100;
 	// this->position.y += fixed::from(1);

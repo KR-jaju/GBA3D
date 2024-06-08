@@ -17,13 +17,13 @@ struct Vertex {
 		CLIP_Y = CLIP_TOP | CLIP_BOTTOM
 	};
 	struct Attribute {
-		i32	u;
-		i32	v;
+		fixed	u;
+		fixed	v;
 	};
 
-	i32			x;
-	i32			y;
-	i32			z;
+	fixed		x;
+	fixed		y;
+	fixed		z;
 	u32		 	flag;
 	Attribute	attr;
 };

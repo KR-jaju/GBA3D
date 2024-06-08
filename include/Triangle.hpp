@@ -12,10 +12,10 @@ struct Triangle {
 	Triangle	*next;
 	Vertex	vertex[3];
 	u32		ac_orientation;
-	i32	dudx;
-	i32	dudy;
-	i32	dvdx;
-	i32	dvdy;
+	fixed	dudx;
+	fixed	dudy;
+	fixed	dvdx;
+	fixed	dvdy;
 
 	IWRAM_CODE
 	Triangle	&init(Vertex const &a, Vertex const &b, Vertex const &c) {
@@ -33,15 +33,15 @@ struct Triangle {
 		Vertex const	&v0 = this->vertex[0];
 		Vertex const	&v1 = this->vertex[1];
 		Vertex const	&v2 = this->vertex[2];
-		i32 const		a = v1.x - v0.x;
-		i32 const		b = v2.x - v0.x;
-		i32 const		c = v1.y - v0.y;
-		i32 const		d = v2.y - v0.y;
-		i32 const		det = a * d - b * c;
-		i32 const		v0v1u = v1.attr.u - v0.attr.u;
-		i32 const		v0v1v = v1.attr.v - v0.attr.v;
-		i32 const		v0v2u = v2.attr.u - v0.attr.u;
-		i32 const		v0v2v = v2.attr.v - v0.attr.v;
+		fixed const		a = v1.x - v0.x;
+		fixed const		b = v2.x - v0.x;
+		fixed const		c = v1.y - v0.y;
+		fixed const		d = v2.y - v0.y;
+		fixed const		det = a * d - b * c;
+		fixed const		v0v1u = v1.attr.u - v0.attr.u;
+		fixed const		v0v1v = v1.attr.v - v0.attr.v;
+		fixed const		v0v2u = v2.attr.u - v0.attr.u;
+		fixed const		v0v2v = v2.attr.v - v0.attr.v;
 
 		this->dudx = (d * v0v1u - c * v0v2u) / det; //TODO: div
 		this->dudy = (-b * v0v1u + a * v0v2u) / det;

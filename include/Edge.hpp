@@ -13,18 +13,30 @@ uv = 32bit
 */
 
 struct Edge {
-	i32	scaled_dx;
-	i32	scaled_dy; // 너무 큰가??
-	i32	error;
-	u32	pack; // 31 {i8 step; u8 shade; u16 x;} 0
+	fixed	dxdy;
+	fixed	x;
 
-	IWRAM_CODE
 	Edge	&init(Vertex const &a, Vertex const &b);
-	IWRAM_CODE
 	void	move();
-	i32		x() const {
-		return (i16(u16(this->pack)));
-	}
 };
+
+inline Edge	&Edge::init(Vertex const &a, Vertex const &b) {
+	fixed const	dx = b.x - a.x;
+	fixed const	dy = b.y - a.y;
+
+	this->x = a.x;
+	if (dy == 0) {
+		this->dxdy = 0;
+		return (*this); // degeneracy
+	}
+	this->dxdy = dx / dy;
+	this->x += (fixed::from(a.y.num + 0x7FFF) + 0.5f - a.y) * this->dxdy;
+	return (*this);
+}
+
+inline void	Edge::move() {
+	this->x += this->dxdy;
+}
+
 
 #endif

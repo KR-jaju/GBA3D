@@ -10,6 +10,7 @@
 # include "Rasterizer.hpp"
 # include "DepthTable.hpp"
 # include "VertexShader.hpp"
+# include "Screen.hpp"
 
 class Camera {
 public:
@@ -60,8 +61,8 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		position.x /= position.w;
 		position.y /= position.w;
 
-		out.x = (i32)(position.x) + 960;
-		out.y = (i32)(-position.y) + 640;
+		out.x = (i32)(position.x) + i32(Screen::width / 2);
+		out.y = (i32)(-position.y) + i32(Screen::height / 2);
 		out.z = (i32)(position.w);
 	}
 	for (u32 i = 0; i < F * 3; i += 3) {
@@ -70,7 +71,7 @@ void	Camera::push(Mesh<V, F> const &mesh) {
 		Vertex const	&c = processed[mesh.index[i + 2]];
 		u32 const		discard_flag = a.flag & b.flag & c.flag;
 		u32	const		clip_flag = a.flag | b.flag | c.flag;
-		i32 const		depth = (a.z + b.z + c.z);
+		i32 const		depth = (i32)(a.z + b.z + c.z);
 
 		if (discard_flag & Vertex::DISCARDED) // 모든 정점이 화면 밖
 			continue;

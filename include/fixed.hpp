@@ -8,6 +8,7 @@
 
 struct fixed
 {
+	static fixed	reciprocal_lut[65536];
 	i32 num;
 	
 	fixed() = default;
