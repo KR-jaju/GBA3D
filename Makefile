@@ -38,7 +38,7 @@ GRAPHICS	:= graphics
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:= -g -Wall -O2 -std=c++20\
+CFLAGS	:= -S -Wall -O2 -std=c++20\
 		-mcpu=arm7tdmi -mtune=arm7tdmi\
 		-fno-loop-optimize\
 		$(ARCH)
