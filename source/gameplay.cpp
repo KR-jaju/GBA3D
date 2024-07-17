@@ -4,5 +4,7 @@
 
 
 object ObjPool[20];
+object MoveObj[10];
+
 
 

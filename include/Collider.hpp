@@ -1,21 +1,49 @@
 #ifndef COLLIDER_HPP
-# define COLLIDER_HPP
+#define COLLIDER_HPP
 
 #include "vec3.hpp"
 #include "fixed.hpp"
+#include "fixed.hpp"
 
+//type
+//0 -> Non
+//1 -> wall
+//2 -> floor
+//3 -> ceil
 
-
-struct SphereCollider
+class Collider
 {
-    vec3 point;
-    fixed radient;
+    u16 type;
+    fixed push;
+    int pixel;
+
+    Collider(int type);
 };
 
-struct BoxCollider
+Collider::Collider(int type)
 {
-    vec3 point1;
-    vec3 point2;
-};
+    this->type = type;
+    switch(type)
+    {
+        case 0:
+            push = 0;
+            pixel = 0;
+        break;
+        case 1:
+            push = 0;
+            pixel = 0;
+        break;
+        case 2:
+            push = 0;
+            pixel = 0;
+        break;
+        case 3:
+            push = 0;
+            pixel = 0;
+        break;
+    }
+}
+
+
 
 #endif
