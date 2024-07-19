@@ -11,6 +11,7 @@
 struct Triangle {
 	Triangle	*next;
 	Vertex	vertex[3];
+	vec3	nv; //normal vector
 	u32		ac_orientation;
 	i32	dudx;
 	i32	dudy;
@@ -22,6 +23,7 @@ struct Triangle {
 		this->vertex[0] = a;
 		this->vertex[1] = b;
 		this->vertex[2] = c;
+		this->nv = cross({b.x-a.x,b.y-a.y,b.z-a.z}, {c.x-a.x,c.y-a.y,c.z-a.z});
 		this->sort();
 		this->precalculate();
 		return (*this);

@@ -4,7 +4,9 @@
 
 
 object ObjPool[20];
-object MoveObj[10];
+object MoveObj[5];
+int objlen= 0;
+int moveObjlen = 0;
 
 
 

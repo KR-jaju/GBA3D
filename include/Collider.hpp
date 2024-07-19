@@ -3,7 +3,7 @@
 
 #include "vec3.hpp"
 #include "fixed.hpp"
-#include "fixed.hpp"
+#include "object.hpp"
 
 //type
 //0 -> Non
@@ -11,39 +11,41 @@
 //2 -> floor
 //3 -> ceil
 
-class Collider
+struct Collider
 {
     u16 type;
     fixed push;
     int pixel;
-
-    Collider(int type);
 };
 
-Collider::Collider(int type)
+struct Rigid
 {
-    this->type = type;
-    switch(type)
+    vec3 weight;
+    vec3 velocity;
+};
+
+void colliderTypeManager(object objList[], int len)
+{
+    for(int i = 0;i<len;i++)
     {
-        case 0:
-            push = 0;
-            pixel = 0;
-        break;
-        case 1:
-            push = 0;
-            pixel = 0;
-        break;
-        case 2:
-            push = 0;
-            pixel = 0;
-        break;
-        case 3:
-            push = 0;
-            pixel = 0;
-        break;
+        Triangle* tri = objList[i].tri;
+        while(tri!=nullptr)
+        {
+            if(tri->nv.y == 0) //wall
+            {
+
+            }
+            else if(tri->nv.y == 0) //ground
+            {
+
+            }
+            else if(tri->nv.y == 0) //ceil
+            {
+                
+            }
+
+        }
     }
 }
-
-
 
 #endif
