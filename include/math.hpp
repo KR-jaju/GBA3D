@@ -52,4 +52,9 @@ static INLINE void	sincos(int angle, fixed &sine, fixed &cosine) {
 	sine = s;
 }
 
+static INLINE fixed limit(fixed current, fixed stop)
+{
+	return current > stop ? stop : current;
+}
+
 #endif

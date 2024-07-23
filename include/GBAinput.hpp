@@ -72,3 +72,4 @@ INLINE int key_tri_shoulder()   // R/L : +/-
 
 INLINE int key_tri_fire()       // B/A : -/+
 {   return bit_tribool(__key_curr, KI_A, KI_B);         }
+
