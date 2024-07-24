@@ -5,6 +5,7 @@
 #include "fixed.hpp"
 #include "object.hpp"
 #include "player.hpp"
+#include "math.hpp"
 //type
 //0 -> Non
 //1 -> wall
@@ -51,9 +52,24 @@ void colliderTypeManager(object objList[], int len)
 //충돌확인
 bool checkCollision(player &mario, object objList[], int len)
 {
+    vec3 nv; //삼각형의 평면 벡터
+    fixed d; //점(마리오)과 평면의 거리
+    Triangle *tri;
+    Collider col;
+    vec3 pos = mario.postion; //현재 마리오 좌표
     for(int i = 0;i<len;i++)
     {
-        
+        tri =  objList[i].tri;
+        col = objList[i].collider;
+        while(tri != nullptr)
+        {
+            nv = tri->nv;
+            d = (nv.x * pos.x + nv.y * pos.y +nv.z * pos.z) 
+                / sqrt(nv.x * nv.x + nv.y * nv.y + nv.z * nv.z); //점과 평면사이의 거리
+            if(d<col.pixel) return true;
+            tri = tri->next;
+        }
     }
+    return false;
 }
 #endif

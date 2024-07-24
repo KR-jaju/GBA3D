@@ -6,6 +6,7 @@
 # include "util.hpp"
 # include "VertexShader.hpp"
 # include "Vertex.hpp"
+# include "vec3.hpp" 
 # include <cmath>
 
 struct Triangle {
