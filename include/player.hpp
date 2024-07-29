@@ -12,7 +12,16 @@ class player : public object
     bool wall = false;
     bool ceil = false;
     bool jumped = false;
+    void update(fixed deltaTime);
+    void applyForce(const vec3& force) { this->rigid.accel = this->rigid.accel + force; }
 };
+
+void player::update(fixed deltaTime)
+{
+    this->rigid.velocity = this->rigid.velocity + this->rigid.accel * deltaTime;
+    this->position = this->position + this->rigid.velocity * deltaTime;
+    this->rigid.accel = {0,0,0};
+}
 
 
 

@@ -23,6 +23,7 @@ struct Rigid
 {
     vec3 weight;
     vec3 velocity;
+    vec3 accel;
 };
 
 void colliderTypeManager(object objList[], int len)
@@ -56,16 +57,22 @@ bool checkCollision(player &mario, object objList[], int len)
     fixed d; //점(마리오)과 평면의 거리
     Triangle *tri;
     Collider col;
-    vec3 pos = mario.postion; //현재 마리오 좌표
+    vec3 pos = mario.position; //현재 마리오 좌표
+    vec3 trimiddle,npos;
     for(int i = 0;i<len;i++)
     {
         tri =  objList[i].tri;
         col = objList[i].collider;
+        trimiddle = {
+            (tri->vertex[0].x + tri->vertex[1].x + tri->vertex[2].x) / 3, 
+            (tri->vertex[0].y + tri->vertex[1].y + tri->vertex[2].y) / 3,
+            (tri->vertex[0].z + tri->vertex[1].z + tri->vertex[2].z) / 3 }; //삼각형의 무게중심
+        npos = pos - trimiddle;
         while(tri != nullptr)
         {
             nv = tri->nv;
-            d = (nv.x * pos.x + nv.y * pos.y +nv.z * pos.z) 
-                / sqrt(nv.x * nv.x + nv.y * nv.y + nv.z * nv.z); //점과 평면사이의 거리
+            d = (nv.x * pos.x + nv.y * pos.y +nv.z * pos.z) ;
+                /// sqrt(nv.x * nv.x + nv.y * nv.y + nv.z * nv.z); //점과 평면사이의 거리
             if(d<col.pixel) return true;
             tri = tri->next;
         }

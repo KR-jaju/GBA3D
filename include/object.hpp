@@ -10,7 +10,7 @@
 class object
 {
     public:
-    vec3 postion;
+    vec3 position;
     vec3 rotate;
     Collider collider;
     Triangle* tri;
