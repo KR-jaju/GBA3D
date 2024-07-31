@@ -80,25 +80,32 @@ bool checkCollision(player &mario, object objList[], int len)
     return false;
 }
 
-bool trianglePrismTest(player *mario, Triangle *tri, fixed pixel)
+bool trianglePrismTest(player &mario, Triangle *tri, fixed pixel)
 {
-    bool touch = false;
-
-    vec3 point = mario->position;
+    vec3 point = mario.position;
 
     vec3 p0 = {tri->vertex[0].x, tri->vertex[0].y, tri->vertex[0].z}; // 기준
     vec3 p1 = {tri->vertex[1].x, tri->vertex[1].y, tri->vertex[1].z};
     vec3 p2 = {tri->vertex[2].x, tri->vertex[2].y, tri->vertex[2].z};
 
-    vec3 V = point - p0;
+    vec3 V = point - p0; //기준점과 마리오 점 사이의 벡터
 
     vec3 d0 = cross(tri->nv, (p1 - p0)); // 모서리의 법선벡터들
     vec3 d1 = cross(tri->nv, (p2 - p0));
     vec3 d2 = cross(tri->nv, (p2 - p1));
 
-    fixed L = (length(tri->nv) * fixed(2)) / length(p2 - p1);
+    fixed L = (length(tri->nv) * fixed(2)) / length(p2 - p1); //기준점과 맞은편 모서리와의 거리
 
     if (dot(V, d0) <= pixel || dot(V, d1) <= pixel || (dot(V, d2) - L) <= pixel)
-        touch = true;
+        return true;
+    else return false;
+}
+
+bool normalTest(player &mario, Triangle *tri, fixed pixel)
+{
+     vec3 p0 = {tri->vertex[0].x, tri->vertex[0].y, tri->vertex[0].z};
+     vec3 V = mario.position - p0;
+     if(dot(V,tri->nv)<=pixel) return true;
+     else return false;
 }
 #endif
