@@ -59,9 +59,9 @@ bool trianglePrismTest(vec3 point, Triangle *tri, fixed pixel)
 
     vec3 V = point - p0; // 기준점과 마리오 점 사이의 벡터
 
-    vec3 d0 = cross(tri->nv, (p1 - p0)); // 모서리의 법선벡터들
-    vec3 d1 = cross(tri->nv, (p2 - p0));
-    vec3 d2 = cross(tri->nv, (p2 - p1));
+    vec3 d0 = normalize(cross(tri->nv, (p1 - p0))); // 모서리의 법선벡터들
+    vec3 d1 = normalize(cross(tri->nv, (p2 - p0)));
+    vec3 d2 = normalize(cross(tri->nv, (p2 - p1)));
 
     fixed L = length(cross((p0 - p1), (p2 - p1))) / length(p2 - p1); // 기준점과 맞은편 모서리와의 거리
 
@@ -94,8 +94,8 @@ bool checkCollision(player &mario, object objList[], int len)
         while(tri->next != nullptr)
         {
             col = tri->collider;
-            if(trianglePrismTest(pos,tri,col.pixel[col.type]) && normalTest(pos,tri,col.pixel[col.type]))
-            return true;
+            if(trianglePrismTest(pos,&tri,col.pixel[col.type]) && normalTest(pos,&tri,col.pixel[col.type]))
+            return true; //처리함수 필요
             tri = tri->next;
         }
         
