@@ -7,10 +7,12 @@
 # include "VertexShader.hpp"
 # include "Vertex.hpp"
 # include "vec3.hpp" 
+#include "Collider.hpp"
 # include <cmath>
 
 struct Triangle {
 	Triangle	*next;
+	Collider collider;
 	Vertex	vertex[3];
 	vec3	nv; //normal vector
 	u32		ac_orientation;

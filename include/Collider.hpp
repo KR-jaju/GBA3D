@@ -35,77 +35,71 @@ void colliderTypeManager(object objList[], int len)
         {
             if (fixed(0) <= tri->nv.y && tri->nv.y <= fixed(0)) // wall
             {
-                objList[i].collider.type = 1;
+                tri->collider.type = 1;
             }
             else if (fixed(0) <= tri->nv.y && tri->nv.y <= fixed(0)) // ground
             {
-                objList[i].collider.type = 2;
+                tri->collider.type = 2;
             }
             else if (fixed(0) <= tri->nv.y && tri->nv.y <= fixed(0)) // ceil
             {
-                objList[i].collider.type = 3;
+                tri->collider.type = 3;
             }
         }
     }
 }
 
-// 충돌확인
-bool checkCollision(player &mario, object objList[], int len)
-{
-    vec3 nv; // 삼각형의 평면 벡터
-    fixed d; // 점(마리오)과 평면의 거리
-    Triangle *tri;
-    Collider col;
-    vec3 pos = mario.position; // 현재 마리오 좌표
-    vec3 trimiddle, npos;
-    for (int i = 0; i < len; i++)
-    {
-        tri = objList[i].tri;
-        col = objList[i].collider;
-        trimiddle = {
-            (tri->vertex[0].x + tri->vertex[1].x + tri->vertex[2].x) / 3,
-            (tri->vertex[0].y + tri->vertex[1].y + tri->vertex[2].y) / 3,
-            (tri->vertex[0].z + tri->vertex[1].z + tri->vertex[2].z) / 3}; // 삼각형의 무게중심
-        npos = pos - trimiddle;
-        while (tri != nullptr)
-        {
-            nv = tri->nv;
-            d = (nv.x * pos.x + nv.y * pos.y + nv.z * pos.z);
-            /// sqrt(nv.x * nv.x + nv.y * nv.y + nv.z * nv.z); //점과 평면사이의 거리
-            if (d < col.pixel)
-                return true;
-            tri = tri->next;
-        }
-    }
-    return false;
-}
 
-bool trianglePrismTest(player &mario, Triangle *tri, fixed pixel)
-{
-    vec3 point = mario.position;
 
+bool trianglePrismTest(vec3 point, Triangle *tri, fixed pixel)
+{
     vec3 p0 = {tri->vertex[0].x, tri->vertex[0].y, tri->vertex[0].z}; // 기준
     vec3 p1 = {tri->vertex[1].x, tri->vertex[1].y, tri->vertex[1].z};
     vec3 p2 = {tri->vertex[2].x, tri->vertex[2].y, tri->vertex[2].z};
 
-    vec3 V = point - p0; //기준점과 마리오 점 사이의 벡터
+    vec3 V = point - p0; // 기준점과 마리오 점 사이의 벡터
 
     vec3 d0 = cross(tri->nv, (p1 - p0)); // 모서리의 법선벡터들
     vec3 d1 = cross(tri->nv, (p2 - p0));
     vec3 d2 = cross(tri->nv, (p2 - p1));
 
-    fixed L = (length(tri->nv) * fixed(2)) / length(p2 - p1); //기준점과 맞은편 모서리와의 거리
+    fixed L = length(cross((p0 - p1), (p2 - p1))) / length(p2 - p1); // 기준점과 맞은편 모서리와의 거리
 
     if (dot(V, d0) <= pixel || dot(V, d1) <= pixel || (dot(V, d2) - L) <= pixel)
         return true;
-    else return false;
+    else
+        return false;
 }
 
-bool normalTest(player &mario, Triangle *tri, fixed pixel)
+bool normalTest(vec3 point, Triangle *tri, fixed pixel)
 {
-     vec3 p0 = {tri->vertex[0].x, tri->vertex[0].y, tri->vertex[0].z};
-     vec3 V = mario.position - p0;
-     if(dot(V,tri->nv)<=pixel) return true;
-     else return false;
+    vec3 p0 = {tri->vertex[0].x, tri->vertex[0].y, tri->vertex[0].z};
+    vec3 V = point - p0;
+    if (dot(V, tri->nv) <= pixel)
+        return true;
+    else
+        return false;
+}
+
+
+// 충돌확인
+bool checkCollision(player &mario, object objList[], int len)
+{
+    Triangle *tri;
+    Collider col;
+    vec3 pos = mario.position; // 현재 마리오 좌표
+    for (int i = 0; i < len; i++)
+    {
+        tri = objList[i].tri;
+        while(tri->next != nullptr)
+        {
+            col = tri->collider;
+            if(trianglePrismTest(pos,tri,col.pixel[col.type]) && normalTest(pos,tri,col.pixel[col.type]))
+            return true;
+            tri = tri->next;
+        }
+        
+    }
+    return false;
 }
 #endif
