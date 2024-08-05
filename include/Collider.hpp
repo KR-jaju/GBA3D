@@ -81,7 +81,30 @@ bool normalTest(vec3 point, Triangle *tri, fixed pixel)
         return false;
 }
 
+// 1 -> wall
+// 2 -> ground
+// 3 -> ceil
+void crashProcess(player &mario, Triangle &tri)
+{
+    int type = tri.collider.type;
+    vec3 V = tri.nv;
+    switch(type)
+    {
+        case 1: //wall
+            mario.wall = true;
+            mario.applyForce(V * tri.collider.push[type]);
+        break;
+        case 2: //ground
+            mario.onGround = true;
+            mario.jumped = false;
+            mario.applyForce(V * tri.collider.push[type]);
+            break;
+        case 3: //ceil
+            mario.applyForce(V * tri.collider.push[type]);
+            break;
+    }
 
+}
 // 충돌확인
 bool checkCollision(player &mario, object objList[], int len)
 {
@@ -94,7 +117,7 @@ bool checkCollision(player &mario, object objList[], int len)
         while(tri->next != nullptr)
         {
             col = tri->collider;
-            if(trianglePrismTest(pos,&tri,col.pixel[col.type]) && normalTest(pos,&tri,col.pixel[col.type]))
+            if(trianglePrismTest(pos,tri,col.pixel[col.type]) && normalTest(pos,tri,col.pixel[col.type]))
             return true; //처리함수 필요
             tri = tri->next;
         }
