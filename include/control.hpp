@@ -14,33 +14,27 @@ void playerCtrl(player &mario)
     vec3 force = {0,0,0};
 
     key_poll();
-    if(key_held(KEY_UP)) force = {0,speed,0};
-    if(key_held(KEY_DOWN)) force = {0,-speed,0};
-    if(key_held(KEY_RIGHT)) force = {speed,0,0};
-    if(key_held(KEY_LEFT)) force = {-speed,0,0};
+    if(key_held(KEY_UP)) force = force + vec3::FRONT() * speed;
+    if(key_held(KEY_DOWN)) force = force + vec3::BACK() * speed;
+    if(key_held(KEY_RIGHT)) force = force + vec3::RIGHT() * speed;
+    if(key_held(KEY_LEFT)) force = force + vec3::LEFT() * speed;
     if(mario.onGround)
     {
-        if(key_held(KEY_B)) force.y = force.y * fixed(1.5f);
-        if(key_hit(KEY_A)) force = {0,0,jumpForce};
+        if(key_held(KEY_B)) //run
+        {
+            force.x = force.x * fixed(1.5f);
+            force.z = force.z * fixed(1.5f);
+        }
+        if(key_hit(KEY_A)) //jump
+        {
+            mario.jumped = true;
+            force = force + vec3::UP() * jumpForce;
+        }
     }
     
 
     mario.applyForce(force);
-
 }
-
-
-
-
-//땅에 있을때
-void Run(player &obj)
-{
-    obj.rigid.velocity.x;
-    obj.rigid.velocity.y;
-}
-
-
-
 
 
 

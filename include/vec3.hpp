@@ -36,7 +36,25 @@ struct vec3
 	}
 
 	static vec3		one() {
-		return {1, 1, 1};
+		return {fixed(1), fixed(1), fixed(1)};
+	}
+	static vec3		UP() {
+		return {fixed(0), fixed(1), fixed(0)};
+	}
+	static vec3		DOWN() {
+		return {fixed(0), fixed(-1), fixed(0)};
+	}
+	static vec3		FRONT() {
+		return {fixed(0), fixed(0), fixed(1)};
+	}
+	static vec3		BACK() {
+		return {fixed(0), fixed(0), fixed(-1)};
+	}
+	static vec3		LEFT() {
+		return {fixed(-1), fixed(0), fixed(0)};
+	}
+	static vec3		RIGHT() {
+		return {fixed(1), fixed(0), fixed(0)};
 	}
 };
 

@@ -15,7 +15,6 @@
 struct Collider
 {
     u16 type;
-    fixed push[4] = {0, fixed(20), 0, fixed(20)};
     fixed pixel[4] = {0, fixed(10), 0, fixed(10)};
 };
 
@@ -49,8 +48,6 @@ void colliderTypeManager(object objList[], int len)
     }
 }
 
-
-
 bool trianglePrismTest(vec3 point, Triangle *tri, fixed pixel)
 {
     vec3 p0 = {tri->vertex[0].x, tri->vertex[0].y, tri->vertex[0].z}; // 기준
@@ -63,8 +60,8 @@ bool trianglePrismTest(vec3 point, Triangle *tri, fixed pixel)
     vec3 d1 = normalize(cross(tri->nv, (p2 - p0)));
     vec3 d2 = normalize(cross(tri->nv, (p2 - p1)));
 
-    fixed L = length(cross((p0 - p1), (p2 - p1))) / length(p2 - p1); // 기준점과 맞은편 모서리와의 거리
-
+    //fixed L = length(cross((p0 - p1), (p2 - p1))) / length(p2 - p1); // 기준점과 맞은편 모서리와의 거리
+    fixed L = abs(dot((p0-p1),d2))/length(d2);
     if (dot(V, d0) <= pixel || dot(V, d1) <= pixel || (dot(V, d2) - L) <= pixel)
         return true;
     else
@@ -84,26 +81,25 @@ bool normalTest(vec3 point, Triangle *tri, fixed pixel)
 // 1 -> wall
 // 2 -> ground
 // 3 -> ceil
-void crashProcess(player &mario, Triangle &tri)
+void crashProcess(player &mario, Triangle &tri)//충돌 처리 함수
 {
     int type = tri.collider.type;
     vec3 V = tri.nv;
-    switch(type)
+    switch (type)
     {
-        case 1: //wall
-            mario.wall = true;
-            mario.applyForce(V * tri.collider.push[type]);
+    case 1: // wall
+        mario.wall = true;
+        mario.applyForce(V * tri.collider.pixel[type]);
         break;
-        case 2: //ground
-            mario.onGround = true;
-            mario.jumped = false;
-            mario.applyForce(V * tri.collider.push[type]);
-            break;
-        case 3: //ceil
-            mario.applyForce(V * tri.collider.push[type]);
-            break;
+    case 2: // ground
+        mario.onGround = true;
+        mario.jumped = false;
+        mario.applyForce(vec3::UP() * tri.collider.pixel[type]);
+        break;
+    case 3: // ceil
+        mario.applyForce(vec3::DOWN() * tri.collider.pixel[type]);
+        break;
     }
-
 }
 // 충돌확인
 bool checkCollision(player &mario, object objList[], int len)
@@ -114,14 +110,13 @@ bool checkCollision(player &mario, object objList[], int len)
     for (int i = 0; i < len; i++)
     {
         tri = objList[i].tri;
-        while(tri->next != nullptr)
+        while (tri->next != nullptr)
         {
             col = tri->collider;
-            if(trianglePrismTest(pos,tri,col.pixel[col.type]) && normalTest(pos,tri,col.pixel[col.type]))
-            return true; //처리함수 필요
+            if (trianglePrismTest(pos, &tri, col.pixel[col.type]) && normalTest(pos, &tri, col.pixel[col.type]))
+                crashProcess(mario,&tri);
             tri = tri->next;
         }
-        
     }
     return false;
 }
