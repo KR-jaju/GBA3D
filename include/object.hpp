@@ -12,7 +12,7 @@ class object
     public:
     vec3 position;
     vec3 rotate;
-    Triangle* tri;
+    Triangle* tri = nullptr;
 };
 
 
