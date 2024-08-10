@@ -57,8 +57,6 @@ static INLINE fixed limit(fixed current, fixed stop)
 	return current > stop ? stop : current;
 }
 
-fixed calculateDeltaTime(int fps) {
-    return fixed(1) / fixed(fps);
-}
+
 
 #endif

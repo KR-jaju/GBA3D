@@ -4,7 +4,6 @@
 
 #include "fixed.hpp"
 #include "vec3.hpp"
-#include "Collider.hpp"
 #include "Triangle.hpp"
 
 
