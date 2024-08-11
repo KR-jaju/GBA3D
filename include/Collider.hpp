@@ -12,7 +12,7 @@
 
 struct Collider
 {
-    u16 type;
+    u16 type = 0;
     fixed pixel[4] = {0, fixed(10), 0, fixed(10)};
 };
 
