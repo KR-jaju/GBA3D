@@ -16,6 +16,7 @@ char	*log_ptr = debug_log;
 
 int	main() {
 	clock_init();
+	initTimer();
 	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
 	Mesh<5, 6>      Pyramid2_mesh = {
 		{{-2.999138f, 0.004364f, -2.999138f, 21845, 32768},

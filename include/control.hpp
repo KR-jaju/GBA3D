@@ -1,40 +1,55 @@
 #ifndef CONTROL_HPP
 #define CONTROL_HPP
 
+#include "object.hpp"
 #include "player.hpp"
 #include "vec3.hpp"
+#include "fixed.hpp"
 #include "math.hpp"
 #include "GBAinput.hpp"
+#include "clock.hpp"
 
-fixed speed = fixed(0);
-fixed jumpForce = fixed(0);
-
-void playerCtrl(player &mario)
+class control
 {
-    vec3 force = {0,0,0};
+public:
+    int FPS;
 
-    key_poll();
-    if(key_held(KEY_UP)) force = force + vec3::FRONT() * speed;
-    if(key_held(KEY_DOWN)) force = force + vec3::BACK() * speed;
-    if(key_held(KEY_RIGHT)) force = force + vec3::RIGHT() * speed;
-    if(key_held(KEY_LEFT)) force = force + vec3::LEFT() * speed;
-    if(mario.onGround)
-    {
-        if(key_held(KEY_B)) //run
-        {
-            force.x = force.x * fixed(1.5f);
-            force.z = force.z * fixed(1.5f);
-        }
-        if(key_hit(KEY_A)) //jump
-        {
-            mario.jumped = true;
-            force = force + vec3::UP() * jumpForce;
-        }
-    }
-    
+    player mario;
+    object obj[10];
+    int objLen;
+    Polygon ceil[1000];
+    int ceilLen;
+    Polygon wall[1000];
+    int wallLen;
+    Polygon floor[1000];
+    int floorLen;
 
-    mario.applyForce(force);
-}
+    vec3 force;
+    vec3 moveTMP;
+    fixed runSpeed ;
+    fixed walkSpeed;
+    fixed jumpForce;
+    fixed gravity;
+    fixed maxFallSpeed;
+
+    fixed floorOP;
+    fixed wallOP;
+    fixed ceilOP;
+    bool touchStatus[4]={ false, false, false, false };
+    bool jumped;
+    fixed distance;
+    bool clickJump;
+
+    control();
+    void playerControll();
+    void polygonInit();
+    bool trianglePrismTest(Polygon tri, vec3 pos);
+    bool normalTest(Polygon tri, vec3 pos, vec3 axis, fixed OP);
+    void wallcheck(vec3& pos);
+    bool floorcheck(vec3& pos);
+    bool ceilcheck(vec3& pos);
+    void checkCollision();
+};
 
 
 

@@ -1,19 +1,17 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
-#include "object.hpp"
+#include "MeshTMP.hpp"
 #include "vec3.hpp"
 
-class player : public object
+class player
 {
     public:
-    Rigid rigid;
-    bool onGround = false;
-    bool wall = false;
-    bool ceil = false;
-    bool jumped = false;
-    void update(fixed deltaTime);
-    void applyForce(const vec3& force) { this->rigid.accel = this->rigid.accel + force; }
+    MeshTMP mesh;
+    vec3 position;
+    vec3 velocity;
+    fixed friction;
+    void move(vec3 pos) {position = pos;}
 };
 
 

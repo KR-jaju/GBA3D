@@ -4,6 +4,7 @@
 
 # define REG_TM0D *(volatile unsigned short *)0x04000100
 # define REG_TM0CNT *(volatile unsigned short *)0x04000102
+# define REG_TM0CNT_L *(volatile u16*)0x4000100
 # define REG_TM1D *(volatile unsigned short *)0x04000104
 # define REG_TM1CNT *(volatile unsigned short *)0x04000106
 # define REG_TM2D *(volatile unsigned short *)0x04000108
@@ -11,6 +12,8 @@
 # define REG_TM3D *(volatile unsigned short *)0x0400010C
 # define REG_TM3CNT *(volatile unsigned short *)0x0400010E
 
+#define TIMER_ON   0x0080
+#define TIMER_FREQ_1024 0x0003
 
 static inline void	clock_init() {
 	//REG_TM2D : 0x04000108
@@ -30,6 +33,28 @@ static inline int		clock_get() {
 	short const	sec = REG_TM3D;
 	// return (*(volatile unsigned short *)(0x0400010C));
 	return (sec * 1000 + milli);
+}
+
+float deltaTime = 0.0f;
+unsigned short prevTime = 0; 
+int targetFPS = 30;
+
+unsigned short getTimerValue()
+{
+    return REG_TM0CNT_L;
+}
+
+void updateDeltaTime(int targetFPS)
+{
+    unsigned short currTime = getTimerValue();
+    deltaTime = (float)(currTime - prevTime) / (0xFFFF * (1.0f / targetFPS));
+    prevTime = currTime;
+}
+
+void initTimer()
+{
+    REG_TM0CNT = 0;
+    REG_TM0CNT = TIMER_FREQ_1024 | TIMER_ON;
 }
 
 #endif

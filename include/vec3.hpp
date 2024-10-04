@@ -35,6 +35,9 @@ struct vec3
 		return {this->x / other, this->y / other, this->z / other};
 	}
 
+	static vec3		zero() {
+		return {fixed(0), fixed(0), fixed(0)};
+	}
 	static vec3		one() {
 		return {fixed(1), fixed(1), fixed(1)};
 	}
