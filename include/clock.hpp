@@ -35,23 +35,23 @@ static inline int		clock_get() {
 	return (sec * 1000 + milli);
 }
 
-float deltaTime = 0.0f;
-unsigned short prevTime = 0; 
-int targetFPS = 30;
+static float deltaTime = 0.0f;
+static unsigned short prevTime = 0; 
+static int targetFPS = 30;
 
-unsigned short getTimerValue()
+static unsigned short getTimerValue()
 {
     return REG_TM0CNT_L;
 }
 
-void updateDeltaTime(int targetFPS)
+static void updateDeltaTime(int FPS)
 {
     unsigned short currTime = getTimerValue();
-    deltaTime = (float)(currTime - prevTime) / (0xFFFF * (1.0f / targetFPS));
+    deltaTime = (float)(currTime - prevTime) / (0xFFFF * (1.0f / FPS));
     prevTime = currTime;
 }
 
-void initTimer()
+static void initDeltaTimer()
 {
     REG_TM0CNT = 0;
     REG_TM0CNT = TIMER_FREQ_1024 | TIMER_ON;
