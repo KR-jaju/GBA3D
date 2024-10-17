@@ -3,6 +3,7 @@
 #include "Screen.hpp"
 #include "clock.hpp"
 #include "debug.hpp"
+
 #include <stdio.h>
 
 Camera::Camera(): position({0, 0, 0}), lookat({0, 0, 0}), table(), aspect(1) {

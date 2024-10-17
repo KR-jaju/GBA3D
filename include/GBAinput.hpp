@@ -4,7 +4,7 @@
 #define REG_KEYINPUT		*(unsigned short*)(REG_BASE+0x0130)	//!< Key status (read only??)
 #define REG_KEYCNT			*(unsigned short*)(REG_BASE+0x0132)	//!< Key IRQ control
 
-u16 __key_curr=0, __key_prev=0;
+static u16 __key_curr=0, __key_prev=0;
 
 #define KEY_A        0x0001
 #define KEY_B        0x0002

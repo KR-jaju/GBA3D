@@ -12,7 +12,6 @@
 class control
 {
 public:
-    int FPS;
 
     player mario;
     object obj[10];

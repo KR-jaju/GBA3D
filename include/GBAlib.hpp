@@ -152,6 +152,7 @@ static inline void init_palettes()
 extern COLOR *vid_page;
 // = vid_mem_back;
 
+#define vid_mem			((COLOR*)MEM_VRAM)
 static inline COLOR *vid_flip(void)
 {
 	vid_page= (COLOR*)((unsigned int)vid_page ^ VRAM_PAGE_SIZE);

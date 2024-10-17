@@ -35,22 +35,39 @@ static inline int		clock_get() {
 	return (sec * 1000 + milli);
 }
 
-static float deltaTime = 0.0f;
-static unsigned short prevTime = 0; 
-static int targetFPS = 30;
+static fixed deltaTime = fixed(0);
+static int prevTime = 0;
 
-static unsigned short getTimerValue()
+// 타이머 설정 상수
+const int TIMER_FREQ = 16384; // 타이머 주파수 (Hz)
+const int TIMER_MAX = 0x10000; // 타이머 최대 값 (65536)
+
+// 타이머 값 읽기 함수
+static int getTimerValue()
 {
-    return REG_TM0CNT_L;
+    // 타이머 레지스터의 하위 16비트 값을 읽어옵니다.
+    return REG_TM0CNT_L & 0xFFFF;
 }
 
-static void updateDeltaTime(int FPS)
+// deltaTime 업데이트 함수
+static void updateDeltaTime()
 {
-    unsigned short currTime = getTimerValue();
-    deltaTime = (float)(currTime - prevTime) / (0xFFFF * (1.0f / FPS));
+    int currTime = getTimerValue();
+    int deltaTicks = currTime - prevTime;
+
+    // 타이머 오버플로우 처리
+    if (deltaTicks < 0)
+    {
+        deltaTicks += TIMER_MAX;
+    }
+
+    // deltaTime 계산 (초 단위)
+    deltaTime = fixed(deltaTicks) / fixed(TIMER_FREQ);
+
     prevTime = currTime;
 }
 
+// 타이머 초기화 함수
 static void initDeltaTimer()
 {
     REG_TM0CNT = 0;
