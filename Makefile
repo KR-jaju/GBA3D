@@ -36,7 +36,8 @@ GRAPHICS	:= graphics
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	:=	-mthumb -mthumb-interwork
+#ARCH	:=	-mthumb -mthumb-interwork
+ARCH	:=	-marm
 
 CFLAGS	:= -g -Wall -O2 -std=c++20\
 		-mcpu=arm7tdmi -mtune=arm7tdmi\

@@ -1,5 +1,5 @@
 #include "control.hpp"
-#include "collideModel.cpp"
+#include "polyPreset.cpp"
 
 static int tmp = 0;
 
@@ -15,6 +15,8 @@ INLINE void m4_plot(int x, int y, u8 clrid)
 		*dst= (*dst&~0xFF) |  clrid;
 }
 
+
+
 control::control()
 {
     
@@ -24,11 +26,11 @@ control::control()
 
     force = vec3::zero();
     moveTMP = vec3::zero();
-    runSpeed = fixed(30);
-    walkSpeed = fixed(15);
-    jumpForce = fixed(25);
-    gravity = fixed(-30);
-    maxFallSpeed = fixed(-90);
+    runSpeed = fixed(20);
+    walkSpeed = fixed(10);
+    jumpForce = fixed(100);
+    gravity = fixed(-10);
+    maxFallSpeed = fixed(-30);
     distance = fixed(0);
 
     jumped = false;
@@ -42,60 +44,104 @@ control::control()
     polygonInit();
 }
 
+// void control::polygonInit()
+// {
+    
+//     //mario.mesh = playerOBJ;
+//     mario.position = vec3({fixed(0.0f), fixed(10.0000f), fixed(0.0f)});
+//     obj[0].mesh = wallOBJ;
+//     obj[0].position = vec3::zero();
+//     // obj[1].mesh = floorOBJ;
+//     // obj[1].position = vec3::zero();
+//     objLen = 1;
+//     for(int i = 0;i<objLen;i++)
+//     {
+//         object& tobj = obj[i];
+//         for(int j = 0;j<tobj.mesh.indexLen;j+=3)
+//         {
+//             Polygon poly;
+//             vec3 A = tobj.mesh.vertex[tobj.mesh.index[j]];
+//             vec3 B = tobj.mesh.vertex[tobj.mesh.index[j+1]];
+//             vec3 C = tobj.mesh.vertex[tobj.mesh.index[j+2]];
+//             // Check for potential zero-length vectors to prevent division by zero
+//             vec3 AB = A - B;
+//             vec3 BC = B - C;
+//             vec3 CA = A - C;
+
+//             if (length(AB) == 0 || length(BC) == 0 || length(CA) == 0) {
+//                 continue; // Skip degenerate triangles
+//             }
+
+//             poly.A = A;
+//             poly.B = B;
+//             poly.C = C;
+
+//             vec3 normal = cross(AB, BC);
+//             if (length(normal) == 0) {
+//                 continue; // Skip degenerate triangles with zero-area
+//             }
+
+//             poly.N = normalize(normal);
+//             poly.edge0 = normalize(cross(B - A, poly.N));
+//             poly.edge1 = normalize(cross(C - B, poly.N));
+//             poly.edge2 = normalize(cross(A - C, poly.N));
+//             poly.L = length(cross(AB, normalize(BC)));
+
+//             fixed d = dot(poly.N, vec3::UP());
+//             poly.dot = d;
+
+            
+//             // if (d > fixed(0.3f))
+//             // {
+//             //     floor[floorLen] = poly;
+//             //     floorLen++;
+//             // }
+//             // else if (d < fixed(-0.3f))
+//             // {
+//             //     ceil[ceilLen] = poly;
+//             //     ceilLen++;
+//             // }
+//             // else
+//             // {
+//             //     wall[wallLen] = poly;
+//             //     wallLen++;
+//             // }
+//         }
+//     }
+        
+// }
 void control::polygonInit()
 {
-    
-    mario.mesh = playerOBJ;
     mario.position = vec3({fixed(0.0f), fixed(10.0000f), fixed(0.0f)});
-    obj[0].mesh = wallOBJ;
-    obj[0].position = vec3::zero();
-    obj[1].mesh = floorOBJ;
-    obj[1].position = vec3::zero();
-    objLen = 2;
-    for(int i = 0;i<objLen;i++)
+
+    int len = polygonCount;
+    for(int i = 0;i<len;i++)
     {
-        object& tobj = obj[i];
-        for(int j = 0;j<tobj.mesh.indexLen;j+=3)
+        Polygon &poly = polygons[i];
+        if (poly.dot > fixed(0.3f))
         {
-            Polygon poly;
-            vec3 A = tobj.mesh.vertex[tobj.mesh.index[j]];
-            vec3 B = tobj.mesh.vertex[tobj.mesh.index[j+1]];
-            vec3 C = tobj.mesh.vertex[tobj.mesh.index[j+2]];
-            poly.A = A;
-            poly.B = B;
-            poly.C = C;
-            poly.N = normalize(cross(A - B, B - C));
-            poly.edge0 = normalize(cross(B - A, poly.N));
-            poly.edge1 = normalize(cross(C - B, poly.N));
-            poly.edge2 = normalize(cross(A - C, poly.N));
-            poly.L = length(cross(A - B, normalize(C - B)));
-            fixed d = dot(poly.N, vec3::UP());
-            poly.dot = d;
-            
-            if (d > fixed(0.3f))
-            {
-                floor[floorLen] = poly;
-                floorLen++;
-            }
-            else if (d < fixed(-0.3f))
-            {
-                ceil[ceilLen] = poly;
-                ceilLen++;
-            }
-            else
-            {
-                wall[wallLen] = poly;
-                wallLen++;
-            }
+            floor[floorLen] = poly;
+            floorLen++;
+        }
+        else if (poly.dot < fixed(-0.3f))
+        {
+            ceil[ceilLen] = poly;
+            ceilLen++;
+        }
+        else
+        {
+            wall[wallLen] = poly;
+            wallLen++;
         }
     }
-        
 }
+
+
 
 void control::playerControll()
 {
     key_poll();
-    updateDeltaTime();
+    //updateDeltaTime();
     moveTMP = vec3::zero();
     fixed currentMoveSpeed = key_held(KEY_B) ? runSpeed : walkSpeed;
     if(key_held(KEY_UP)) moveTMP = moveTMP + vec3::FRONT();
@@ -122,12 +168,14 @@ void control::playerControll()
             jumped = true;
             force.y = jumpForce;
         }
+        
     }
+    
 }
 
 
 
-bool IWRAM_CODE control::trianglePrismTest(Polygon tri, vec3 pos)
+bool control::trianglePrismTest(Polygon tri, vec3 pos)
 {
     vec3 V = pos - tri.A;
     fixed OP = fixed(0.2f);
@@ -146,11 +194,12 @@ bool IWRAM_CODE control::trianglePrismTest(Polygon tri, vec3 pos)
     
 }
 
-bool IWRAM_CODE control::normalTest(Polygon tri, vec3 pos, vec3 axis, fixed OP)
+bool control::normalTest(Polygon tri, vec3 pos, vec3 axis, fixed OP)
 {
     vec3 V = pos - tri.A;
     fixed height = dot(tri.N, V);
     fixed hypot = dot(tri.N, axis);
+    //distance = divide(height , hypot);
     distance = height / hypot;
     //m4_plot(abs(int(distance)%100)+10,abs(int(distance))/100,10);
     
@@ -209,7 +258,7 @@ bool control::ceilcheck(vec3& pos)
     for(int i = 0;i<ceilLen;i++)
     {
         
-        if (normalTest(ceil[i], pos, axis, ceilOP) && trianglePrismTest(ceil[i], pos))
+        if (trianglePrismTest(ceil[i], pos)&&normalTest(ceil[i], pos, axis, ceilOP))
         {
             if (distance < ceilOP)
             {
@@ -222,7 +271,7 @@ bool control::ceilcheck(vec3& pos)
 
 void control::checkCollision()
 {
-    updateDeltaTime();
+    //updateDeltaTime();
     vec3 npos = mario.position + moveTMP + force * deltaTime;
     
     wallcheck(npos);

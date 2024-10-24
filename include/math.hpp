@@ -12,20 +12,19 @@
 # define ONE_DEGREE  0xB6
 # define FIXED_12_SCALE (1 << 12)
 
-static INLINE fixed	sqrt(fixed f) {
-	u64 const	a = u64(f.num) << FIX_SHIFT;
-	u64		l = 0;
-	u64		r = u64(f.num) + (1 << FIX_SHIFT);
-	u64   	m;
+static INLINE fixed  sqrt(fixed f) {
+   fixed l = 0;
+   fixed r = (f.num < (1 << FIX_SHIFT)) ? 1 : fixed::from(f.num + 1);
+   fixed m;
 
-	while(l != r - 1) {
-		m = (l + r) >> 1;
-		if (m * m <= a)
-			l = m;
-		else
-			r = m;
-	}
-	return (fixed::from(l));
+   while (l.num != r.num - 1) {
+      m = (l + r) >> 1;
+      if (m * m <= f)
+         l = m;
+      else
+         r = m;
+   }
+   return (l);
 }
 
 static INLINE fixed	abs(fixed f) {
@@ -57,5 +56,17 @@ static INLINE fixed limit(fixed current, fixed stop)
 	return current > stop ? stop : current;
 }
 
+static INLINE fixed reciprocal(fixed d) {
+    fixed x = fixed(1);  // 초기 근사값을 1로 설정
+    x = (x * (fixed(2) - (d * x)));
+	x = (x * (fixed(2) - (d * x)));
+	x = (x * (fixed(2) - (d * x)));
+    return x;  // 근사된 1/d
+}
+
+// 나눗셈 구현
+static INLINE fixed divide(fixed n, fixed d) {
+    return (n * reciprocal(d));  // n/d = n * (1/d)
+}
 
 #endif

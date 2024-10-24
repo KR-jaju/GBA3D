@@ -35,7 +35,7 @@ static inline int		clock_get() {
 	return (sec * 1000 + milli);
 }
 
-static fixed deltaTime = fixed(0);
+static fixed deltaTime = fixed(0.0166f);
 static int prevTime = 0;
 
 // 타이머 설정 상수
