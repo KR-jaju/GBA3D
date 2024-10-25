@@ -2,7 +2,7 @@
 #ifndef VEC4_HPP
 # define VEC4_HPP
 
-# include "fixed.hpp"
+# include "fixed.h"
 # include "math.hpp"
 
 struct vec4

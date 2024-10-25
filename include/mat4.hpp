@@ -3,7 +3,7 @@
 # define MAT4_HPP
 
 # include "type.hpp"
-# include "fixed.hpp"
+# include "fixed.h"
 # include "vec2.hpp"
 # include "vec4.hpp"
 # include "math.hpp"

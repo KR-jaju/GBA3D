@@ -3,7 +3,7 @@
 # define MATH_HPP
 
 # include <cmath>
-# include "fixed.hpp"
+# include "fixed.h"
 # include "util.hpp"
 
 // #define PI_FLT 3.14159265f

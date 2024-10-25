@@ -2,7 +2,7 @@
 #ifndef VEC3_HPP
 # define VEC3_HPP
 
-# include "fixed.hpp"
+# include "fixed.h"
 # include "math.hpp"
 
 struct vec3

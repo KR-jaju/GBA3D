@@ -24,12 +24,6 @@ typedef signed long long	i64;
 #ifndef RENDERER_HEIGHT
 # define RENDERER_HEIGHT 160
 #endif
-#ifndef MAX_FACE_COUNT
-# define MAX_FACE_COUNT 1024
-#endif
-#ifndef DEPTH_LAYER_SIZE
-# define DEPTH_LAYER_SIZE	512
-#endif
 
 // #define IWRAM_CODE	
 #define IWRAM_CODE __attribute__((section(".iwram"), long_call))

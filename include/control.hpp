@@ -4,7 +4,7 @@
 #include "object.hpp"
 #include "player.hpp"
 #include "vec3.hpp"
-#include "fixed.hpp"
+#include "fixed.h"
 #include "math.hpp"
 #include "GBAinput.hpp"
 #include "clock.hpp"

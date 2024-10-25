@@ -3,7 +3,7 @@
 # define VEC2_HPP
 
 # include "type.hpp"
-# include "fixed.hpp"
+# include "fixed.h"
 # include "math.hpp"
 
 struct vec2

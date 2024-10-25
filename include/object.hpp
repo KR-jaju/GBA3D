@@ -2,7 +2,7 @@
 #define OBJECT_HPP
 
 
-#include "fixed.hpp"
+#include "fixed.h"
 #include "vec3.hpp"
 #include "MeshTMP.hpp"
 typedef struct Polygon Polygon;
