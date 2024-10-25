@@ -43,23 +43,23 @@ struct fixed
 
 	
 // 16.16 고정소수점 곱셈 함수 - 인라인 어셈블리 사용
-	fixed operator*(fixed other) const {
-		i32 result;
-		i32 a = num;
-		i32 b = other.num;
-		__asm__ volatile (
-			"smull %0, %1, %2, %3\n"  // a와 b를 곱하여 64비트 결과 생성 (rLo, rHi)
-			"mov %0, %0, lsr #16\n"   // 하위 32비트(rLo)를 16비트 시프트하여 고정소수점 정규화
-			"orr %0, %0, %1, asl #16\n" // 상위 32비트(rHi)를 사용해 결과의 나머지 부분을 처리
-			: "=&r" (result), "=&r" (b)
-			: "r" (a), "r" (b)
-			: "cc"
-		);
-		return fixed::from(result);
-	}
-	// constexpr fixed   operator*(fixed other) const {
-	// return fixed::from(int((i64(num) * i64(other.num)) >> FIX_SHIFT));
+	// fixed operator*(fixed other) const {
+	// 	i32 result;
+	// 	i32 a = num;
+	// 	i32 b = other.num;
+	// 	__asm__ volatile (
+	// 		"smull %0, %1, %2, %3\n"  // a와 b를 곱하여 64비트 결과 생성 (rLo, rHi)
+	// 		"mov %0, %0, lsr #16\n"   // 하위 32비트(rLo)를 16비트 시프트하여 고정소수점 정규화
+	// 		"orr %0, %0, %1, asl #16\n" // 상위 32비트(rHi)를 사용해 결과의 나머지 부분을 처리
+	// 		: "=&r" (result), "=&r" (b)
+	// 		: "r" (a), "r" (b)
+	// 		: "cc"
+	// 	);
+	// 	return fixed::from(result);
 	// }
+	constexpr fixed   operator*(fixed other) const {
+	return fixed::from(int((i64(num) * i64(other.num)) >> FIX_SHIFT));
+	}
 	constexpr fixed	operator/(fixed other) const {
 		return fixed::from(int(((1 << FIX_SHIFT) * i64(num)) / other.num));
 	}
