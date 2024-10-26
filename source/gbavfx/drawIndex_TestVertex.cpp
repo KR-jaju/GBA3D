@@ -3,11 +3,11 @@
 #include "gbavfx/TestVertex.h"
 #include <algorithm>
 
-
+#include "division.h"
 #include <iostream>
 
 namespace gbavfx {
-	static void	transformVertex(TestVertex const* vertices, u32 count, fixed* matrix)
+	static void IWRAM	transformVertex(TestVertex const* vertices, u32 count, fixed* matrix)
 	{
 		u8 *depth = vertex_depth_buffer + vertex_count;
 		u32 *v = vertex_buffer + (vertex_count << 1);
@@ -19,20 +19,24 @@ namespace gbavfx {
 			fixed post_x = vertex.x * matrix[0] + vertex.y * matrix[1] + vertex.z * matrix[2] + matrix[3];
 			fixed post_y = vertex.x * matrix[4] + vertex.y * matrix[5] + vertex.z * matrix[6] + matrix[7];
 			fixed post_z = vertex.x * matrix[8] + vertex.y * matrix[9] + vertex.z * matrix[10] + matrix[11];
-			fixed z_reciprocal = fixed(1.0f) / post_z;
+			// fixed z_reciprocal = fixed(1.0f) / post_z;
+			fixed z_reciprocal = reciprocal(post_z);
 
 			u16 proj_x = ((post_x * z_reciprocal * 160 + 120).num >> 16);
 			u16 proj_y = ((post_y * z_reciprocal * 160 + 80).num >> 16);
 
+			// u16 proj_x = ((post_x / post_z * 160 + 120).num >> 16);
+			// u16 proj_y = ((post_y / post_z * 160 + 80).num >> 16);
+
 			depth[0] = u8(post_z.num >> (FIX_SHIFT - 2));
 			depth += 1;
 			v[0] = (u16(proj_y + 32768) << 16) | (u16(proj_x + 32768));
-			v[1] = (vertex.u.num & 0xFFFF0000) | (u32(vertex.v.num) >> 16);
+			v[1] = (u32(vertex.u) << 16) | (u32(vertex.v << 16) >> 16);
 			v += 2;
 			vertices += 1;
 		}
 	}
-	static void	addFace(i32 const *indices, i32 face_count, u32 texture_id)
+	static void IWRAM	addFace(i32 const *indices, i32 face_count, u32 texture_id)
 	{
 		u32 *v = vertex_buffer + (vertex_count << 1);
 		u8 *depth = vertex_depth_buffer + vertex_count;
@@ -74,7 +78,7 @@ namespace gbavfx {
 		}
 	}
 	template <>
-	void	drawIndexed(TestVertex const *vertices, u32 vertex_count, i32 const *indices, u32 face_count,  u32 texture_id)
+	void IWRAM	drawIndexed(TestVertex const *vertices, u32 vertex_count, i32 const *indices, u32 face_count,  u32 texture_id)
 	{
 		transformVertex(vertices, vertex_count, gbavfx::matrix_slot[0]);
 		addFace(indices, face_count, texture_id);

@@ -53,13 +53,6 @@ Face
 */
 
 namespace gbavfx {
-	enum Stride {
-		STRIDE_128 = 1,
-		STRIDE_64 = 2,
-		STRIDE_32 = 3,
-		STRIDE_16 = 4
-	};
-
 	constexpr i32	MAX_VERTEX_COUNT = 1024;
 	constexpr i32	MAX_FACE_COUNT = 1024;
 	constexpr i32	MAX_DEPTH_VARIATION = 1024;
@@ -73,7 +66,6 @@ namespace gbavfx {
 	extern i16		ordering_table[MAX_DEPTH_VARIATION]; // 1024 depth variation
 
 	extern u8		texture_slot[32][64 * 64];
-	extern Stride	stride_slot[32];
 	extern fixed	*matrix_slot[32];
 
 	void	clear();

@@ -7,6 +7,6 @@ struct TestVertex
 	fixed x;
 	fixed y;
 	fixed z;
-	fixed u;
-	fixed v;
+	i32 u;
+	i32 v;
 };

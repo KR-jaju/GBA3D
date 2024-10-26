@@ -27,7 +27,7 @@ LIBTONC := $(DEVKITPRO)/libtonc
 #---------------------------------------------------------------------------------
 TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
-SOURCES		:= source source/gbavfx
+SOURCES		:= source source/gbavfx source/animation source/model source/texture
 INCLUDES	:= include
 DATA		:=
 MUSIC		:=

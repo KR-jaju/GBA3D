@@ -11,6 +11,5 @@ namespace gbavfx {
 	i16		ordering_table[MAX_DEPTH_VARIATION]; // 1024 depth variation
 
 	u8		texture_slot[32][64 * 64] EWRAM;
-	Stride	stride_slot[32];
 	fixed	*matrix_slot[32];
 }

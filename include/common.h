@@ -10,7 +10,7 @@ typedef signed long long	i64;
 typedef signed int		i32;
 typedef signed short	i16;
 typedef signed char		i8;
-typedef fixed			f32;
+// typedef fixed			f32;
 
 #define EWRAM_BASE		(u8 *)0x02000000
 #define IWRAM_BASE		(u8 *)0x03000000
