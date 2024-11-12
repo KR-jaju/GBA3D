@@ -1,46 +1,53 @@
-#include "division.h"
+// #include "division.h"
 
-i32 reciprocal(i32 d)
-{
-	if (d < 0) {
-		d = ~d;
-		u32 lz = __builtin_clz(d);
-		u32 key = d << (lz + 1);
-		i32 value = division_lut[key >> 17];
+// i32 reciprocal(i32 i) {
+// 	if (i == 0)
+// 		return (u32(-1)>>1);
+// 	bool is_negative = i < 0;
+// 	if (is_negative)
+// 		i *= -1;
+// 	i32 x = i;
+// 	i32 lz = 0;
+// 	if ((x & 0xFFFF0000) == 0) {
+// 		x <<= 16;
+// 		lz += 16;
+// 	}
+// 	if ((x & 0xFF000000) == 0) {
+// 		x <<= 8;
+// 		lz += 8;
+// 	}
+// 	if ((x & 0xF0000000) == 0) {
+// 		x <<= 4;
+// 		lz += 4;
+// 	}
+// 	if ((x & 0xC0000000) == 0) {
+// 		x <<= 2;
+// 		lz += 2;
+// 	}
+// 	if ((x & 0x80000000) == 0) {
+// 		lz += 1;
+// 	}
+// 	i32 result = 0;
+// 	if (lz <= 16) { // divisor가 큰 경우
+// 		u32 key = (u32(i) >> (16 - lz)) - 32768;
+// 		i32 value = division_lut[key];
+		
+// 		result = value >> (16 - lz);
+// 	} else { // divisor가 작은 경우
+// 		u32 key = (u32(i) << (lz - 16)) - 32768; // poor approximation
+// 		i32 value = division_lut[key];
+		
+// 		result = value << (lz - 16);
+// 	}
+// 	if (is_negative)
+// 		return -result;
+// 	return result;
+// }
 
-		return (~(value << (lz - 16)));
-	} else {
-		u32 lz = __builtin_clz(d);
-		u32 key = d << (lz + 1);
-		i32 value = division_lut[key >> 17];
-
-		return (value << (lz - 16));
-	}
-}
-
-u32 reciprocal(u32 d)
-{
-	u32 lz = __builtin_clz(d);
-	u32 key = d << (lz + 1);
-	u32 value = division_lut[key >> 17];
-
-	if (lz == 31)
-		return (4294967295);
-	return (value << (lz - 16));
-}
-
-fixed reciprocal(fixed d) {
-	u32 lz = __builtin_clz(d.num);
-	u32 key = d.num << (lz + 1);
-	u32 value = division_lut[key >> 17];
-
-	if (lz < 16)
-		value >>= (16 - lz);
-	else
-		value <<= (lz - 16);
-	fixed x = fixed::from(value);
-	x = x * (fixed(2) - d * x);
-	x = x * (fixed(2) - d * x);
-	x = x * (fixed(2) - d * x);
-	return x;
-}
+// // i32 reciprocal(i32 i) {
+// //    if (i == 0 || i == 1)
+// //       return i32(u32(-1) >> 1);
+// //    if (i == -1)
+// //       return (u32(1 << 31));
+// // 	return i32((1LL << 31) / i);
+// // }
