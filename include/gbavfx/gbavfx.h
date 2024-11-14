@@ -53,10 +53,14 @@ struct vbo {
 	u32	size;
 };
 
+struct fbo {
+	u32	face[MAX_FACE_COUNT * 2];
+	u32	size;
+};
+
 extern u8		*gbavfx_color; // 240 * 160 * 1 byte
 extern vbo		gbavfx_vbo;
-extern u32		gbavfx_fbo[MAX_FACE_COUNT * 2]; // max 2048
-extern u32		gbavfx_fbo_size;
+extern fbo		gbavfx_fbo;
 extern i16		ordering_table[MAX_DEPTH_VARIATION]; // 1024 depth variation
 
 extern u8		gbavfx_texture_slot[32][64 * 64];
@@ -64,8 +68,8 @@ extern fixed	*gbavfx_matrix_slot[32];
 
 void	gbavfx_clear();
 
-template <typename T>
-void	gbavfx_drawIndexed(T const *vertices, u32 vertex_count, i32 const *indices, u32 face_count, u32 texture_id);
+// template <typename T>
+// void	gbavfx_drawIndexed(T const *vertices, u32 vertex_count, i32 const *indices, u32 face_count, u32 texture_id);
 
 template <typename T>
 void	gbavfx_drawSkinned(T const *vertices, i32* vertex_count, i32 const *indices, u32 face_count, u32 texture_id, i32 bone_count);
@@ -77,5 +81,6 @@ void	gbavfx_flip();
 extern "C"
 {
 	void	gbavfx_rasterize(u32 a, u32 b);
-	void transformVertex_A(TestVertex const* vertices, u32 count, fixed* matrix);
+	void	transformVertex_A(TestVertex const* vertices, u32 count, fixed* matrix);
+	void	gbavfx_drawIndexed(TestVertex const *vertices, u32 vertex_count, i32 const *indices, u32 face_count, u32 texture_id);
 }

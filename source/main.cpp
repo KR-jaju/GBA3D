@@ -77,14 +77,11 @@ int	main() {
 	for (int i = 0; i < 64 * 64; ++i) {
 		gbavfx_texture_slot[0][i] = mario_test[i];
 	}
-	for (int i = 0; i < 64 * 64; ++i) {
-		gbavfx_texture_slot[0][i] = mario_test[i];
-	}
 	fixed mat[12];
 	control cnt;
 	fixed pos[] = { 0, 1, -4 };
 	fixed dir[] = { 0, 0, 1 };
-	char buffer[2][20];
+	char buffer[2][40];
 
 	// float T = ((0.0f / 100.0f + 179.5f) / 180.f) * 3.141592f;
 	float T = ((30.0f) / 180.f) * 3.141592f;
@@ -115,14 +112,17 @@ int	main() {
 		// gbavfx_drawIndexed(box_vertices, 8, box_indices, 12, 0);
 		// gbavfx_drawIndexed(vertices, 306, indices, 368, 0);
 		// gbavfx_drawIndexed(plane_vertices, 4, plane_indices, 2, 0);
+		int neo = clock_get();
 		gbavfx_drawIndexed(vertices, 306, indices, 368, 0); // 얘만으로 16ms씀....
 		// int vc[] = {306};
 		// gbavfx_drawSkinned(vertices, vc, indices, 368, 0, 1);
 		int start = clock_get();
 		gbavfx_flip();
 		int end = clock_get();
-		sprintf(buffer[0], "TIME : %dus ", end - start);
-		
+		sprintf(buffer[0], "drawIndexed TIME : %dus ", start - neo);
+		sprintf(buffer[1], "rasterize TIME : %dus ", end - start);
+		// sprintf(buffer[0], "COUNT : %d -- ", gbavfx_vbo.size);
+
 
 		while(REG_VCOUNT >= 160);
     	while(REG_VCOUNT < 160);

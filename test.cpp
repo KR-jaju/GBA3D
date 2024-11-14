@@ -1,29 +1,20 @@
 #include <iostream>
 
-int	clz(unsigned int d) {
-	if (d == 0)
-		return (32);
-	unsigned int count = 0;
-	if ((d & 0xFFFF0000) == 0) {
-		d <<= 16;
-		count += 16;
+void	sort(int *arr, int i, int j, int k)
+{
+	int a = arr[i];
+	int b = arr[j];
+	int c = arr[k];
+
+	if (a > b) { // a(1), b(0), c(2) -> [b, a, c]
+		if (a > c) { // a(2), b(0), c(1) -> [b, c, a]
+
+		}
+	} else {
+		if (b > c) { // a(0), b(2), c(1) -> [a, c, b]
+
+		}
 	}
-	if ((d & 0xFF000000) == 0) {
-		d <<= 8;
-		count += 8;
-	}
-	if ((d & 0xF0000000) == 0) {
-		d <<= 4;
-		count += 4;
-	}
-	if ((d & 0xC0000000) == 0) {
-		d <<= 2;
-		count += 2;
-	}
-	if ((d & 0x80000000) == 0) {
-		count += 1;
-	}
-	return (count);
 }
 
 int	main(void) {
