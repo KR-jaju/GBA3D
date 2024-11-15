@@ -4,10 +4,16 @@
 .global reciprocal
 reciprocal:
 	cmp		r0, #1 @ if (i == 1)
-	cmpne	r0, #-1 @ if (i == -1)
+	@ cmpne	r0, #-1 @ if (i == -1)
 	cmpne	r0, #0
 	moveq	r0, #0x7FFFFFFF
 	bxeq	lr
+
+	cmp		r0, #1
+	moveq	r0, #-1
+	bxeq	lr
+
+
 	rsblt	r1, r0, #0 @ i' = -i;
 	movgt	r1, r0 @ i' = i
 	bxeq	lr

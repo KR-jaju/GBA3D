@@ -2,14 +2,11 @@
 .extern reciprocal
 
 .section .iwram, "ax"
-.global gbavfx_drawIndexed
-gbavfx_drawIndexed:
+.global gbavfx_drawSkinned
+gbavfx_drawSkinned:
 	cmp r1, #0 @ if (count == 0)
 	beq .L4 @ return;
 	push	{r2-r11, lr} @ r2, r3은 매개변수 저장을 위해
-
-	ldr		r2, =gbavfx_matrix_slot
-	ldr		r2, [r2] @ matrix_slot[0]
 
 	ldr		r3, =gbavfx_vbo
 	add		r4, r3, #8192 @ depth
@@ -19,8 +16,24 @@ gbavfx_drawIndexed:
 	add		r3, r3, ip, LSL #3
 	add		r4, r4, ip
 	push	{r3, r4}
-.L2: @ while loop
-	push	{r0-r3}
+
+	@ ldr		r5, [r1] @ bone count
+	ldr		r2, =gbavfx_matrix_slot
+	ldr		r5, [sp, #52]
+	@ sub		r6, r5, #1 @ bone
+	mov		r6, r6
+	cmp		r5, #0
+	beq		.bone_loop_end
+	
+.bone_loop_begin: @ while (bone_count > 0)
+	push	{r2, r5, r6}
+	sub		r7, r6, r5 @ bone
+	@ ldr		r12, [r1, r5] @ vertec_count
+	ldr		r12, [r1], #4 @ vertex_count
+	
+	ldr		r2, [r2, r7, LSL #2] @ matrix
+.transform_begin: @ while loop
+	push	{r0-r3, r12}
 	ldmia	r0, {r3, r5, lr} @ vector x, y z
 
 	ldmia	r2!, {r6-r9} @ matrix 0 ~ 3
@@ -51,11 +64,10 @@ gbavfx_drawIndexed:
 	cmp		r12, #16384
 	movge	r0, r12
 	movlt	r0, #16384
-	@ bic		r0, r12, r12, ASR #31
 	mov		r9, r0, ASR #14
 	bl		reciprocal @ reciprocal(post_z)
 	mov		r5, r0
-	pop		{r0-r3}
+	pop		{r0-r3, r12}
 	@-------------z_reciprocal계산 완료
 	
 	strb	r9, [r4], #1 @ depth[0] = (post_z >> 14)
@@ -85,13 +97,19 @@ gbavfx_drawIndexed:
 	stmia	r3!, {r6, r7} @ v[0] = r6, v[1] = r7
 
 	add		r0, r0, #16 @ sizeof(TestVertex) == 20
-	subs	r1, r1, #1 @ count -= 1;
-	bne		.L2
+	subs	r12, r12, #1 @ count -= 1;
+	bne		.transform_begin
+.transform_end:
+	pop		{r2, r5, r6}
+	subs	r5, r5, #1 @bone_count -= 1;
+	bne		.bone_loop_begin
+.bone_loop_end:
+
 	@----------------------------------------add Face----------------------------
 .L3:
 	pop		{r3, r4} @ v, depth
 	pop		{r0, r1} @ indices, face_count
-	ldr		r2, [sp, #36] @ texture_id ????????????????????????
+	ldr		r2, [sp, #40] @ texture_id ????????????????????????
 	mov		r2, #0
 
 	ldr		r5, =gbavfx_fbo @ f

@@ -141,7 +141,7 @@ gbavfx_rasterize:
 	cmp		r8, r10 @ which side is v1 on?
 	bge		.case_r
 	cmp		r4, #0 @ height == 0
-	beq		.l_high_y_loop_end_1
+	ble		.l_high_y_loop_end_1
 .l_high_y_loop_begin: @ while문 시작 r0-r5, r8
 	push	{r0, r2} @ a_x,b_x,l_u,l_v, height, base, ddy----texture도 옮길 수 있으면 옮기기
 	mov		lr, r0, ASR #16 @ a_x >>= 16
@@ -189,7 +189,7 @@ gbavfx_rasterize:
 	strh	lr, [r5, r2] @ *(ptr + width - 1) = 
 .l_high_odd_pixel_end_1:
 	cmp		r2, #0
-	beq		.l_high_x_loop_end @ while (width--)
+	ble		.l_high_x_loop_end @ while (width--)
 .l_high_x_loop_begin:
 	and		r0, r3, #0x003F0000
 	and		r4, r1, #0x003F0000
@@ -244,7 +244,7 @@ gbavfx_rasterize:
 @------------------------------------------------------------------------------
 
 	cmp		r9, #0 @ height == 0
-	beq		.l_low_y_loop_end_1
+	ble		.l_low_y_loop_end_1
 .l_low_y_loop_begin:
 	push	{r0, r2}
 	mov		r8, r0, ASR #16 @ a_x >>= 16
@@ -332,7 +332,7 @@ gbavfx_rasterize:
 @------------------------ RIGHT EDGE TRIANGLE
 .case_r:
 	cmp		r4, #0 @ height == 0
-	beq		.r_high_y_loop_end_1
+	ble		.r_high_y_loop_end_1
 .r_high_y_loop_begin: @ while문 시작 r0-r5, r8
 	push	{r0, r2} @ a_x,b_x,l_u,l_v, height, base, ddy----texture도 옮길 수 있으면 옮기기
 	mov		lr, r2, ASR #16 @ b_x >>= 16
@@ -380,7 +380,7 @@ gbavfx_rasterize:
 	strh	lr, [r5, r0] @ *(ptr + width - 1) = 
 .r_high_odd_pixel_end_1:
 	cmp		r0, #0
-	beq		.r_high_x_loop_end @ while (width--)
+	ble		.r_high_x_loop_end @ while (width--)
 .r_high_x_loop_begin:
 	and		r2, r3, #0x003F0000
 	and		r4, r1, #0x003F0000
@@ -436,8 +436,8 @@ gbavfx_rasterize:
 @------------------------------------------------------------------------------
 @------------------------------------------------------------------------------
 
-	cmp		lr, #0 @ height == 0
-	beq		.r_low_y_loop_end_1
+	cmp		lr, #0 @ height <= 0
+	ble		.r_low_y_loop_end_1
 .r_low_y_loop_begin:
 	push	{r0, r2}
 	mov		r8, r2, ASR #16 @ a_x >>= 16

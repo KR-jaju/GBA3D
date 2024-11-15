@@ -79,7 +79,8 @@ int	main() {
 	}
 	fixed mat[12];
 	control cnt;
-	fixed pos[] = { 0, 1, -4 };
+	// fixed pos[] = { 0, 1, -4 };
+	fixed pos[] = { 0, 0, -4 };
 	fixed dir[] = { 0, 0, 1 };
 	char buffer[2][40];
 
@@ -107,15 +108,16 @@ int	main() {
 		// gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
 		gbavfx_color = (u8*)vid_page;
 		// pos[0] += 0.01f;
+		pos[2] += 0.02f;
 		view(mat, pos, dir);
 		gbavfx_matrix_slot[0] = mat;
 		// gbavfx_drawIndexed(box_vertices, 8, box_indices, 12, 0);
 		// gbavfx_drawIndexed(vertices, 306, indices, 368, 0);
 		// gbavfx_drawIndexed(plane_vertices, 4, plane_indices, 2, 0);
 		int neo = clock_get();
-		gbavfx_drawIndexed(vertices, 306, indices, 368, 0); // 얘만으로 16ms씀....
-		// int vc[] = {306};
-		// gbavfx_drawSkinned(vertices, vc, indices, 368, 0, 1);
+		// gbavfx_drawIndexed(vertices, 306, indices, 368, 0); // 얘만으로 16ms씀....
+		int vc[] = {306};
+		gbavfx_drawSkinned(vertices, vc, indices, 368, 0, 1);
 		int start = clock_get();
 		gbavfx_flip();
 		int end = clock_get();
