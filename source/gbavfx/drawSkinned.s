@@ -15,23 +15,23 @@ gbavfx_drawSkinned:
 	str		lr, [r4, #1024]
 	add		r3, r3, ip, LSL #3
 	add		r4, r4, ip
-	push	{r3, r4}
+	push	{r3, r4} @ vertices, depth
 
 	@ ldr		r5, [r1] @ bone count
 	ldr		r2, =gbavfx_matrix_slot
-	ldr		r5, [sp, #52]
-	@ sub		r6, r5, #1 @ bone
-	mov		r6, r6
-	cmp		r5, #0
+	ldr		r5, [sp, #56] @ bone_count
+	mov		r6, r5
+	cmp		r5, #0 @ bone_left
 	beq		.bone_loop_end
 	
 .bone_loop_begin: @ while (bone_count > 0)
-	push	{r2, r5, r6}
 	sub		r7, r6, r5 @ bone
+	push	{r2, r5, r6}
 	@ ldr		r12, [r1, r5] @ vertec_count
 	ldr		r12, [r1], #4 @ vertex_count
-	
 	ldr		r2, [r2, r7, LSL #2] @ matrix
+	cmp		r12, #0 @ vertex_left
+	ble		.transform_end
 .transform_begin: @ while loop
 	push	{r0-r3, r12}
 	ldmia	r0, {r3, r5, lr} @ vector x, y z
@@ -109,8 +109,7 @@ gbavfx_drawSkinned:
 .L3:
 	pop		{r3, r4} @ v, depth
 	pop		{r0, r1} @ indices, face_count
-	ldr		r2, [sp, #40] @ texture_id ????????????????????????
-	mov		r2, #0
+	ldr		r2, [sp, #36] @ texture_id ????????????????????????
 
 	ldr		r5, =gbavfx_fbo @ f
 	add		r6, r5, #8192
