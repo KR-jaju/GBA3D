@@ -43,6 +43,17 @@ Face
 // total 8 bytes
 */
 
+#define REG_DISPSTAT  (*(volatile u16*)0x4000004)
+#define REG_IE        (*(volatile u16*)0x4000200)
+#define REG_IF        (*(volatile u16*)0x4000202)
+#define REG_IME       (*(volatile u16*)0x4000208)
+
+// 인터럽트 벡터 주소
+#define INTERRUPT_VECTOR ((volatile u32*)0x3007FFC)
+#define INTERRUPT_CODE __attribute__((interrupt))
+
+#define REG_VCOUNT    (*(volatile u16*)0x4000006)
+
 constexpr i32	MAX_VERTEX_COUNT = 1024;
 constexpr i32	MAX_FACE_COUNT = 1024;
 constexpr i32	MAX_DEPTH_VARIATION = 1024;
@@ -80,8 +91,14 @@ void	gbavfx_flip();
 #include "gbavfx/TestVertex.h"
 extern "C"
 {
-	void	gbavfx_rasterize(u32 a, u32 b);
 	void	transformVertex_A(TestVertex const* vertices, u32 count, fixed* matrix);
 	void	gbavfx_drawIndexed(TestVertex const *vertices, u32 vertex_count, i32 const *indices, u32 face_count, u32 texture_id);
 	void	gbavfx_drawSkinned(TestVertex const *vertices, i32 const *vertex_count, i32 const *indices, u32 face_count, u32 texture_id, i32 bone_count);
+
+	void	gbavfx_rasterize(u32 a, u32 b);
+	void	gbavfx_rasterize_interlaced(u32 a, u32 b);
+	void	gbavfx_rasterize_interlaced_odd(u32 a, u32 b);
+
+	void	gbavfx_interlace();
+	void	gbavfx_flip_interlaced();
 }

@@ -129,13 +129,28 @@ int	main() {
 	fixed model_matrix[32][12];
 	fixed pos[] = { 0, 0, -4 };
 	fixed dir[] = { 0, 0, 1 };
-	char buffer[2][40];
+	char buffer[3][40];
 	fixed matrix[] = {
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 10
 	};
+	{
+		u8 *ptr = (u8*)(intptr_t(vid_page) ^ 0xA000);
 
+		for (int i = 0; i < 240 * 160; ++i) {
+			ptr[i] = 1;
+		}
+	}
+	{
+		u8 *ptr = (u8*)(intptr_t(vid_page));
+
+		for (int i = 0; i < 240 * 160; ++i) {
+			ptr[i] = 0;
+		}
+	}
+	while(REG_VCOUNT >= 160);
+    while(REG_VCOUNT < 160);
 	// float T = ((0.0f / 100.0f + 179.5f) / 180.f) * 3.141592f;
 	float T = ((30.0f) / 180.f) * 3.141592f;
 	float a = cos(T) - sin(T);
@@ -149,6 +164,10 @@ int	main() {
 	// };
 	// i32 plane_indices[] = {0, 1, 2, 1, 2, 3};
 
+	// *INTERRUPT_VECTOR = (u32)gbavfx_hblank_handler;
+	// REG_DISPSTAT |= 0x10;
+	// REG_IE |= 0b10;
+	// REG_IME = 1;
 
 	int frame = 0;
 	clock_init();
@@ -201,16 +220,18 @@ int	main() {
 
 		gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
 		int start = clock_get();
-		gbavfx_flip();
+		// gbavfx_flip();
+		gbavfx_flip_interlaced();
 		int end = clock_get();
+		int nend = clock_get();
 		sprintf(buffer[0], "drawIndexed TIME : %dus ", start - neo);
 		sprintf(buffer[1], "rasterize TIME : %dus ", end - start);
+		sprintf(buffer[2], "interlace TIME : %dus ", nend - end);
 		// sprintf(buffer[0], "COUNT : %d -- ", gbavfx_vbo.size);
-
 		frame = frame + 1;
 		if (frame == 31)
 			frame = 0;
-		while(REG_VCOUNT >= 160);
+		// while(REG_VCOUNT >= 160);
     	while(REG_VCOUNT < 160);
 		vid_page = (i16*)((u32)vid_page ^ 0xA000);
 		REG_DISPCNT ^= DCNT_PAGE;
