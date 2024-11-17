@@ -169,6 +169,8 @@ int	main() {
 	// REG_IE |= 0b10;
 	// REG_IME = 1;
 
+	gbavfx_skybg = background_test;
+
 	int frame = 0;
 	clock_init();
 	while(true) {
