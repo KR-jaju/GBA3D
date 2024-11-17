@@ -11,7 +11,7 @@ gbavfx_flip_interlaced:
 	ldr		r0, [r0]
 	tst		r0, #0xA000
 	ldrne	r0, =gbavfx_rasterize_interlaced_odd
-	ldreq	r0, =gbavfx_rasterize_interlaced
+	ldreq	r0, =gbavfx_rasterize_interlaced_even
 	ldr		r1, =.rasterizer_code
 	sub		r0, r0, r1 @ 상대 위치
 	sub		r0, r0, #8 @ pc 조정

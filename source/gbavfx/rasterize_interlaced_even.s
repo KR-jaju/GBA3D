@@ -6,8 +6,8 @@
 .extern gbavfx_color
 
 .section .iwram, "ax"
-.global gbavfx_rasterize_interlaced
-gbavfx_rasterize_interlaced:
+.global gbavfx_rasterize_interlaced_even
+gbavfx_rasterize_interlaced_even:
 	push	{r4-r11, lr}
 	mov		lr, #0xFFFFFFFF
 	ldr		ip, =gbavfx_vbo

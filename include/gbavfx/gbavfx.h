@@ -96,7 +96,7 @@ extern "C"
 	void	gbavfx_drawSkinned(TestVertex const *vertices, i32 const *vertex_count, i32 const *indices, u32 face_count, u32 texture_id, i32 bone_count);
 
 	void	gbavfx_rasterize(u32 a, u32 b);
-	void	gbavfx_rasterize_interlaced(u32 a, u32 b);
+	void	gbavfx_rasterize_interlaced_even(u32 a, u32 b);
 	void	gbavfx_rasterize_interlaced_odd(u32 a, u32 b);
 
 	void	gbavfx_interlace();
