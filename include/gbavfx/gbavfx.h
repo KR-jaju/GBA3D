@@ -74,9 +74,12 @@ extern vbo		gbavfx_vbo;
 extern fbo		gbavfx_fbo;
 extern i16		ordering_table[MAX_DEPTH_VARIATION]; // 1024 depth variation
 
-extern u8 const	*gbavfx_skybg;
+
+
 extern u8		gbavfx_texture_slot[32][64 * 64];
-extern fixed	*gbavfx_matrix_slot[32];
+extern fixed	gbavfx_matrix_slot[32][12];
+
+extern u8 const	*gbavfx_skybg;
 
 void	gbavfx_clear();
 

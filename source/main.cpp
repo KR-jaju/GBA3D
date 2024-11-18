@@ -135,42 +135,7 @@ int	main() {
 		0, 1, 0, 0,
 		0, 0, 1, 10
 	};
-	{
-		u8 *ptr = (u8*)(intptr_t(vid_page) ^ 0xA000);
-
-		for (int i = 0; i < 240 * 160; ++i) {
-			ptr[i] = 1;
-		}
-	}
-	{
-		u8 *ptr = (u8*)(intptr_t(vid_page));
-
-		for (int i = 0; i < 240 * 160; ++i) {
-			ptr[i] = 0;
-		}
-	}
-	while(REG_VCOUNT >= 160);
-    while(REG_VCOUNT < 160);
-	// float T = ((0.0f / 100.0f + 179.5f) / 180.f) * 3.141592f;
-	float T = ((30.0f) / 180.f) * 3.141592f;
-	float a = cos(T) - sin(T);
-	float b = sin(T) + cos(T);
-	// TestVertex plane_vertices[] = {
-	// 	{-a, b, 0, 0, 0},
-	// 	// {-a, 0.3f, 0, 0, 0},
-	// 	{b, a, 0, 63, 0},
-	// 	{-b, -a, 0, 0, 63},
-	// 	{a, -b, 0, 63, 63},
-	// };
-	// i32 plane_indices[] = {0, 1, 2, 1, 2, 3};
-
-	// *INTERRUPT_VECTOR = (u32)gbavfx_hblank_handler;
-	// REG_DISPSTAT |= 0x10;
-	// REG_IE |= 0b10;
-	// REG_IME = 1;
-
-	gbavfx_skybg = background_test;
-
+	gbavfx_skybg = skybg + 240 + 160 * 1200;
 	int frame = 0;
 	clock_init();
 	while(true) {
@@ -182,18 +147,9 @@ int	main() {
 		// gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
 		gbavfx_color = (u8*)vid_page;
 		// pos[0] += 0.01f;
-		// pos[2] += 0.02f;
-		// pos[2] = 0.5f;
-		// pos[2] = -1.0f;
 		view(matrix, pos, dir);
-		// gbavfx_matrix_slot[0] = mat;
-		// gbavfx_drawIndexed(box_vertices, 8, box_indices, 12, 0);
-		// gbavfx_drawIndexed(vertices, 306, indices, 368, 0);
-		// gbavfx_drawIndexed(plane_vertices, 4, plane_indices, 2, 0);
 		int neo = clock_get();
-		// gbavfx_drawIndexed(vertices, 306, indices, 368, 0); // 얘만으로 16ms씀....
 		int vc[] = {306};
-		// gbavfx_drawSkinned(vertices, vc, indices, 368, 0, 1);
 		fixed const (*data)[7] = animation[frame];
 		for (int bone = 0; bone < 17; bone++)
 		{
@@ -215,9 +171,7 @@ int	main() {
 			model[7] = y;
 			model[11] = z;
 
-			multiply_matrix(model_matrix[bone], matrix, model);
-			gbavfx_matrix_slot[bone] = model_matrix[bone];
-			// gbavfx::matrix_slot[bone] = matrix;
+			multiply_matrix(gbavfx_matrix_slot[bone], matrix, model);
 		}
 
 		gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);

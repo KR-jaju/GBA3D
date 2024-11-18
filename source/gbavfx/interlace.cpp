@@ -14,17 +14,19 @@ void gbavfx_interlace()
     while (i)
     {
         // DMA3 설정
-		*(volatile u32 *)0x40000DC = 0;
+		// *(volatile u32 *)0x40000DC = 0;
         *(volatile u32 *)0x40000D4 = (u32)front; // 소스 주소
         *(volatile u32 *)0x40000D8 = (u32)back;  // 목적지 주소
-        *(volatile u16 *)0x40000DC = 120;        // 전송할 16비트 단어 수
-        *(volatile u16 *)0x40000DE = (1 << 15);  // DMA 시작 (DMA Enable)
+        // *(volatile u16 *)0x40000DC = 120;        // 전송할 16비트 단어 수
+        // *(volatile u16 *)0x40000DE = (1 << 15);  // DMA 시작 (DMA Enable)
+        *(volatile u32 *)0x40000DC = (1 << 31) | 120;
+
         // 다음 라인으로 포인터 이동 (한 라인 건너뜀)
         front += 240;
         back += 240;
         i--;
 
         // DMA 전송 완료 대기
-        while (*(volatile u16 *)0x40000DE & (1 << 15));
+        // while (*(volatile u16 *)0x40000DE & (1 << 15));
     }
 }

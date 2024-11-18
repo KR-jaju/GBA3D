@@ -9,7 +9,6 @@
 .global gbavfx_flip_interlaced
 gbavfx_flip_interlaced:
 	push	{r4-r11, lr}
-	@ bl		gbavfx_interlace
 	ldr		r0, =gbavfx_color
 	ldr		r0, [r0]
 
@@ -39,8 +38,8 @@ gbavfx_flip_interlaced:
 	str		r0, [lr, #0xD8] @ dma dst set (back)
 	str		r11, [lr, #0xDC] @ dma control
 	add		r0, r0, #240 @ back 한 줄 다음으로 이동
-	@ add		r1, r1, #1920 @ skybg 두 줄 다음으로 이동-----------------------------------------------------------------------
-	add		r1, r1, #480 @ skybg 두 줄 다음으로 이동
+	add		r1, r1, #2400 @ skybg 두 줄 다음으로 이동-----------------------------------------------------------------------
+	@ add		r1, r1, #480 @ skybg 두 줄 다음으로 이동
 	eor		r2, r0, #0xA000 @ front == r2
 	str		r2, [lr, #0xD4] @ dma src set (front)
 	str		r0, [lr, #0xD8] @ dma dst set (back)
@@ -49,16 +48,16 @@ gbavfx_flip_interlaced:
 	add		r2, r2, #480 @ front는 두 줄 다음으로 이동
 	@ 결과적으로 r0, r1, r2로 계속하면 됨.
 	b		.dma_init_end
-	@ buffer[0]을 표시 중일 때 ->
 .dma_init_odd:
+	@ buffer[0]을 표시 중일 때 ->
 	eor		r2, r0, #0xA000 @ front == r2
 	str		r2, [lr, #0xD4] @ dma src set (front)
 	str		r0, [lr, #0xD8] @ dma dst set (back)
 	str		r11, [lr, #0xDC] @ dma control
 	add		r0, r0, #240 @ back 한 줄 다음으로 이동
 	add		r2, r2, #480 @ front 두 줄 다음으로 이동
-	@ add		r1, r1, #960 @ skybg 한 줄 이동----------------------------------------------------------------------------------
-	add		r1, r1, #240
+	add		r1, r1, #1200 @ skybg 한 줄 이동----------------------------------------------------------------------------------
+	@ add		r1, r1, #240
 	mov		ip, #0x9400
 	add		ip, #0x0020 @ 240 * (160 - 2)
 	add		r9, r0, ip @ back + 240 * (160 - 2) 마지막 줄
@@ -75,8 +74,8 @@ gbavfx_flip_interlaced:
 	str		r0, [lr, #0xD8] @ dma dst set (back)
 	str		r11, [lr, #0xDC] @ dma control
 	add		r0, r0, #240 @ back 한 줄 다음으로 이동
-	@ add		r1, r1, #1920 @ skybg 두 줄 다음으로 이동--------------------------------------------------------------------------
-	add		r1, r1, #480 @ skybg 두 줄 다음으로 이동
+	add		r1, r1, #2400 @ skybg 두 줄 다음으로 이동--------------------------------------------------------------------------
+	@ add		r1, r1, #480 @ skybg 두 줄 다음으로 이동
 	str		r2, [lr, #0xD4] @ dma src set (front)
 	str		r0, [lr, #0xD8] @ dma dst set (back)
 	str		r11, [lr, #0xDC] @ dma control

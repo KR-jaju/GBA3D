@@ -8,5 +8,5 @@ i16		ordering_table[MAX_DEPTH_VARIATION]; // 1024 depth variation
 
 u8 const	*gbavfx_skybg;
 u8			gbavfx_texture_slot[32][64 * 64] EWRAM;
-fixed		*gbavfx_matrix_slot[32];
+fixed		gbavfx_matrix_slot[32][12];
 

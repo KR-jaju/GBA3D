@@ -29,7 +29,9 @@ gbavfx_drawSkinned:
 	push	{r2, r5, r6}
 	@ ldr		r12, [r1, r5] @ vertec_count
 	ldr		r12, [r1], #4 @ vertex_count
-	ldr		r2, [r2, r7, LSL #2] @ matrix
+	@ ldr		r2, [r2, r7, LSL #2] @ matrix
+	add		r2, r2, r7, LSL #5 @ matrix + idx * (8 + 4) * 4
+	add		r2, r2, r7, LSL #4 @ matrix + idx * (8 + 4) * 4
 	cmp		r12, #0 @ vertex_left
 	ble		.transform_end
 .transform_begin: @ while loop

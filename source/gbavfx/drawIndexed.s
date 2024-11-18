@@ -9,7 +9,7 @@ gbavfx_drawIndexed:
 	push	{r2-r11, lr} @ r2, r3은 매개변수 저장을 위해
 
 	ldr		r2, =gbavfx_matrix_slot
-	ldr		r2, [r2] @ matrix_slot[0]
+	@ ldr		r2, [r2] @ matrix_slot[0]
 
 	ldr		r3, =gbavfx_vbo
 	add		r4, r3, #8192 @ depth
