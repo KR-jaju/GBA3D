@@ -1,11 +1,11 @@
 #pragma once
 
-#include "fixed.h"
+#include "gbamath/gbamath.h"
 
 struct TestVertex
 {
-	fixed x;
-	fixed y;
-	fixed z;
+	f32 x;
+	f32 y;
+	f32 z;
 	u32 uv;
 };

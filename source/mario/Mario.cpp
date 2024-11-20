@@ -8,7 +8,7 @@
 #include "GBAinput.hpp"
 
 
-static void	multiply_matrix(fixed *dst, fixed const *a, fixed const *b)
+static void	multiply_matrix(f32 *dst, f32 const *a, f32 const *b)
 {
 	dst[0] = a[0] * b[0] + a[1] * b[4] + a[2] * b[8];
 	dst[1] = a[0] * b[1] + a[1] * b[5] + a[2] * b[9];
@@ -84,8 +84,8 @@ void	Mario::update(InputState *input)
 
 void	Mario::render(Lakitu const* lakitu)
 {
-	fixed	mv[12];
-	fixed	model_matrix[12];
+	f32	mv[12];
+	f32	model_matrix[12];
 
 	this->constructModelMatrix(model_matrix);
 	multiply_matrix(mv, lakitu->getViewMatrix(), model_matrix);
@@ -93,9 +93,9 @@ void	Mario::render(Lakitu const* lakitu)
 	gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
 }
 
-void	Mario::constructModelMatrix(fixed *dst)
+void	Mario::constructModelMatrix(f32 *dst)
 {
-	fixed *forward = this->forward;
+	f32 *forward = this->forward;
 
 	dst[0] = forward[1];
 	dst[1] = 0;

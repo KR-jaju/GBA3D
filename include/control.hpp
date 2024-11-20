@@ -4,8 +4,7 @@
 #include "object.hpp"
 #include "player.hpp"
 #include "vec3.hpp"
-#include "fixed.h"
-#include "math.hpp"
+#include "gbamath/gbamath.h"
 #include "GBAinput.hpp"
 #include "clock.hpp"
 
@@ -25,25 +24,25 @@ public:
 
     vec3 force;
     vec3 moveTMP;
-    fixed runSpeed ;
-    fixed walkSpeed;
-    fixed jumpForce;
-    fixed gravity;
-    fixed maxFallSpeed;
+    f32 runSpeed ;
+    f32 walkSpeed;
+    f32 jumpForce;
+    f32 gravity;
+    f32 maxFallSpeed;
 
-    fixed floorOP;
-    fixed wallOP;
-    fixed ceilOP;
+    f32 floorOP;
+    f32 wallOP;
+    f32 ceilOP;
     bool touchStatus[4]={ false, false, false, false };
     bool jumped;
-    fixed distance;
+    f32 distance;
     bool clickJump;
 
     control();
     void playerControll();
     void polygonInit();
     bool trianglePrismTest(Polygon tri, vec3 pos);
-    bool normalTest(Polygon tri, vec3 pos, vec3 axis, fixed OP);
+    bool normalTest(Polygon tri, vec3 pos, vec3 axis, f32 OP);
     void wallcheck(vec3& pos);
     bool floorcheck(vec3& pos);
     bool ceilcheck(vec3& pos);

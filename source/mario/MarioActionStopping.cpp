@@ -9,8 +9,8 @@ MarioAction	Mario::actionStopping(InputState *input)
 	if (raw_horizontal != 0 || raw_vertical != 0)
 		return (this->transitionToRunning(input));
 
-	fixed	horizontal = input->h;
-	fixed	vertical = -input->v;
+	f32	horizontal = input->h;
+	f32	vertical = -input->v;
 	if (this->forward[0] * horizontal + this->forward[1] * vertical < -0.95f)
 	{
 		if(this->forward_velocity >= 5.0f)
@@ -22,8 +22,8 @@ MarioAction	Mario::actionStopping(InputState *input)
 		this->forward_velocity = 0;
 	if (this->forward_velocity == 0)
 		this->animation_dt = (1 << 16);
-	this->pos[0] += this->forward[0] * this->forward_velocity * fixed(0.033f);
-	this->pos[2] += this->forward[1] * this->forward_velocity * fixed(0.033f);
+	this->pos[0] += this->forward[0] * this->forward_velocity * f32(0.033f);
+	this->pos[2] += this->forward[1] * this->forward_velocity * f32(0.033f);
 	if (this->animation_time >= (18 << 16))
 		return (this->transitionToIdleLeft(input));
 	return (ACTION_STOPPING);

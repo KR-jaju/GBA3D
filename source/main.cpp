@@ -11,7 +11,6 @@
 #include "resource/model.h"
 #include "resource/texture.h"
 #include "resource/animation.h"
-// #include "resource/model.h"
 #include "scene/Scene.h"
 
 #include <stdio.h>
@@ -29,33 +28,33 @@ INLINE void m4_plot(int x, int y, u8 clrid)
 		*dst= (*dst&~0xFF) |  clrid;
 }
 
-void	qtor(fixed* dst, fixed x, fixed y, fixed z, fixed w)
+void	qtor(f32* dst, f32 x, f32 y, f32 z, f32 w)
 {
-	fixed xx = x * x;
-	fixed yy = y * y;
-	fixed zz = z * z;
-	fixed wx = w * x;
-	fixed wy = w * y;
-	fixed wz = w * z;
-	fixed xy = x * y;
-	fixed xz = x * z;
-	fixed yz = y * z;
-	dst[0] = fixed(1) - (yy + zz) * 2;
+	f32 xx = x * x;
+	f32 yy = y * y;
+	f32 zz = z * z;
+	f32 wx = w * x;
+	f32 wy = w * y;
+	f32 wz = w * z;
+	f32 xy = x * y;
+	f32 xz = x * z;
+	f32 yz = y * z;
+	dst[0] = f32(1) - (yy + zz) * 2;
 	dst[1] = (xy - wz) * 2;
 	dst[2] = (xz + wy) * 2;
 	dst[3] = 0;
 	dst[4] = (xy + wz) * 2;
-	dst[5] = fixed(1) - (xx + zz) * 2;
+	dst[5] = f32(1) - (xx + zz) * 2;
 	dst[6] = (yz - wx) * 2;
 	dst[3] = 0;
 	dst[8] = (xz - wy) * 2;
 	dst[9] = (yz + wx) * 2;
-	dst[10] = fixed(1) - (xx + yy) * 2;
+	dst[10] = f32(1) - (xx + yy) * 2;
 	dst[11] = 0;
 }
 
 
-void	view(fixed *matrix, fixed pos[3], fixed dir[3]) {
+void	view(f32 *matrix, f32 pos[3], f32 dir[3]) {
 	matrix[0] = dir[2];
 	matrix[1] = 0;
 	matrix[2] = -dir[0];
@@ -72,20 +71,7 @@ void	view(fixed *matrix, fixed pos[3], fixed dir[3]) {
 	matrix[11] = -(pos[0] * matrix[8] + pos[1] * matrix[9] + pos[2] * matrix[10]);
 }
 
-// TestVertex box_vertices[] = {
-// 	{ 1.0f, 1.0f, 1.0f, 56, 32 },
-// 	{ 1.0f, -1.0f, 1.0f, 40, 48 },
-// 	{ 1.0f, 1.0f, -1.0f, 40, 32 },
-// 	{ 1.0f, -1.0f, -1.0f, 24, 64 },
-// 	{ -1.0f, 1.0f, 1.0f, 24, 48 },
-// 	{ -1.0f, -1.0f, 1.0f, 40, 0 },
-// 	{ -1.0f, 1.0f, -1.0f, 24, 16 },
-// 	{ -1.0f, -1.0f, -1.0f, 24, 0 }};
-
-// i32 box_indices[] = {4, 2, 0, 2, 7, 3, 6, 5, 7, 1, 7, 5, 0, 3, 1, 4, 1, 5, 4, 6, 2, 2, 6, 7, 6, 4, 5, 1, 3, 7, 0, 2, 3, 4, 0, 1};
-
-
-void	multiply_matrix(fixed *dst, fixed *a, fixed *b)
+void	multiply_matrix(f32 *dst, f32 *a, f32 *b)
 {
 	dst[0] = a[0] * b[0] + a[1] * b[4] + a[2] * b[8];
 	dst[1] = a[0] * b[1] + a[1] * b[5] + a[2] * b[9];
@@ -106,34 +92,6 @@ void	multiply_matrix(fixed *dst, fixed *a, fixed *b)
 #include "clock.hpp"
 #include "division.h"
 
-/*
-		view(matrix, pos, dir);
-		int neo = clock_get();
-		fixed const (*data)[7] = animation[frame];
-		for (int bone = 0; bone < 17; bone++)
-		{
-			fixed model[12] = {1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,};
-			fixed* dst = gbavfx_matrix_slot[0];
-			fixed x = data[bone][0];
-			fixed y = data[bone][1];
-			fixed z = data[bone][2];
-
-			fixed rx = data[bone][3];
-			fixed ry = data[bone][4];
-			fixed rz = data[bone][5];
-			fixed rw = data[bone][6];
-
-			qtor(model, rx, ry, rz, rw);
-			model[3] = x;
-			model[7] = y;
-			model[11] = z;
-
-			multiply_matrix(gbavfx_matrix_slot[bone], matrix, model);
-		}
-*/
-
 #define REG_WAITCNT *(volatile unsigned short*)0x4000204
 void optimize_ewram() {
     REG_WAITCNT = (REG_WAITCNT & ~0x0030) | 0x000E;  // EWRAM wait state를 0x0E로 설정
@@ -147,7 +105,6 @@ void	vblank()
 
 int	main() {
 	// optimize_ewram(); // mgba에서는 더 느려짐!
-	clock_init();
 	//initDeltaTimer();
 	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
 	// init_palettes();
@@ -158,14 +115,14 @@ int	main() {
 	for (int i = 0; i < 64 * 64; ++i) {
 		gbavfx_texture_slot[0][i] = mario_test[i];
 	}
-	// fixed mat[12];
+	// f32 mat[12];
 	// control cnt;
-	// fixed pos[] = { 0, 1, -4 };
-	// fixed model_matrix[32][12];
-	// fixed pos[] = { 0, 0, -4 };
-	// fixed dir[] = { 0, 0, 1 };
+	// f32 pos[] = { 0, 1, -4 };
+	// f32 model_matrix[32][12];
+	// f32 pos[] = { 0, 0, -4 };
+	// f32 dir[] = { 0, 0, 1 };
 	char buffer[3][40];
-	clock_init();
+	// clock_init();
 		// int start = clock_get();
 		// if(key_held(KEY_A)) cnt.clickJump = true;
 		// cnt.playerControll();
@@ -185,11 +142,11 @@ int	main() {
 			SceneA scene;
 
 			while (true) {
-				int t = clock_get();
+				// int t = clock_get();
 				scene.update();
-				int u = clock_get();
+				// int u = clock_get();
 
-				sprintf(buffer[0], "Frametime: %dus", u - t);
+				// sprintf(buffer[0], "Frametime: %dus", u - t);
 			}
 		}
 	}

@@ -913,7 +913,7 @@ STBIWDEF unsigned char * stbi_zlib_compress(unsigned char *data, int data_len, i
    stbiw__sbpush(out, 0x78);   // DEFLATE 32K window
    stbiw__sbpush(out, 0x5e);   // FLEVEL = 1
    stbiw__zlib_add(1,1);  // BFINAL = 1
-   stbiw__zlib_add(1,2);  // BTYPE = 1 -- fixed huffman
+   stbiw__zlib_add(1,2);  // BTYPE = 1 -- f32 huffman
 
    for (i=0; i < stbiw__ZHASH; ++i)
       hash_table[i] = NULL;
@@ -1664,7 +1664,7 @@ STBIWDEF int stbi_write_jpg(char const *filename, int x, int y, int comp, const 
       0.98 (2015-04-08)
              added STBIW_MALLOC, STBIW_ASSERT etc
       0.97 (2015-01-18)
-             fixed HDR asserts, rewrote HDR rle logic
+             f32 HDR asserts, rewrote HDR rle logic
       0.96 (2015-01-17)
              add HDR output
              fix monochrome BMP

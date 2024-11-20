@@ -1,7 +1,7 @@
 #include "lakitu/Lakitu.h"
 #include "gbavfx/gbavfx.h"
 #include "resource/texture.h"
-#include "gba_math.h"
+#include "gbamath/gbamath.h"
 
 Lakitu::Lakitu()
 	: pos(),
@@ -31,7 +31,7 @@ void	Lakitu::updateViewMatrix() {
 	this->view_matrix[11] = -(pos[0] * this->view_matrix[8] + pos[1] * this->view_matrix[9] + pos[2] * this->view_matrix[10]);
 }
 
-fixed const	*Lakitu::getViewMatrix() const
+f32 const	*Lakitu::getViewMatrix() const
 {
 	return (this->view_matrix);
 }
@@ -42,10 +42,10 @@ void	Lakitu::update()
 		angle / 65536 * 240 * 4
 		(pitch / 16384 * 160) * 3 + 160
 	*/
-	fixed	sin_yaw;
-	fixed	cos_yaw;
-	fixed	sin_pitch;
-	fixed	cos_pitch;
+	f32	sin_yaw;
+	f32	cos_yaw;
+	f32	sin_pitch;
+	f32	cos_pitch;
 	sincos(this->yaw, sin_yaw, cos_yaw);
 	sincos(this->pitch, sin_pitch, cos_pitch);
 	dir[0] = sin_yaw * cos_pitch;

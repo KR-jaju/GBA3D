@@ -3,7 +3,7 @@
 # define MAT4_HPP
 
 # include "type.hpp"
-# include "fixed.h"
+# include "gbamath/gbamath.h"
 # include "vec2.hpp"
 # include "vec4.hpp"
 # include "math.hpp"
@@ -14,7 +14,7 @@
 
 
 struct mat4 {
-	fixed	element[16];
+	f32	element[16];
 
 	mat4	operator+(mat4 const &other) const {
 		mat4	ret;
@@ -36,7 +36,7 @@ struct mat4 {
 		}
 		return (ret);
 	}
-	mat4	operator*(fixed const &other) const{
+	mat4	operator*(f32 const &other) const{
 		mat4	ret;
 
 		for (u32 r = 0; r < 4; ++r) {
@@ -85,7 +85,7 @@ struct mat4 {
 		};
 		return (ret);
 	}
-	static mat4	translate(fixed x, fixed y, fixed z) {
+	static mat4	translate(f32 x, f32 y, f32 z) {
 		return {
 			1, 0, 0, x,
 			0, 1, 0, y,
@@ -94,8 +94,8 @@ struct mat4 {
 		};
 	}
 	static mat4	rotateX(int angle) {
-		fixed	s;
-		fixed	c;
+		f32	s;
+		f32	c;
 		sincos(angle, s, c);
 
 		return {
@@ -106,8 +106,8 @@ struct mat4 {
 		};
 	}
 	static mat4	rotateY(int angle) {
-		fixed	s;
-		fixed	c;
+		f32	s;
+		f32	c;
 		sincos(angle, s, c);
 
 		return {
@@ -118,8 +118,8 @@ struct mat4 {
 		};
 	}
 	static mat4	rotateZ(int angle) {
-		fixed	s;
-		fixed	c;
+		f32	s;
+		f32	c;
 		sincos(angle, s, c);
 
 		return {
@@ -129,7 +129,7 @@ struct mat4 {
 			0, 0, 0, 1
 		};
 	}
-	static mat4	scale(fixed x, fixed y, fixed z) {
+	static mat4	scale(f32 x, f32 y, f32 z) {
 		return {
 			x, 0, 0, 0,
 			0, y, 0, 0,

@@ -3,13 +3,13 @@
 # define VEC2_HPP
 
 # include "type.hpp"
-# include "fixed.h"
+# include "gbamath/gbamath.h"
 # include "math.hpp"
 
 struct vec2
 {
-	fixed	x;
-	fixed	y;
+	f32	x;
+	f32	y;
 
 	vec2	operator-() const {
 		return {-this->x, -this->y};
@@ -27,10 +27,10 @@ struct vec2
 	vec2	operator/(vec2 const &other) const {
 		return {this->x / other.x, this->y / other.y};
 	}
-	vec2	operator*(fixed other) const {
+	vec2	operator*(f32 other) const {
 		return {this->x * other, this->y * other};
 	}
-	vec2	operator/(fixed other) const {
+	vec2	operator/(f32 other) const {
 		return {this->x / other, this->y / other};
 	}
 	static vec2	one() {
@@ -38,10 +38,10 @@ struct vec2
 	}
 };
 
-static INLINE fixed	dot(vec2 const &a, vec2 const &b) {
+static INLINE f32	dot(vec2 const &a, vec2 const &b) {
 	return (a.x * b.x + a.y * b.y);
 }
-static INLINE fixed	length(vec2 const &a) {
+static INLINE f32	length(vec2 const &a) {
 	return (sqrt(dot(a, a)));
 }
 static INLINE vec2	normalize(vec2 const &a) {

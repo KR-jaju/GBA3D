@@ -1,12 +1,12 @@
 #pragma once
 
-#include "fixed.h"
+#include "gbamath/gbamath.h"
 
 struct mat4
 {
-	fixed	m[12];
+	f32	m[12];
 
-	void	translate(fixed x, fixed y, fixed z) {
+	void	translate(f32 x, f32 y, f32 z) {
 		m[3] += x;
 		m[7] += y;
 		m[11] += z;

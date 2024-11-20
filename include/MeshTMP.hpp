@@ -2,7 +2,7 @@
 # define MESHTMP_HPP
 
 # include "type.hpp"
-# include "fixed.h"
+# include "gbamath/gbamath.h"
 # include "vec3.hpp"
 
 struct MeshTMP {

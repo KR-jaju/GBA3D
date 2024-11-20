@@ -28,7 +28,7 @@
 
 // i32 box_indices[] = {4, 2, 0, 2, 7, 3, 6, 5, 7, 1, 7, 5, 0, 3, 1, 4, 1, 5, 4, 6, 2, 2, 6, 7, 6, 4, 5, 1, 3, 7, 0, 2, 3, 4, 0, 1};
 
-// void	view(fixed *matrix, fixed pos[3], fixed dir[3]) {
+// void	view(f32 *matrix, f32 pos[3], f32 dir[3]) {
 // 	matrix[0] = dir[2];
 // 	matrix[1] = 0;
 // 	matrix[2] = -dir[0];
@@ -68,7 +68,7 @@
 
 // */
 
-// void	multiply_matrix(fixed *dst, fixed *a, fixed *b)
+// void	multiply_matrix(f32 *dst, f32 *a, f32 *b)
 // {
 // 	dst[0] = a[0] * b[0] + a[1] * b[4] + a[2] * b[8];
 // 	dst[1] = a[0] * b[1] + a[1] * b[5] + a[2] * b[9];
@@ -86,17 +86,17 @@
 // 	dst[11] = a[8] * b[3] + a[9] * b[7] + a[10] * b[11] + a[11];
 // }
 
-// void	qtor(fixed* dst, fixed x, fixed y, fixed z, fixed w)
+// void	qtor(f32* dst, f32 x, f32 y, f32 z, f32 w)
 // {
-// 	fixed xx = x * x;
-// 	fixed yy = y * y;
-// 	fixed zz = z * z;
-// 	fixed wx = w * x;
-// 	fixed wy = w * y;
-// 	fixed wz = w * z;
-// 	fixed xy = x * y;
-// 	fixed xz = x * z;
-// 	fixed yz = y * z;
+// 	f32 xx = x * x;
+// 	f32 yy = y * y;
+// 	f32 zz = z * z;
+// 	f32 wx = w * x;
+// 	f32 wy = w * y;
+// 	f32 wz = w * z;
+// 	f32 xy = x * y;
+// 	f32 xz = x * z;
+// 	f32 yz = y * z;
 // 	dst[0] = 1 - 2 * (yy + zz);
 // 	dst[1] = 2 * (xy - wz);
 // 	dst[2] = 2 * (xz + wy);
@@ -111,24 +111,24 @@
 // 	dst[11] = 0;
 // }
 
-// void	rotation(fixed* mat, fixed x, fixed y, fixed z)
+// void	rotation(f32* mat, f32 x, f32 y, f32 z)
 // {
-// 	fixed xr[9] = {
+// 	f32 xr[9] = {
 // 		1, 0, 0,
 // 		0, cos(x), -sin(x),
 // 		0, sin(x), cos(x)
 // 	};
-// 	fixed yr[9] = {
+// 	f32 yr[9] = {
 // 		cos(y), 0, sin(y),
 // 		0, 1, 0,
 // 		-sin(y), 0, cos(y)
 // 	};
-// 	fixed zr[9] = {
+// 	f32 zr[9] = {
 // 		cos(z), -sin(z), 0,
 // 		sin(z), cos(x), 0,
 // 		0, 0, 1
 // 	};
-// 	fixed xzr[9] = {
+// 	f32 xzr[9] = {
 // 		xr[0] * zr[0] + xr[1] * zr[3] + xr[2] * zr[6], xr[0] * zr[1] + xr[1] * zr[4] + xr[2] * zr[7], xr[0] * zr[2] + xr[1] * zr[5] + xr[2] * zr[8],
 // 		xr[3] * zr[0] + xr[4] * zr[3] + xr[5] * zr[6], xr[3] * zr[1] + xr[4] * zr[4] + xr[5] * zr[7], xr[3] * zr[2] + xr[4] * zr[5] + xr[5] * zr[8],
 // 		xr[6] * zr[0] + xr[7] * zr[3] + xr[8] * zr[6], xr[6] * zr[1] + xr[7] * zr[4] + xr[8] * zr[7], xr[6] * zr[2] + xr[7] * zr[5] + xr[8] * zr[8],
@@ -168,19 +168,19 @@
 // 	};
 // 	i32 plane_indices[] = {0, 1, 2, 1, 2, 3};
 // 	// i32 indices[] = {0, 1, 2};
-// 	fixed matrix[] = {
+// 	f32 matrix[] = {
 // 		1, 0, 0, 0,
 // 		0, 1, 0, 0,
 // 		0, 0, 1, 10
 // 	};
-// 	// fixed pos[] = { 0, 1.0, -4 };
+// 	// f32 pos[] = { 0, 1.0, -4 };
 // 	// float t = 0.0f;
-// 	// fixed dir[] = { sin(t), 0, cos(t) }; 
+// 	// f32 dir[] = { sin(t), 0, cos(t) }; 
 
-// 	fixed model_matrix[32][12];
-// 	fixed pos[] = { 0, 1.0, 4 };
+// 	f32 model_matrix[32][12];
+// 	f32 pos[] = { 0, 1.0, 4 };
 // 	float t = 3.14f;
-// 	fixed dir[] = { sin(t), 0, cos(t) }; 
+// 	f32 dir[] = { sin(t), 0, cos(t) }; 
 // 	view(matrix, pos, dir);
 	
 // 	// view matrix인데 z를 노말라이즈 하지 않는
@@ -194,18 +194,18 @@
 // 	float (*data)[7] = animation[frame];
 // 	for (int bone = 0; bone < 17; bone++)
 // 	{
-// 		fixed model[12] = {1, 0, 0, 0,
+// 		f32 model[12] = {1, 0, 0, 0,
 // 		0, 1, 0, 0,
 // 		0, 0, 1, 0,};
-// 		fixed* dst = gbavfx::matrix_slot[0];
-// 		fixed x = data[bone][0];
-// 		fixed y = data[bone][1];
-// 		fixed z = data[bone][2];
+// 		f32* dst = gbavfx::matrix_slot[0];
+// 		f32 x = data[bone][0];
+// 		f32 y = data[bone][1];
+// 		f32 z = data[bone][2];
 
-// 		fixed rx = data[bone][3];
-// 		fixed ry = data[bone][4];
-// 		fixed rz = data[bone][5];
-// 		fixed rw = data[bone][6];
+// 		f32 rx = data[bone][3];
+// 		f32 ry = data[bone][4];
+// 		f32 rz = data[bone][5];
+// 		f32 rw = data[bone][6];
 
 // 		qtor(model, rx, ry, rz, rw);
 // 		model[3] = x;

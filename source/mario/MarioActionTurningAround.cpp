@@ -2,8 +2,8 @@
 #include "resource/animation.h"
 #include <cmath>
 
-constexpr fixed dcos = cosf(6.0f / 180 * 3.141592f);
-constexpr fixed dsin = sinf(6.0f / 180 * 3.141592f);
+constexpr f32 dcos = cosf(6.0f / 180 * 3.141592f);
+constexpr f32 dsin = sinf(6.0f / 180 * 3.141592f);
 
 MarioAction	Mario::actionTurningAround(InputState *input)
 {
@@ -16,10 +16,10 @@ MarioAction	Mario::actionTurningAround(InputState *input)
 	// 	else
 	// 		return (this->transitionToStopping(input));
 	// }
-	fixed	dx = this->forward[0];
-	fixed	dz = this->forward[1];
-	fixed	horizontal = input->h;
-	fixed	vertical = -input->v;
+	f32	dx = this->forward[0];
+	f32	dz = this->forward[1];
+	f32	horizontal = input->h;
+	f32	vertical = -input->v;
 
 	if (this->animation_time <= (3 << 16)) {
 		if (this->forward[0] * horizontal + this->forward[1] * vertical > 0.173f)
@@ -33,7 +33,7 @@ MarioAction	Mario::actionTurningAround(InputState *input)
 			if(this->forward_velocity >= 5.0f)
 				return (this->transitionToTurningAround(input));
 		}
-		fixed sin_theta = horizontal * dz - vertical * dx;
+		f32 sin_theta = horizontal * dz - vertical * dx;
 		if (sin_theta < 0){ // turn left
 			this->forward[0] = dcos * dx + dsin * dz;
 			this->forward[1] = dcos * dz - dsin * dx;
@@ -45,7 +45,7 @@ MarioAction	Mario::actionTurningAround(InputState *input)
 		if (this->forward_velocity >= -4.0f) {
 			this->forward_velocity = -4.0f;
 		} else if (this->forward_velocity <= 6.0f) {
-			this->forward_velocity -= fixed(0.2f) + this->forward_velocity * fixed(0.0043f);
+			this->forward_velocity -= f32(0.2f) + this->forward_velocity * f32(0.0043f);
 		} else {
 			this->forward_velocity += 0.187f;
 		}
@@ -53,8 +53,8 @@ MarioAction	Mario::actionTurningAround(InputState *input)
 			this->forward_velocity = -9.0f;
 		}
 	}
-	this->pos[0] += this->forward[0] * this->forward_velocity * fixed(0.033f);
-	this->pos[2] += this->forward[1] * this->forward_velocity * fixed(0.033f);
+	this->pos[0] += this->forward[0] * this->forward_velocity * f32(0.033f);
+	this->pos[2] += this->forward[1] * this->forward_velocity * f32(0.033f);
 
 	if (this->animation_time >= (17 << 16)) {
 		this->forward[0] *= -1;

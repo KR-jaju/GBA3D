@@ -2,7 +2,7 @@
 #define OBJECT_HPP
 
 
-#include "fixed.h"
+#include "gbamath/gbamath.h"
 #include "vec3.hpp"
 #include "MeshTMP.hpp"
 typedef struct Polygon Polygon;
@@ -16,8 +16,8 @@ struct Polygon
     vec3 edge1;
     vec3 edge2;
     vec3 N;
-    fixed L;
-    fixed dot;
+    f32 L;
+    f32 dot;
 };
 
 class object

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fixed.h"
+#include "gbamath/gbamath.h"
 #include "InputState.h"
 
 class Lakitu;
@@ -21,23 +21,23 @@ class Mario
 {
 public:
 	Mario();
-	fixed	pos[3];
+	f32	pos[3];
 
 	void	update(InputState *input);
 	void	render(Lakitu const* lakitu);
 private:
-	typedef fixed const (*MarioPose)[7];
-	typedef fixed const (*MarioAnimation)[17][7];
+	typedef f32 const (*MarioPose)[7];
+	typedef f32 const (*MarioAnimation)[17][7];
 	MarioAction	action;
-	fixed	forward[2];
-	fixed	forward_velocity;
+	f32	forward[2];
+	f32	forward_velocity;
 
 	MarioAnimation animation;
 	u32		animation_time;
 	u32		animation_dt;
-	fixed	model_matrix[12];
+	f32	model_matrix[12];
 
-	void	constructModelMatrix(fixed *dst);
+	void	constructModelMatrix(f32 *dst);
 
 	MarioAction	actionIdleLeft(InputState *input);
 	MarioAction	actionIdleRight(InputState *input);
@@ -66,5 +66,5 @@ private:
 	MarioAction	transitionToTurningAround(InputState *input);
 	
 
-	void	updateAnimation(fixed const *mv);
+	void	updateAnimation(f32 const *mv);
 };

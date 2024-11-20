@@ -8,7 +8,7 @@
 // #include "division.h"
 // #include <iostream>
 
-// static void IWRAM_CODE	transformVertex(TestVertex const* vertices, u32 count, fixed* matrix)
+// static void IWRAM_CODE	transformVertex(TestVertex const* vertices, u32 count, f32* matrix)
 // {
 // 	u32 *v = gbavfx_vbo.vertex + (gbavfx_vbo.size << 1);//r3
 // 	u8 *depth = gbavfx_vbo.depth + gbavfx_vbo.size;//r4
@@ -17,10 +17,10 @@
 // 	{
 // 		TestVertex const vertex = vertices[0];
 
-// 		fixed post_x = vertex.x * matrix[0] + vertex.y * matrix[1] + vertex.z * matrix[2] + matrix[3];
-// 		fixed post_y = vertex.x * matrix[4] + vertex.y * matrix[5] + vertex.z * matrix[6] + matrix[7];
-// 		fixed post_z = vertex.x * matrix[8] + vertex.y * matrix[9] + vertex.z * matrix[10] + matrix[11];
-// 		fixed z_reciprocal = fixed::from(reciprocal(u32(post_z.num)) << 1);
+// 		f32 post_x = vertex.x * matrix[0] + vertex.y * matrix[1] + vertex.z * matrix[2] + matrix[3];
+// 		f32 post_y = vertex.x * matrix[4] + vertex.y * matrix[5] + vertex.z * matrix[6] + matrix[7];
+// 		f32 post_z = vertex.x * matrix[8] + vertex.y * matrix[9] + vertex.z * matrix[10] + matrix[11];
+// 		f32 z_reciprocal = f32::from(reciprocal(u32(post_z.num)) << 1);
 
 // 		u16 proj_x = ((post_x * z_reciprocal * 160 + 120).num >> 16);
 // 		u16 proj_y = ((post_y * z_reciprocal * 160 + 80).num >> 16);

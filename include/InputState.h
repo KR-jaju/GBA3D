@@ -34,13 +34,13 @@ struct InputState
 {
 	u16	prev;
 	u16	curr;
-	fixed	h;
-	fixed	v;
+	f32	h;
+	f32	v;
 	i8		h_raw;
 	i8		v_raw;
 };
 
-INLINE void	pollInput(InputState *state)
+inline void	pollInput(InputState *state)
 {
 	state->prev = state->curr;
     state->curr = ~REG_KEYINPUT & KEY_MASK;

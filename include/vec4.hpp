@@ -2,15 +2,15 @@
 #ifndef VEC4_HPP
 # define VEC4_HPP
 
-# include "fixed.h"
+# include "gbamath/gbamath.h"
 # include "math.hpp"
 
 struct vec4
 {
-	fixed	x;
-	fixed	y;
-	fixed	z;
-	fixed	w;
+	f32	x;
+	f32	y;
+	f32	z;
+	f32	w;
 	
 	vec4	operator-() const {
 		return {-this->x, -this->y, -this->z, -this->w};
@@ -29,10 +29,10 @@ struct vec4
 		return {this->x / other.x, this->y / other.y, this->z / other.z, this->w / other.w};
 	}
 	
-	vec4	operator*(fixed other) const {
+	vec4	operator*(f32 other) const {
 		return {this->x * other, this->y * other, this->z * other, this->w * other};
 	}
-	vec4	operator/(fixed other) const {
+	vec4	operator/(f32 other) const {
 		return {this->x / other, this->y / other, this->z / other, this->w / other};
 	}
 
@@ -41,11 +41,11 @@ struct vec4
 	}
 };
 
-static INLINE fixed	dot(vec4 const &a, vec4 const &b) {
+static INLINE f32	dot(vec4 const &a, vec4 const &b) {
 	return (a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w);
 }
 
-static INLINE fixed	length(vec4 const &a) {
+static INLINE f32	length(vec4 const &a) {
 	return (sqrt(dot(a, a)));
 }
 

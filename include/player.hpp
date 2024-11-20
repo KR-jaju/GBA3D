@@ -10,7 +10,7 @@ class player
     MeshTMP mesh;
     vec3 position;
     vec3 velocity;
-    fixed friction;
+    f32 friction;
     void move(vec3 pos) {position = pos;}
 };
 
