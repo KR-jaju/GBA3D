@@ -12,6 +12,7 @@
 #include "resource/texture.h"
 #include "resource/animation.h"
 // #include "resource/model.h"
+#include "scene/Scene.h"
 
 #include <stdio.h>
 #define REG_VCOUNT *(volatile u16*)0x04000006
@@ -105,51 +106,9 @@ void	multiply_matrix(fixed *dst, fixed *a, fixed *b)
 #include "clock.hpp"
 #include "division.h"
 
-#define REG_WAITCNT *(volatile unsigned short*)0x4000204
-void optimize_ewram() {
-    REG_WAITCNT = (REG_WAITCNT & ~0x0030) | 0x000E;  // EWRAM wait state를 0x0E로 설정
-}
-
-int	main() {
-	// optimize_ewram(); // mgba에서는 더 느려짐!
-	clock_init();
-	//initDeltaTimer();
-	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
-	// init_palettes();
-	// memcp
-	for (int i = 0; i < 256; ++i) {
-		pal_bg_mem[i] = palette[i];
-	}
-	for (int i = 0; i < 64 * 64; ++i) {
-		gbavfx_texture_slot[0][i] = mario_test[i];
-	}
-	fixed mat[12];
-	control cnt;
-	// fixed pos[] = { 0, 1, -4 };
-	fixed model_matrix[32][12];
-	fixed pos[] = { 0, 0, -4 };
-	fixed dir[] = { 0, 0, 1 };
-	char buffer[3][40];
-	fixed matrix[] = {
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 10
-	};
-	gbavfx_skybg = skybg + 240 + 160 * 1200;
-	int frame = 0;
-	clock_init();
-	while(true) {
-		// int start = clock_get();
-		// if(key_held(KEY_A)) cnt.clickJump = true;
-		// cnt.playerControll();
-		// cnt.checkCollision();
-		gbavfx_clear();
-		// gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
-		gbavfx_color = (u8*)vid_page;
-		// pos[0] += 0.01f;
+/*
 		view(matrix, pos, dir);
 		int neo = clock_get();
-		int vc[] = {306};
 		fixed const (*data)[7] = animation[frame];
 		for (int bone = 0; bone < 17; bone++)
 		{
@@ -173,23 +132,65 @@ int	main() {
 
 			multiply_matrix(gbavfx_matrix_slot[bone], matrix, model);
 		}
+*/
 
-		gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
-		int start = clock_get();
-		// gbavfx_flip();
-		gbavfx_flip_interlaced();
-		int end = clock_get();
-		int nend = clock_get();
-		sprintf(buffer[0], "drawIndexed TIME : %dus ", start - neo);
-		sprintf(buffer[1], "rasterize TIME : %dus ", end - start);
-		sprintf(buffer[2], "interlace TIME : %dus ", nend - end);
-		// sprintf(buffer[0], "COUNT : %d -- ", gbavfx_vbo.size);
-		frame = frame + 1;
-		if (frame == 31)
-			frame = 0;
-		// while(REG_VCOUNT >= 160);
-    	while(REG_VCOUNT < 160);
-		vid_page = (i16*)((u32)vid_page ^ 0xA000);
-		REG_DISPCNT ^= DCNT_PAGE;
+#define REG_WAITCNT *(volatile unsigned short*)0x4000204
+void optimize_ewram() {
+    REG_WAITCNT = (REG_WAITCNT & ~0x0030) | 0x000E;  // EWRAM wait state를 0x0E로 설정
+}
+
+void	vblank()
+{
+	gbavfx_vblank_counter += 1;
+	REG_IF = 1;
+}
+
+int	main() {
+	// optimize_ewram(); // mgba에서는 더 느려짐!
+	clock_init();
+	//initDeltaTimer();
+	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
+	// init_palettes();
+	// memcp
+	for (int i = 0; i < 256; ++i) {
+		pal_bg_mem[i] = palette[i];
+	}
+	for (int i = 0; i < 64 * 64; ++i) {
+		gbavfx_texture_slot[0][i] = mario_test[i];
+	}
+	// fixed mat[12];
+	// control cnt;
+	// fixed pos[] = { 0, 1, -4 };
+	// fixed model_matrix[32][12];
+	// fixed pos[] = { 0, 0, -4 };
+	// fixed dir[] = { 0, 0, 1 };
+	char buffer[3][40];
+	clock_init();
+		// int start = clock_get();
+		// if(key_held(KEY_A)) cnt.clickJump = true;
+		// cnt.playerControll();
+		// cnt.checkCollision();
+	REG_IME = 0;
+	REG_IE = 1;
+	REG_DISPSTAT |= (1 << 3);
+	REG_IF = 0;
+	REG_ISR_MAIN = vblank;
+	REG_IME = 1;
+
+	SceneId scene_id = SCENE_A;
+
+	while (true) {
+		if (scene_id == SCENE_A)
+		{
+			SceneA scene;
+
+			while (true) {
+				int t = clock_get();
+				scene.update();
+				int u = clock_get();
+
+				sprintf(buffer[0], "Frametime: %dus", u - t);
+			}
+		}
 	}
 }

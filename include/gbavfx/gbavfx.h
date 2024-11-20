@@ -2,57 +2,6 @@
 
 # include "common.h"
 # include "fixed.h"
-/*
-vertex with brightness {
-position, (2 + 2 + 2 byte)
-uv, (2 + 2 byte)
-brightness (1 byte)
-additional (1 byte)
-} // total 12 byte
-
-vertex {
-position(2 + 2 + 2 byte)
-uv (2 + 2 byte)
-brightness (1 byte)
-} // total 11 bytes
-
-Vertex after transformation
-{
-	position (2 + 2 + 1 bytes)
-	flag(1 byte)
-	uv, (2 + 2 byte)
-}
-position(2, 2, 1)
-flag(1)
-uv(1, 1)
-
-31 :(y | x): 0
-63 :(u | v): 32
-63 :(flag | u | v | z): 32
-0x0F000000
-0x00FFF000
-Face
-{
-	vertices (2 + 2 + 2 bytes)
-	texture_id (5 bit) - 14bit
-	next(11 bit)
-}
-31 :(v2 | v1): 0
-63 :(next | texture_id | v3): 32
-
-// total 8 bytes
-*/
-
-#define REG_DISPSTAT  (*(volatile u16*)0x4000004)
-#define REG_IE        (*(volatile u16*)0x4000200)
-#define REG_IF        (*(volatile u16*)0x4000202)
-#define REG_IME       (*(volatile u16*)0x4000208)
-
-// 인터럽트 벡터 주소
-#define INTERRUPT_VECTOR ((volatile u32*)0x3007FFC)
-#define INTERRUPT_CODE __attribute__((interrupt))
-
-#define REG_VCOUNT    (*(volatile u16*)0x4000006)
 
 constexpr i32	MAX_VERTEX_COUNT = 1024;
 constexpr i32	MAX_FACE_COUNT = 1024;
@@ -74,12 +23,12 @@ extern vbo		gbavfx_vbo;
 extern fbo		gbavfx_fbo;
 extern i16		ordering_table[MAX_DEPTH_VARIATION]; // 1024 depth variation
 
-
+extern u16		gbavfx_vblank_counter;
 
 extern u8		gbavfx_texture_slot[32][64 * 64];
 extern fixed	gbavfx_matrix_slot[32][12];
 
-extern u8 const	*gbavfx_skybg;
+extern u8 const	*gbavfx_background;
 
 void	gbavfx_clear();
 

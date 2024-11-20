@@ -3,6 +3,7 @@
 # define VEC3_HPP
 
 # include "fixed.h"
+#include "gba_math.h"
 # include "math.hpp"
 
 struct vec3
@@ -72,7 +73,7 @@ static INLINE vec3	cross(vec3 const &a, vec3 const &b) {
 	};
 }
 static INLINE fixed	length(vec3 const &a) {
-	return (sqrt(dot(a, a)));
+	return (sqrt_fx(dot(a, a)));
 }
 static INLINE vec3	normalize(vec3 const &a) {
 	return (a / length(a));

@@ -1,4 +1,4 @@
-#include "division.h"
+#include "gba_math.h"
 
 u16 const division_lut[32768] = {
 	0xFFFF, 0xFFFE, 0xFFFC, 0xFFFA, 0xFFF8, 0xFFF6, 0xFFF4, 0xFFF2, 
