@@ -1,6 +1,6 @@
 
 #include "gbavfx/gbavfx.h"
-#include "GBAlib.hpp"
+#include "gbadef.h"
 
 IWRAM_CODE
 void gbavfx_interlace()

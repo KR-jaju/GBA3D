@@ -5,8 +5,6 @@
 
 #include "resource/animation.h"
 
-#include "GBAinput.hpp"
-
 
 static void	multiply_matrix(f32 *dst, f32 const *a, f32 const *b)
 {

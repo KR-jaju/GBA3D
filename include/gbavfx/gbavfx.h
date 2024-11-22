@@ -26,20 +26,13 @@ extern i16		ordering_table[MAX_DEPTH_VARIATION]; // 1024 depth variation
 extern u16		gbavfx_vblank_counter;
 
 extern u8		gbavfx_texture_slot[32][64 * 64];
-extern f32	gbavfx_matrix_slot[32][12];
+extern f32		gbavfx_matrix_slot[32][12];
 
 extern u8 const	*gbavfx_background;
 
+void	gbavfx_init();
 void	gbavfx_clear();
-
-// template <typename T>
-// void	gbavfx_drawIndexed(T const *vertices, u32 vertex_count, i32 const *indices, u32 face_count, u32 texture_id);
-
-// template <typename T>
-// void	gbavfx_drawSkinned(T const *vertices, i32* vertex_count, i32 const *indices, u32 face_count, u32 texture_id, i32 bone_count);
-
 void	gbavfx_flip();
-
 
 #include "gbavfx/TestVertex.h"
 extern "C"

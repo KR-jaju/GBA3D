@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common.h"
+#include "gbadef.h"
 
-#define REG_BASE			0x04000000
 #define REG_KEYINPUT		*(unsigned short*)(REG_BASE+0x0130)	//!< Key status (read only??)
 #define REG_KEYCNT			*(unsigned short*)(REG_BASE+0x0132)	//!< Key IRQ control
 
@@ -32,10 +32,10 @@
 
 struct InputState
 {
-	u16	prev;
-	u16	curr;
-	f32	h;
-	f32	v;
+	u16		prev;
+	u16		curr;
+	f32		h;
+	f32		v;
 	i8		h_raw;
 	i8		v_raw;
 };

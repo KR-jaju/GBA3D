@@ -27,7 +27,8 @@ LIBTONC := $(DEVKITPRO)/libtonc
 #---------------------------------------------------------------------------------
 TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
-SOURCES		:= source source/gbavfx source/animation source/model source/texture source/mario source/lakitu source/scene
+SOURCES		:= source source/gbavfx source/animation source/model source/texture source/mario source/lakitu source/scene source/gbamath\
+source/scene/SceneA
 INCLUDES	:= include
 DATA		:=
 MUSIC		:=
@@ -37,7 +38,8 @@ GRAPHICS	:= graphics
 # options for code generation
 #---------------------------------------------------------------------------------
 # ARCH	:=	-mthumb -mthumb-interwork
-ARCH	:=	-marm
+ARCH	:=	-marm 
+# -Werror -Wall -Wextra
 
 CFLAGS	:= -g -Wall -O2 -std=c++20\
 		-mcpu=arm7tdmi -mtune=arm7tdmi\

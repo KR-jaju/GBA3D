@@ -1,5 +1,15 @@
-#include "scene/Scene.h"
+#include "scene/SceneA.h"
 #include "gbavfx/gbavfx.h"
+#include "gbadef.h"
+
+SceneA::SceneA()
+{
+	i16	*palette = (i16 *)MEM_PAL;
+
+	for (i32 i = 0; i < 256; ++i) {
+		palette[i] = SceneA::palette[i];
+	}
+}
 
 void	SceneA::update()
 {

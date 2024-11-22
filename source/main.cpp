@@ -3,30 +3,18 @@
 //#include "Rasterizer.hpp"
 #include "control.hpp"
 // #include <gba_systemcalls.h>
-#include "clock.hpp"
 #include "debug.hpp"
 
+#include "clock.h"
 #include "gbavfx/gbavfx.h"
 #include "gbavfx/TestVertex.h"
 #include "resource/model.h"
 #include "resource/texture.h"
 #include "resource/animation.h"
 #include "scene/Scene.h"
-
+#include "scene/SceneA.h"
+#include "gbadef.h"
 #include <stdio.h>
-#define REG_VCOUNT *(volatile u16*)0x04000006
-//TODO: 언젠가 지운다
-
-char	debug_log[2048];
-char	*log_ptr = debug_log;
-INLINE void m4_plot(int x, int y, u8 clrid)
-{
-	COLOR *dst= &vid_page[(y*M4_WIDTH+x)>>1];
-	if(x&1)
-		*dst= (*dst& 0xFF) | (clrid<<8);
-	else
-		*dst= (*dst&~0xFF) |  clrid;
-}
 
 void	qtor(f32* dst, f32 x, f32 y, f32 z, f32 w)
 {
@@ -89,29 +77,19 @@ void	multiply_matrix(f32 *dst, f32 *a, f32 *b)
 	dst[11] = a[8] * b[3] + a[9] * b[7] + a[10] * b[11] + a[11];
 }
 
-#include "clock.hpp"
-#include "division.h"
 
-#define REG_WAITCNT *(volatile unsigned short*)0x4000204
 void optimize_ewram() {
     REG_WAITCNT = (REG_WAITCNT & ~0x0030) | 0x000E;  // EWRAM wait state를 0x0E로 설정
 }
 
-void	vblank()
-{
-	gbavfx_vblank_counter += 1;
-	REG_IF = 1;
-}
-
+#define DCNT_MODE4			0x0004	//!< Mode 4; bg2: 240x160\@8 bitmap
+#define DCNT_BG2			0x0400	//!< Enable bg 2
 int	main() {
 	// optimize_ewram(); // mgba에서는 더 느려짐!
 	//initDeltaTimer();
 	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
 	// init_palettes();
 	// memcp
-	for (int i = 0; i < 256; ++i) {
-		pal_bg_mem[i] = palette[i];
-	}
 	for (int i = 0; i < 64 * 64; ++i) {
 		gbavfx_texture_slot[0][i] = mario_test[i];
 	}
@@ -121,19 +99,13 @@ int	main() {
 	// f32 model_matrix[32][12];
 	// f32 pos[] = { 0, 0, -4 };
 	// f32 dir[] = { 0, 0, 1 };
-	char buffer[3][40];
+	// char buffer[3][40];
 	// clock_init();
 		// int start = clock_get();
 		// if(key_held(KEY_A)) cnt.clickJump = true;
 		// cnt.playerControll();
 		// cnt.checkCollision();
-	REG_IME = 0;
-	REG_IE = 1;
-	REG_DISPSTAT |= (1 << 3);
-	REG_IF = 0;
-	REG_ISR_MAIN = vblank;
-	REG_IME = 1;
-
+	gbavfx_init();
 	SceneId scene_id = SCENE_A;
 
 	while (true) {
