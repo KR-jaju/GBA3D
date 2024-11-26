@@ -25,19 +25,16 @@ static void	multiply_matrix(f32 *dst, f32 const *a, f32 const *b)
 }
 
 Mario::Mario()
+	: transform()
 {
-	this->action = ACTION_IDLE_LEFT;
+	this->action = &Mario::actionIdleCenter;
 
 	this->forward[0] = 0;
 	this->forward[1] = 1;
 
 	this->forward_velocity = 0;
 
-	this->pos[0] = 0;
-	this->pos[1] = 0;
-	this->pos[2] = 0;
-
-	this->animation = mario_idle_left;
+	this->animation = mario_idle_center;
 	this->animation_time = 0;
 	this->animation_dt = (1 << 16);
 }
@@ -48,65 +45,19 @@ Mario::Mario()
 */
 void	Mario::update(InputState *input)
 {
-	switch (this->action)
+	do
 	{
-	case ACTION_IDLE_LEFT:
-		this->action = actionIdleLeft(input);
-		break;
-	case ACTION_IDLE_RIGHT:
-		this->action = actionIdleRight(input);
-		break;
-	case ACTION_IDLE_CENTER:
-		this->action = actionIdleCenter(input);
-		break;
-	case ACTION_RUNNING:
-		this->action = actionRunning(input);
-		break;
-	case ACTION_WALKING:
-		this->action = actionWalking(input);
-		break;
-	case ACTION_SINGLE_JUMP:
-		this->action = actionSingleJump(input);
-		break;
-	case ACTION_DOUBLE_JUMP:
-		this->action = actionDoubleJump(input);
-		break;
-	case ACTION_STOPPING:
-		this->action = actionStopping(input);
-		break;
-	case ACTION_TURNING_AROUND:
-		this->action = this->actionTurningAround(input);
-		break;
-	}
+		if (!(this->*(this->action))(input))
+			break;
+	} while(true);
 }
 
 void	Mario::render(Lakitu const* lakitu)
 {
-	f32	mv[12];
-	f32	model_matrix[12];
+	mat4	mv;
 
-	this->constructModelMatrix(model_matrix);
-	multiply_matrix(mv, lakitu->getViewMatrix(), model_matrix);
-	this->updateAnimation(mv);
+	this->transform.recalculateDirection(this->yaw, this->pitch, this->roll);
+	mv = this->transform.composite(lakitu->getViewMatrix());
+	this->updateAnimation(mv.m);
 	gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
-}
-
-void	Mario::constructModelMatrix(f32 *dst)
-{
-	f32 *forward = this->forward;
-
-	dst[0] = forward[1];
-	dst[1] = 0;
-	dst[2] = forward[0];
-	dst[3] = this->pos[0];
-
-	dst[4] = 0;
-	dst[5] = 1;
-	dst[6] = 0;
-	dst[7] = this->pos[1];
-
-	dst[8] = -forward[0];
-	dst[9] = 0;
-	dst[10] = forward[1];
-	dst[11] = this->pos[2];
 }

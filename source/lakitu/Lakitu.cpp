@@ -1,58 +1,105 @@
 #include "lakitu/Lakitu.h"
 #include "gbavfx/gbavfx.h"
 #include "resource/texture.h"
-#include "gbamath/gbamath.h"
+#include "gbamath/mat4.h"
 
 Lakitu::Lakitu()
-	: pos(),
+	: position(0, 1, -4), //TODO : non standard
 	yaw(0),
 	pitch(0),
 	background(skybg)
 {
-	this->pos[0] = 0;
-	this->pos[1] = 1;
-	this->pos[2] = -4;
+	this->action = &Lakitu::actionIdle;
 }
 
-void	Lakitu::updateViewMatrix() {
-	this->view_matrix[0] = this->dir[2];
-	this->view_matrix[1] = 0;
-	this->view_matrix[2] = -this->dir[0];
-	this->view_matrix[3] = -(pos[0] * this->view_matrix[0] + pos[2] * this->view_matrix[2]);
-
-	this->view_matrix[4] = this->dir[0] * this->dir[1];
-	this->view_matrix[5] = -(this->dir[0] * this->dir[0] + this->dir[2] * this->dir[2]);
-	this->view_matrix[6] = this->dir[1] * this->dir[2];
-	this->view_matrix[7] = -(pos[0] * this->view_matrix[4] + pos[1] * this->view_matrix[5] + pos[2] * this->view_matrix[6]);
-
-	this->view_matrix[8] = this->dir[0];
-	this->view_matrix[9] = this->dir[1];
-	this->view_matrix[10] = this->dir[2];
-	this->view_matrix[11] = -(pos[0] * this->view_matrix[8] + pos[1] * this->view_matrix[9] + pos[2] * this->view_matrix[10]);
-}
-
-f32 const	*Lakitu::getViewMatrix() const
+mat4 const&	Lakitu::getViewMatrix() const
 {
 	return (this->view_matrix);
 }
 
-void	Lakitu::update()
+void	Lakitu::update(InputState *input)
 {
-	/*
-		angle / 65536 * 240 * 4
-		(pitch / 16384 * 160) * 3 + 160
-	*/
-	f32	sin_yaw;
-	f32	cos_yaw;
-	f32	sin_pitch;
-	f32	cos_pitch;
-	sincos(this->yaw, sin_yaw, cos_yaw);
-	sincos(this->pitch, sin_pitch, cos_pitch);
-	dir[0] = sin_yaw * cos_pitch;
-	dir[1] = sin_pitch;
-	dir[2] = cos_yaw * cos_pitch;
-	this->updateViewMatrix();
-	// gbavfx_background = background;
-	// gbavfx_background = skybg;
+	
+	while (true)
+	{
+		if (!(this->*(this->action))(input))
+			break;
+	}
+	this->view_matrix = mat4::createViewMatrix(this->position, this->yaw, this->pitch);
 	gbavfx_background = background + ((u16(this->yaw) * 960) >> 16) + (((this->pitch * 320) >> 15) + 160) * 1200;
+}
+
+bool	Lakitu::actionRHold(InputState *input)
+{
+	if (input->curr & KEY_A)
+		this->action = &Lakitu::actionRAHold;
+	else if (input->curr & KEY_B)
+		this->action = &Lakitu::actionRBHold;
+	else if (!(input->curr & KEY_R))
+		this->action = &Lakitu::actionCameraReset;
+	else
+		return (false);
+	return (true);
+}
+
+bool	Lakitu::actionRHoldOld(InputState *input)
+{
+	if (input->curr & KEY_A)
+		this->action = &Lakitu::actionRAHold;
+	else if (input->curr & KEY_B)
+		this->action = &Lakitu::actionRBHold;
+	else if (!(input->curr & KEY_R))
+		this->action = &Lakitu::actionIdle;
+	else
+		return (false);
+	return (true);
+}
+
+bool	Lakitu::actionRAHold(InputState *input)
+{
+	if (!(input->curr & KEY_A))
+		this->action = &Lakitu::actionRHoldOld;
+	else if (input->curr & KEY_B)
+		this->action = &Lakitu::actionRABHold;
+	else
+	{
+		this->yaw += 500;
+		return (false);
+	}
+	return (true);
+}
+bool	Lakitu::actionRBHold(InputState *input)
+{
+	if (input->curr & KEY_A)
+		this->action = &Lakitu::actionRABHold;
+	else if (!(input->curr & KEY_B))
+		this->action = &Lakitu::actionRHoldOld;
+	else
+	{
+		this->yaw -= 500;
+		return (false);
+	}
+	return (true);
+}
+bool	Lakitu::actionRABHold(InputState *input)
+{
+	if (!(input->curr & KEY_A))
+		this->action = &Lakitu::actionRBHold;
+	else if (!(input->curr & KEY_B))
+		this->action = &Lakitu::actionRAHold;
+	else
+		return (false);
+	return (true);
+}
+bool	Lakitu::actionCameraReset(InputState *input)
+{
+	this->action = &Lakitu::actionIdle;
+	this->yaw = 0;
+	return (true);
+}
+bool	Lakitu::actionIdle(InputState *input)
+{
+	if (input->curr & KEY_R)
+		this->action = &Lakitu::actionRHold;
+	return (false);
 }

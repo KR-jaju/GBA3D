@@ -32,7 +32,7 @@
 
 struct InputState
 {
-	u16		prev;
+	u16		prev = 0;
 	u16		curr;
 	f32		h;
 	f32		v;
@@ -59,3 +59,4 @@ inline void	pollInput(InputState *state)
 		state->v.num = state->v_raw * 65536;
 	}
 }
+

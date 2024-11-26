@@ -18,7 +18,7 @@ void	SceneA::update()
 	pollInput(&input);
 
 	this->mario.update(&input);
-	this->lakitu.update();
+	this->lakitu.update(&input);
 	gbavfx_clear();
 	this->mario.render(&this->lakitu);
 	gbavfx_flip_interlaced();

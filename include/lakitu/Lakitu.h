@@ -2,20 +2,31 @@
 
 #include "common.h"
 #include "gbamath/gbamath.h"
+#include "gbamath/mat4.h"
+#include "InputState.h"
 
 class Lakitu
 {
 public:
 	Lakitu();
-	void	update();
-	f32 const	*getViewMatrix() const;
+	void	update(InputState *input);
+	mat4 const &getViewMatrix() const;
 private:
-	f32	pos[3];
-	f32	dir[3];
+	typedef bool (Lakitu::*LakituAction)(InputState *);
+	LakituAction action;
+	f32	position[3];
 	short	yaw;
 	short	pitch;
-	f32	view_matrix[12];
+	mat4	view_matrix;
 	u8 const	*background;
+
+	bool	actionRHold(InputState *input);
+	bool	actionRHoldOld(InputState *input);
+	bool	actionRAHold(InputState *input);
+	bool	actionRBHold(InputState *input);
+	bool	actionRABHold(InputState *input);
+	bool	actionCameraReset(InputState *input);
+	bool	actionIdle(InputState *input);
 
 	void	updateViewMatrix();
 };

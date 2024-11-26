@@ -1,7 +1,6 @@
 #pragma once
 
-#include "fixed32.h"
-#include "fixed16.h"
+#include "common.h"
 
 extern "C" {
 	extern u16 const division_lut[32768];
