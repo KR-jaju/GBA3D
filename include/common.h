@@ -27,3 +27,17 @@ typedef struct fixed16	f16;
 
 #define VIEWPORT_WIDTH 240
 #define VIEWPORT_HEIGHT 160
+
+#define DELTA_TIME (1.0f/30.0f)
+
+/*
+mario_length = unit length * 100
+mario_speed = unit speed * dt * 100 -> speed = mario_speed * 0.3
+mario_acceleration = unit acceleration * dt * 100 -> speed = mario_acceleration * 0.3
+
+s = vt + 1/2at^2
+
+s / 100 = vt / 100 + 1/200 * at^2
+
+*/
+

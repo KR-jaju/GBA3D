@@ -34,29 +34,24 @@ struct InputState
 {
 	u16		prev = 0;
 	u16		curr;
-	f32		h;
-	f32		v;
+	i32		stick_x;
+	i32		stick_y;
+	i32		stick_angle;
+	i32		stick_mag;
 	i8		h_raw;
 	i8		v_raw;
 };
 
-inline void	pollInput(InputState *state)
-{
-	state->prev = state->curr;
-    state->curr = ~REG_KEYINPUT & KEY_MASK;
+void	pollInput(InputState *state);
 
-	state->h_raw = ((state->curr >> KEY_RIGHT_IDX) & 1) - ((state->curr >> KEY_LEFT_IDX) & 1);
-	state->v_raw = ((state->curr >> KEY_DOWN_IDX) & 1) - ((state->curr >> KEY_UP_IDX) & 1);
+/*
+(0, 1) -> 0
+(1, 1) -> 8192
+(1, 0) -> 16384
+(1, -1) -> 24576
+(0, -1) -> -32768
+(-1, -1) -> -24576
+(-1, 0) -> -16384
+(-1, 1) -> -8192
 
-	if (state->h_raw != 0 && state->v_raw != 0)
-	{
-		state->h.num = state->h_raw * 46341;
-		state->v.num = state->v_raw * 46341;
-	}
-	else
-	{
-		state->h.num = state->h_raw * 65536;
-		state->v.num = state->v_raw * 65536;
-	}
-}
-
+*/

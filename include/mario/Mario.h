@@ -22,8 +22,12 @@ private:
 	i32	yaw;
 	i32	pitch;
 	i32	roll;
+
+	i32	intended_yaw;
+
 	f32	forward[2];
 	f32	forward_velocity;
+	f32 velocity[3];
 	MarioAnimation animation;
 	u32		animation_time;
 	u32		animation_dt;
@@ -36,8 +40,11 @@ private:
 	bool	actionReorient(InputState *input);
 
 	bool	actionRunning(InputState *input);
+	void	updateWalkingSpeed(InputState *input);
 
 	bool	actionStopping(InputState *input);
 
 	void	updateAnimation(f32 const *mv);
+
+	void	performStep();
 };
