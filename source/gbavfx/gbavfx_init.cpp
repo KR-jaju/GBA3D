@@ -3,13 +3,12 @@
 
 static void	frame_counter()
 {
-	gbavfx_vblank_counter += 1;
+	// gbavfx_vblank_counter += 1;
 	REG_IF = 1;
 }
 
 void	gbavfx_init()
 {
-
 	REG_IME = 0;
 	REG_IE = 1;
 	REG_DISPSTAT |= (1 << 3);

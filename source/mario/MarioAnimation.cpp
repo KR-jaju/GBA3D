@@ -67,7 +67,7 @@ void	Mario::updateAnimation(f32 const *mv)
 		bone_matrix[7] = y;
 		bone_matrix[11] = z;
 
-		multiply_matrix(gbavfx_matrix_slot[bone], mv, bone_matrix);
+		// multiply_matrix(gbavfx_matrix_slot[bone], mv, bone_matrix);
 	}
 	this->animation_time += animation_dt;
 }

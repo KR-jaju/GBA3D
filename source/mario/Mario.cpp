@@ -59,5 +59,5 @@ void	Mario::render(Lakitu const* lakitu)
 	this->transform.recalculateDirection(this->yaw, this->pitch, this->roll);
 	mv = this->transform.composite(lakitu->getViewMatrix());
 	this->updateAnimation(mv.m);
-	gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
+	// gbavfx_drawSkinned(vertices, vertex_count, indices, 368, 0, 17);
 }

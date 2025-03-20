@@ -26,13 +26,26 @@ gbavfx_flip_interlaced:
 	ldr		r2, =.rasterizer_code
 	sub		ip, ip, r2 @ 상대 위치
 	sub		ip, ip, #8 @ pc 조정
+
+	@ adrne	ip, gbavfx_rasterize_interlaced_odd @ rendering buffer[0]	(dst - (pc + 8))
+	@ subne	ip, #8 @ (dst - (pc + 16))
+	@ adreq	ip, gbavfx_rasterize_interlaced_even @ rendering buffer[1]	(dst - (pc + 16))
+	@ adr		r2, .rasterizer_code @ (base - (pc + 20))
+	@ sub		ip, ip, r2 @ (dst - pc - 16 - base + pc + 20) = (dst - base + 4)
+	@ sub		ip, ip, #12 @ (dst - (base + 8)) bl에 들어갈 
 	mov		ip, ip, ASR #2
 	orr		ip, ip, #0xEB000000 @ bl instruction (self modifying code)
 	str		ip, [r2]
-	@---------------self modifying code done----------------------
+	@---------------self modifying code end----------------------
 	@ r0이 back 정보 뿐
 	@ 0, 2, 4번은 front -> back, 1, 3, 5번은 스카이박스로 하면 총 80*2줄인데, 확신 가능한건 79 * 2줄 뿐, 뒤틀린 경우에만 추가함, 뒤틀리지 않은 경우는 마지막이 남음
+	@ 줄 세기는 0번부터 시작
+	@ 0번 버퍼에 그리는 경우 짝수번째 줄은 배경이미지에서 복사, 홀수번째 줄은 1번 버퍼에서 복사
+	@ -> 0번 줄(배경), 1번줄(1번버퍼)는 미리 그려놓고, 2번부터 79번까지를 반복문으로 그리기
+	@ 1번 버퍼에 그리는 경우 짝수번째 줄은 0번 버퍼에서 복사, 홀수번째 줄은 배경 이미지에서 복사
+	@ -> 0번 줄(0번 버퍼), 79번(배경)은 미리 그려놓고, 1번부터 78번까지를 반복문으로 복사
 	@ buffer[1]이 표시 중일 때는 홀수번째라인을 복사한다
+	@ TODO : 왜 번갈아가면서 그리는걸 택한거지? 루프를 2번 돌면 코드는 훨씬 깔끔해지기는 해. 그런데 연속적이지는 않네.
 	bne		.dma_init_odd
 	@ buffer[1]을 표시 중일 때 ->
 	str		r1, [lr, #0xD4] @ dma src set (skybg)
@@ -50,7 +63,7 @@ gbavfx_flip_interlaced:
 	@ 결과적으로 r0, r1, r2로 계속하면 됨.
 	b		.dma_init_end
 .dma_init_odd:
-	@ buffer[0]을 표시 중일 때 ->
+	@ buffer[0]을 표시 중일 때, 하드코딩으로 맨 윗줄과 아랫줄을 dma로 그림(배경). ->
 	eor		r2, r0, #0xA000 @ front == r2
 	str		r2, [lr, #0xD4] @ dma src set (front)
 	str		r0, [lr, #0xD8] @ dma dst set (back)

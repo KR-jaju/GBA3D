@@ -30,6 +30,19 @@ gbavfx_rasterize_interlaced_even:
 	and		r3, r3, lr, LSR #16
 	and		r5, r5, lr, LSR #16
 
+	@ free registers(r6, r8, r10, r14(lr))
+	@ used registers(r0, r1, r2, r3, r4, r5, r7, r9, r11, r12(ip))
+	@ r0 = (0.y | 0.x | 0.z)
+	@ r1 = 0.v
+	@ r2 = (1.y | 1.x | 1.z)
+	@ r3 = 1.v
+	@ r4 = (2.y | 2.x | 2.z)
+	@ r5 = 2.v
+	@ r7 = 0.u
+	@ r9 = 1.u
+	@ r11 = 2.u
+	@ r12 = &texture_slot[texture_id];
+
 	mov		lr, #32768
 	rsb		r6, lr, r0, LSR #16 @ y of 0
 	rsb		r8, lr, r2, LSR #16 @ y of 1
@@ -42,11 +55,28 @@ gbavfx_rasterize_interlaced_even:
 	rsb		r4, lr, r4, LSR #16
 	sub		r11, r11, r9 @ 2.u - 1.u 
 	sub		lr, r5, r3 @ 2.v - 1.v
+
+	@ free registers()
+	@ used registers(r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12(ip), r14(lr))
+	@ r0 = 0.x
+	@ r1 = 0.v
+	@ r2 = 1.x
+	@ r3 = 1.v
+	@ r4 = 2.x
+	@ r5 = 2.v
+	@ r6 = 0.y
+	@ r7 = 0.u
+	@ r8 = 1.y
+	@ r9 = 1.u
+	@ r10 = 2.y
+	@ r11 = 2.u - 1.u
+	@ r12 = &texture_slot[texture_id];
+	@ r14 = 2.v - 1.v
 	push	{r2, r4, r8, r10, r11, lr} @ {x1, x2, y1, y2, du, dv}
 
 	push	{r0, r1, r6, r7, r8} @ {0.x, 0.v, 0.y, 0.u, 1.y}
 	sub		r2, r2, r0 @ (1.x - 0.x) = dx01
-	sub		r4, r4, r0
+	sub		r4, r4, r0 @ (2.x - 0.x) = dx02
 	sub		r8, r8, r6 @ 1.y - 0.y = dy01
 	sub		r10, r10, r6 @ 2.y - 0.y = dy02
 	mul		r0, r2, r10 @ a * d
@@ -58,7 +88,7 @@ gbavfx_rasterize_interlaced_even:
 	beq		.end_of_function @ return if (det == 0)
 	@------------------determinant 계산 완료---------------------
 	sub		r9, r9, r7 @ 1.u - 0.u = du01
-	add		r11, r9, r11 @ 2.u - 0.u
+	add		r11, r9, r11 @ ((2.u - 1.u) + (1.u - 0.u) = du02
 	sub		r3, r3, r1 @ 1.v - 0.v = dv01
 	sub		r5, r5, r1 @ 2.v - 0.v = dv02
 	mul		r6, r9, r10 @ du01 * dy02
@@ -130,9 +160,9 @@ gbavfx_rasterize_interlaced_even:
 	ldr		r2, =gbavfx_color
 	ldr		r2, [r2]
 	add		r5, r2, r5 @ gbavfx_color += top * 240
-	mov		r0, r0, LSL #16
-	mov		r1, r1, LSL #16
-	mov		r3, r3, LSL #16
+	mov		r0, r0, LSL #16 @ x
+	mov		r1, r1, LSL #16 @ v
+	mov		r3, r3, LSL #16 @ u
 	mla		r2, r10, lr, r0 @ b_x += dx02 * clipped_y
 	mla		r0, r8, lr, r0 @ a_x += dx01 * clipped_y
 	mla		r1, r9, lr, r1 @ l_v += dv * clipped_y
@@ -225,8 +255,7 @@ gbavfx_rasterize_interlaced_even:
 	subs	r4, r4, #1 @ height -= 1
 	bne		.l_high_y_loop_begin
 .l_high_y_loop_end_1:
-	@ pop		{r0, r4, r8, r9, r11, lr} @ {x1, x2, y1, y2, du, dv}
-	pop		{r0, r4, r8, r9, r11} @ {x1, x2, y1, y2, du, dv}
+	pop		{r0, r4, r8, r9, r11} @ {x1, x2, y1, y2, du}
 	push	{r0-r2}
 	sub		r0, r9, r8 @ reciprocal(dy)
 	bl		reciprocal_u16
@@ -235,7 +264,7 @@ gbavfx_rasterize_interlaced_even:
 	rsblt	r9, r8, r9
 	rsbge	r9, r8, #160 @ height(r9) min(y2, 160) - max(y1, 0)
 	mov		r8, r0, ASR #15 @ inv dy-----------------
-	pop		{r0-r2, lr}
+	pop		{r0-r2, lr} @ {dv}
 	sub		r4, r4, r0 @ dx12(r4)
 	mul		r4, r8, r4 @ a_dx(r4)
 	mul		r11, r8, r11 @ l_du(r11) inv_dy

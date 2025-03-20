@@ -142,7 +142,6 @@ static inline void init_palettes()
 	for (int i = 0; i < 256; ++i) {
 		pal_bg_mem[i] = palette[i];
 	}
-
 }
 //! First page array
 #define vid_mem_front	((COLOR*)MEM_VRAM)

@@ -5,7 +5,6 @@
 // #include <gba_systemcalls.h>
 #include "debug.hpp"
 
-#include "clock.h"
 #include "gbavfx/gbavfx.h"
 #include "gbavfx/TestVertex.h"
 #include "resource/model.h"
@@ -15,6 +14,50 @@
 #include "scene/SceneA.h"
 #include "gbadef.h"
 #include <stdio.h>
+#include "gbavfx/mode8.h"
+
+void optimize_ewram() {
+    REG_WAITCNT = (REG_WAITCNT & ~0x0030) | 0x000E;  // EWRAM wait state를 0x0E로 설정
+}
+
+#define DCNT_MODE4			0x0004	//!< Mode 4; bg2: 240x160\@8 bitmap
+#define DCNT_BG2			0x0400	//!< Enable bg 2
+
+char debug_buffer[200];
+
+int	main() {
+	// optimize_ewram(); // mgba에서는 더 느려짐!
+	
+	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
+	// init_palettes();
+	// for (int i = 0; i < 64 * 64; ++i)
+	// {
+	// 	gbavfx_texture_slot[0][i] = mario_test[i];
+	// }
+	// control cnt;
+	// int start = clock_get();
+	// if(key_held(KEY_A)) cnt.clickJump = true;
+	// cnt.playerControll();
+	// cnt.checkCollision();
+	gbavfx_init();
+	SceneId scene_id = SCENE_A;
+
+	mode8::init();
+	while (true)
+	{
+		if (scene_id == SCENE_A)
+		{
+			SceneA scene;
+
+			while (true)
+			{
+				scene.update();
+			}
+		}
+	}
+}
+
+
 
 void	qtor(f32* dst, f32 x, f32 y, f32 z, f32 w)
 {
@@ -75,51 +118,4 @@ void	multiply_matrix(f32 *dst, f32 *a, f32 *b)
 	dst[9] = a[8] * b[1] + a[9] * b[5] + a[10] * b[9];
 	dst[10] = a[8] * b[2] + a[9] * b[6] + a[10] * b[10];
 	dst[11] = a[8] * b[3] + a[9] * b[7] + a[10] * b[11] + a[11];
-}
-
-
-void optimize_ewram() {
-    REG_WAITCNT = (REG_WAITCNT & ~0x0030) | 0x000E;  // EWRAM wait state를 0x0E로 설정
-}
-
-#define DCNT_MODE4			0x0004	//!< Mode 4; bg2: 240x160\@8 bitmap
-#define DCNT_BG2			0x0400	//!< Enable bg 2
-int	main() {
-	// optimize_ewram(); // mgba에서는 더 느려짐!
-	//initDeltaTimer();
-	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
-	// init_palettes();
-	// memcp
-	for (int i = 0; i < 64 * 64; ++i) {
-		gbavfx_texture_slot[0][i] = mario_test[i];
-	}
-	// f32 mat[12];
-	// control cnt;
-	// f32 pos[] = { 0, 1, -4 };
-	// f32 model_matrix[32][12];
-	// f32 pos[] = { 0, 0, -4 };
-	// f32 dir[] = { 0, 0, 1 };
-	// char buffer[3][40];
-	// clock_init();
-		// int start = clock_get();
-		// if(key_held(KEY_A)) cnt.clickJump = true;
-		// cnt.playerControll();
-		// cnt.checkCollision();
-	gbavfx_init();
-	SceneId scene_id = SCENE_A;
-
-	while (true) {
-		if (scene_id == SCENE_A)
-		{
-			SceneA scene;
-
-			while (true) {
-				// int t = clock_get();
-				scene.update();
-				// int u = clock_get();
-
-				// sprintf(buffer[0], "Frametime: %dus", u - t);
-			}
-		}
-	}
 }

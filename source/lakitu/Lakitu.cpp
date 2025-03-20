@@ -26,7 +26,7 @@ void	Lakitu::update(InputState *input)
 			break;
 	}
 	this->view_matrix = mat4::createViewMatrix(this->position, this->yaw, this->pitch);
-	gbavfx_background = background + ((u16(this->yaw) * 960) >> 16) + (((this->pitch * 320) >> 15) + 160) * 1200;
+	// gbavfx_background = background + ((u16(this->yaw) * 960) >> 16) + (((this->pitch * 320) >> 15) + 160) * 1200;
 }
 
 bool	Lakitu::actionRHold(InputState *input)
