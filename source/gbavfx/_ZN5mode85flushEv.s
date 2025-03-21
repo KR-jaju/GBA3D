@@ -2,37 +2,22 @@
 .extern _ZN5mode87contextE
 .extern value
 
-
-@ .L5의 beq .L11를 bne로,
-@ .L4의 251번째 줄의 r14에 넣는 #0x06000000를 buffer[1]로 바꾸기
-@ -> scan_1 완성
-
 .section .iwram, "ax"
 .global _ZN5mode85flushEv
 _ZN5mode85flushEv:
 	push	{r4-r11, lr}
 	ldr		r1, =_ZN5mode87contextE @ r1 = &context (&context->ordering_table)
 	add		r2, r1, #0x0C00 @ r2 = &context->ptb;
-	ldr		r3, [r1, #0x0BF4] @ r3 = context->texture_slot
+	ldr		r3, =_ZN5mode88texturesE @ r3 = &mode8::textures
 	mov		r4, #0x04000000 @ &REG_DISPCNT
 	ldr		r4,	[r4] @ REG_DISPCNT
 
-	@ tst		r4, #0x0010 @ check 5th bit of DISPCNT
-	@ adreq	r5, .rasterize_0 @ back_buffer == buffer[1]						1
-	@ adrne	r5, .rasterize_0 @ back_buffer = buffer[0]						1
-	@ adr		r6, .L2 @ self_modifying_code destination					1
-	@ sub		r5, r5, r6 @ relative position								1
-	@ sub		r5, r5, #8 @ adjust pc										1
-	@ mov		r5, r5, LSR #2 @ pack address (>> 2)						1
-	@ orr		r5, r5, #0xEB000000 @ bl instruction (self modifying code)	1
-	@ str		r5, [r6] @ store bl instruction								2 = 9
 	tst		r4, #0x0010 @ check 5th bit of DISPCNT
 	adr		r5, .L4 @ add	r14, r14, #0xA000
 	ldr		r6, [r5]
 	bic		r6, r6, #0xF0000000 @ add -> addeq (back_buffer == buffer[0])
 	eoreq	r6, r6, #0x10000000 @ addeq -> addne (back_buffer == buffer[1])
 	str		r6, [r5]
-
 	adr		r5, .L5 @ beq	.L11
 	ldr		r6, [r5]
 	bic		r6, r6, #0xF0000000 @ b -> beq (back_buffer == buffer[0])
@@ -62,7 +47,7 @@ _ZN5mode85flushEv:
 	push	{r2, r3, r12}
 .L2: @ rasterizer self modying code
 	@ nop
-	bl		.rasterize_0
+	bl		.rasterize
 	pop		{r2, r3, r12}
 	cmp		r12, #-1
 	bne		.L1
@@ -81,7 +66,7 @@ _ZN5mode85flushEv:
 @ ---------------------------------- rasterizer 0 ----------------------------------
 
 @ buffer[0]에 그리는 코드
-.rasterize_0:
+.rasterize:
 	mvn		r11, #0 @ r11 = 0xFFFFFFFF
 	and		r9, r0, r11, LSR #16 @ r9 = i0
 	mov		r10, r0, LSR #16 @ r10 = i1
@@ -91,8 +76,10 @@ _ZN5mode85flushEv:
 	add		r11, r2, r11, LSL #3 @ r11 = &context->ptb.vertex[i2]
 	and		r1, r1, #0x001F0000 @ r1 = texture_id << 16
 
-	@ texture_slot + (texture_id << 2)를 구해야함!
-	ldr		r12, [r3, r1, LSR #14] @ r12 = &context->texture_slot.textures[texture_id]
+	@ texture_slot + (texture_id << 12)를 구해야함!
+	@ ldr		r12, [r3, r1, LSR #14] @ r12 = &context->texture_slot.textures[texture_id]
+	add		r12, r3, r1, LSR #4 @ r12 = &textures[texture_id]
+	
 	ldmia	r9, {r0, r2} @ vertex 0
 	ldmia	r10, {r4, r6} @ vertex 1
 	ldmia	r11, {r8, r10} @ vertex 2
@@ -302,7 +289,7 @@ _ZN5mode85flushEv:
 	@ height가 1인 경우, 플래그에 따라 10(2) 또는 11(3)이 되는데, 둘 다 루프를 한번만 돌아야한다.
 	@ subs로 2씩 뺀다고 가정했을 때, 2는 2를 빼면 0이 되지만, 3은 1이되므로 subs로 판단할 수가 없어진다.
 	@ 따라서 2를 먼저 빼 놓는다.
-	bl		.scan_0
+	bl		.scan_convert
 .L13:
 @ free registers(r14(lr))
 @ used registers(r0, r1, r2, r3, r4, r6, r7, r8, r9, r10, r11, r12(ip))
@@ -370,12 +357,12 @@ _ZN5mode85flushEv:
 	cmp		r9, #0
 	sub		r9, r9, #2
 	ble		.L16 @ skip loop if height <= 0
-	bl		.scan_0
+	bl		.scan_convert
 .L16:
 	pop		{pc}
 
 
-.scan_0:
+.scan_convert:
 	str		r14, [sp, #-4]! @ store lr
 .L6: @ 윗 삼각형 y 루프
 	@ 렌더타겟은 무조건 0x06000000 또는 0x0600A000 이고, 한 줄이 240(0x00F0)바이트 이므로

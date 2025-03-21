@@ -185,8 +185,6 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	@ 2. v1 >= v2 && v0 >= v2인 경우, v2, v0, v1순으로 정렬된다.
 	@ 3. v1 >= v2 && v0 < v2인 경우, v0, v2, v1순으로 정렬된다.
 
-
-	
 	@ if(!(B && C)) { swap(i1, i2); }
 	@ 1. b false -> ge이 나옴
 	@ 2. b true, c false -> ge이 나옴
@@ -196,11 +194,12 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	@ 2. b false, c true(lt) -> false
 	@ 3. b false, c false -> true
 
-@ free registers = (r7, r11, r12(ip), r14(lr))
-@ used registers = (r0, r1, r2, r3, r4, r5, r6, r8, r9, r10)
+	orr		r6, r6, r2, LSL #16 @ ((texture_id << 16) | i2);
+
+@ free registers = (r7, r11, r12(ip))
+@ used registers = (r0, r1, r2, r3, r4, r5, r6, r8, r9, r10, r14(lr))
 @ r0 = &context (&context->ordering_table)
 @ r1 = indices
-@ r2 = texture_id
 @ r3 = &context->fb_top
 @ r4 = &context->ptb_top
 @ r5 = (i1 | i0)
@@ -208,6 +207,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 @ r8 = v0
 @ r9 = v1
 @ r10 = v2
+@ r14 = &context->face_buffer
 
 @ dx02, dy01도 마찬가지로 구하고
 	and		r7, r8, #0xFF @ r7 = v0.z
@@ -220,28 +220,27 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	cmp		r7, #0
 	ble		.L3 @ continue;
 
-	mov		r11, r8, LSL #12
-	mov		r11, r11, LSR #20 @ r11 = v0.x
+	mov		r12, r8, LSL #12
+	mov		r12, r12, LSR #20 @ r12 = v0.x
 	mov		r8, r8, LSR #20 @ r8 = v0.y
 
-	mov		r12, r9, LSR #12
-	sub		r11, r12, r11, LSL #20 @ r11 = dx01
-	rsb		r12, r8, r10, LSR #20 @ r12 = dy02
-	mul		r11, r12, r11 @ dx01 * dy02
-	
-	mov		r10, r10, LSR #12
-	sub		r10, r10, r12, LSL #20 @ r10 = dx02
-	rsb		r12, r8, r9, LSR #20 @ r12 = dy01
-	mul		r10, r12, r10 @ dx02 * dy01
+	mov		r2, r9, LSL #12 @ r2 = 1.x << 20
+	rsb		r2, r12, r2, LSR #20 @ r2 = v1.x - v0.x
+	rsb		r11, r8, r10, LSR #20 @ r11 = v2.y - v0.y
+	mul		r2, r11, r2 @ dx01 * dy02
 
-	cmp		r11, r10 @ if(dx01 * dy02 <= dx02 * dy01)
+	mov		r11, r10, LSL #12 @ r11 = 2.x << 12
+	rsb		r11, r12, r11, LSR #20 @ r11 = 2.x - 0.x
+	rsb		r10, r8, r9, LSR #20 @ r10 = 1.y - 0.y = dy01
+	mul		r10, r11, r10 @ dx02 * dy01
+
+	cmp		r2, r10 @ if(dx01 * dy02 <= dx02 * dy01)
 	bge		.L3 @ continue; @ cull if winding order == clockwise
 	
-@ free registers = (r8, r9, r10, r11, r12(ip))
-@ used registers = (r0, r1, r2, r3, r4, r5, r6, r7, r14(lr))
+@ free registers = (r2, r8, r9, r10, r11, r12(ip))
+@ used registers = (r0, r1, r3, r4, r5, r6, r7, r14(lr))
 @ r0 = &context (&context->ordering_table)
 @ r1 = indices
-@ r2 = texture_id
 @ r3 = &context->fb_top
 @ r4 = &context->ptb_top
 @ r5 = (i1 | i0)
@@ -251,7 +250,6 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	mov		r7, r7, LSL #1 @ r7 = z * sizeof(uint16_t)
 	ldrsh	r11, [r0, r7] @ r11 = ordering_table[z]
 	orr		r6, r6, r11, LSL #21 @ r6 = (next << 21) | (i2)
-	orr		r6, r6, r2, LSL #16 @ ((next << 21) | (texture_id << 16) | i2);
 	sub		r11, r3, r14 @ r11 = fb_top - face_buffer
 	mov		r11, r11, LSR #3 @ r11 = face_id
 	strh	r11, [r0, r7] @ ordering_table[z] = face_id

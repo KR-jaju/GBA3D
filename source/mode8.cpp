@@ -3,5 +3,5 @@
 namespace mode8
 {
 	t_context   context;
-	u32			vblank_counter;
+	u8			textures[32][4096];
 }

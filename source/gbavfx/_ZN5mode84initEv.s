@@ -3,18 +3,16 @@
 .section .iwram, "ax"
 .global _ZN5mode84initEv
 _ZN5mode84initEv:
-	@ --------------- vblank counter init ---------------------
-	ldr		r0, =_ZN5mode814vblank_counterE @ r0 = &vblank_counter
-	mov		r1, #0
-	str		r1, [r0] @ vblank_counter = 0
-	@ --------------- vblank counter init ---------------------
 	@ --------------- context init ---------------------
 	ldr		r0, =_ZN5mode87contextE @ r0 = &context
-	add		r1, r0, #0x0C00 @ r1 = &context->post_transform_buffer
-	add		r2, r0, #0x2C00 @ r2 = &context->face_buffer
+	mov		r1, #0
+	str		r1, [r0, #0x0BF4] @ context->vblank_counter = 0
 
+	add		r1, r0, #0x0C00 @ r1 = &context->post_transform_buffer
 	str		r1, [r0, #0x0BF8] @ init ptb_top
-	str		r2, [r0, #0x0BFC] @ init fb_top
+
+	add		r1, r0, #0x2C00 @ r2 = &context->face_buffer
+	str		r1, [r0, #0x0BFC] @ init fb_top
 
 	@ --------------- context init ---------------------
 
@@ -36,10 +34,10 @@ _ZN5mode84initEv:
 
 .vblank_isr:
 	push	{r0, r1}
-	ldr		r0, =_ZN5mode814vblank_counterE @ r0 = &vblank_counter
-	ldr		r1, [r0] @ r1 = vblank_counter
+	ldr		r0, =_ZN5mode87contextE @ r0 = &context
+	ldr		r1, [r0, #0x0BF4] @ r1 = context->vblank_counter
 	add		r1, r1, #1
-	str		r1, [r0] @ vblank_counter = r1
+	str		r1, [r0, #0x0BF4] @ vblank_counter = r1
 	mov		r0, #0x04000000 @ r0 = I/O register base
 	add		r0, r0, #0x0200
 	add		r0, r0, #0x0002 @ r0 = &REG_IF

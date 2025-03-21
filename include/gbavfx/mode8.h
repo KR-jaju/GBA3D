@@ -20,7 +20,7 @@ namespace mode8
 		u16				ordering_table[768];			// 0x0000 ~ 0x05FF (1536 bytes)
 		i32				matrix_slot[31][12];			// 0x0600 ~ 0x0BCF (1488 bytes)
 		i32				padding[9];						// 0x0BD0 ~ 0x0BF3 (36 bytes)
-		t_texture_slot	*texture_slot;					// 0x0BF4 ~ 0x0BF7 (4 bytes)
+		u32				vblank_coutner;					// 0x0BF4 ~ 0x0BF7 (4 bytes)]
 		u32				*ptb_top;						// 0x0BF8 ~ 0x0BFB (4 bytes)
 		u32				*fb_top;						// 0x0BFC ~ 0x0BFF (4 bytes)
 		u32				post_transform_buffer[2048];	// 0x0C00 ~ 0x2BFF (8192 bytes)
@@ -36,10 +36,14 @@ namespace mode8
 	}; // sizeof(vertex) = 16 bytes
 
 	extern t_context	context;
-	extern u32			vblank_counter;
+	extern u8			textures[32][4096] EWRAM;
 
 	void	init();
 	void	clear(u8 const* background, u32 offset_x, u32 offset_y); // 현재 render_target을 초기화
+
+	// vertices는 정점 배열로, 정점의 위치와 uv를 가진다.
+	// vertex_count는 각 본의 정점 개수를 담는 배열로, 이 순서대로 변환 행렬이 결정된다. 0이 나올 때까지 읽는다.
+	// indices는 삼각형을 정의하는 세 점을 담는 배열로, 모든 면들이 나온 후 마지막에 추가로 -1이 3개 붙어야한다.
 	void	drawIndexed(t_vertex const* vertices, i32 const* vertex_count, i32 const* indices, u32 texture_id);
 	void	flush();
 	void	flip();
