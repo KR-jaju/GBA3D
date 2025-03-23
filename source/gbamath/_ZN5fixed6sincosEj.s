@@ -1,6 +1,6 @@
-.extern _ZN5fixed4sqrtEi
+.extern _ZN5fixed4sqrtEj
 @ param {angle} Q16.16 (unsigned)
-@ returns (Q0.15 | Q0.15), 0 ~ 15bit -> cosine, 16 ~ 31bit -> sine
+@ returns (Q1.14 | Q1.14), 0 ~ 15bit -> cosine, 16 ~ 31bit -> sine
 @ u32	sincos(u32 angle);
 
 .global _ZN5fixed6sincosEj
@@ -14,23 +14,17 @@ _ZN5fixed6sincosEj:
 	add		r1, r4, r1 @ (octant + (octant & 1))
 	sub		r0, r0, r1, LSL #13 @ x(r5) = angle - ((octant + (octant & 1)) << 13)
 
-	mov		r12, #0x1200
-	orr		r12, r12, #0x00FA
+	ldr		r12, =0x12F9AE66
 	mul		r1, r0, r0 @ r1 = x^2
-	smull	r2, r3, r1, r12 @ x^2 * 0x12FA
-	mov		r3, r3, LSL #20
-	orr		r3, r3, r2, LSR #12
-	mov		r2, r2, LSL #20 @ (x^2 * 0x12FA) * 0x100000
-	mov		r12, #0x8600
-	orr		r12, r12, #0x0006
-	smlal	r2, r3, r1, r12 @ x^2 * 0x8606
-	mov		r2, #0x8000 @ r4 = 1(Q0.15)
-	sub		r5, r2, r3, ASR #13 @ c(r5) = 1 - x^2 / divisor((x^2 * 0x12FA08606) >> 45)
-	mov		r3, #0x10000
+	umull	r2, r3, r1, r12 @ x^2 * 0x12F9AE66
+	@ r3 >> 10
+	mov		r2, #0x4000 @ r2 = 1(Q0.14)
+	sub		r5, r2, r3, LSR #10 @ cosine(r5) = 1 - x^2 / divisor((x^2 * 0x0x12F9AE660) >> 46)
 	mul		r2, r5, r5 @ r2 = c^2
-	sub		r0, r3, r2, LSR #14 @ 1 - c^2
-	bl		_ZN5fixed4sqrtEi
-	mov		r6, r0 @ sine(r6)
+	mov		r3, #0x10000 @ r4 = 1(Q16.16)
+	sub		r0, r3, r2, LSR #12 @ 1 - c^2
+	bl		_ZN5fixed4sqrtEj
+	mov		r6, r0, ASR #2 @ sine(r6) = sqrt(1 - c^2)
 	eor		r0, r4, r4, LSL #1 @ shift(r0) = octant ^ (octant << 1)
 
 	tst		r0, #2 @ octant == 1 | 2 | 5 | 6
@@ -44,7 +38,8 @@ _ZN5fixed6sincosEj:
 	tst		r4, #4 @ octant == 4 | 5 | 6 | 7
 	rsbne	r6, r6, #0 @ s = -s
 
-	mov		r0, r5
-	orr		r0, r0, r6, LSL #16 @ (sine | cosine)
+	bic		r0, r5, #0xFF000000
+	bic		r0, r0, #0x00FF0000 @ r0 = cosine
+	orr		r0, r0, r6, LSL #16 @ r0 = (sine | cosine)
 
 	pop		{r4, r5, r6, pc}

@@ -4,12 +4,11 @@
 
 namespace fixed
 {
-
 	/**
-	 * @param {f} Q15.16
-	 * @returns Q15.16
+	 * @param {f} Q16.16 (unsigned)
+	 * @returns Q16.16 (unsigned)
 	 */
-	i32	sqrt(i32 f);
+	u32	sqrt(u32 f);
 	/**
 	 * @param {angle} Q16.16 (unsigned)
 	 * @returns (Q0.15 | Q0.15), 0 ~ 15bit -> cosine, 16 ~ 31bit -> sine
