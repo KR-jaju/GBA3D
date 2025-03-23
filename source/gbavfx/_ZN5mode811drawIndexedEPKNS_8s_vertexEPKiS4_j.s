@@ -84,8 +84,8 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	@ used : r1, r2
 	@ output : r0
 
-	cmp r0, #0
-	movlt r0, #0 @ clamp z
+	cmp		r0, #1
+	movlt	r0, #1 @ clamp z
 	mov		r7, r0, ASR #6 @ z의 소수부를 2진수 2자리만 남김
 	cmp		r7, #0xFF @ 정수부가 64를 넘기면 제한 (총 8비트)
 	movgt	r7, #0xFF @ clamp z
@@ -217,7 +217,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	add		r7, r7, r11 @ r7 = v0.z + v1.z + v2.z
 
 	@ r7 = approximate depth of triangle
-	cmp		r7, #0
+	cmp		r7, #3
 	ble		.L3 @ continue;
 
 	mov		r12, r8, LSL #12
@@ -257,7 +257,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 .L3:
 	ldmia	r1!, {r5, r6, r7} @ r5 = i0, r6 = i1, r7 = i2
 	cmp		r5, #-1
-	bne		.L2 @ if i0 != 0, continue
+	bne		.L2 @ if i0 != -1, continue
 	str		r3, [r0, #0x0BFC] @ context->fb_top = fb_top
 .L4:
 	@ stack = (...)

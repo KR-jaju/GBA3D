@@ -4,8 +4,8 @@
 
 struct TestVertex
 {
-	f32 x;
-	f32 y;
-	f32 z;
+	i32 x;
+	i32 y;
+	i32 z;
 	u32 uv;
 };

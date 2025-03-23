@@ -56,7 +56,7 @@ struct RenderingContext
 	fbo		face_buffer; // face buffer
 	i16		ordering_table[MAX_DEPTH_VARIATION]; // 1024 depth variation
 	u8		texture_slot[32]; // 32 * 64 * 64 * 1 = 128KB
-	f32		matrix_slot[32][12]; //max 32 matrices (3 * 4)
+	i32		matrix_slot[32][12]; //max 32 matrices (3 * 4)
 
 	void	drawIndexed(TestVertex const* vertices, i32 const* vertex_count, i32 const* indices, u32 texture_id);
 };

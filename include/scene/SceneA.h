@@ -16,7 +16,7 @@ private:
 	i32				vertex_count[4];
 	i32				indices[6];
 	
-	Mario	mario;
+	// Mario	mario;
 
-	Lakitu	lakitu;
+	// Lakitu	lakitu;
 };

@@ -9,29 +9,39 @@ namespace mode8
 	typedef struct s_ptb			t_ptb;
 	typedef struct s_context 		t_context;
 	typedef struct s_vertex			t_vertex;
+	typedef struct s_matrix			t_matrix;
 
 	struct s_texture_slot
 	{
 		u8 const	*textures[32]; // 0x0000 ~ 0x0080 (128 bytes)
 	};
 
+	struct s_matrix
+	{
+		u32	data[12];
+		// t_matrix	operator*(t_matrix const& other) const;
+	};
+
 	struct s_context
 	{
 		u16				ordering_table[768];			// 0x0000 ~ 0x05FF (1536 bytes)
-		i32				matrix_slot[31][12];			// 0x0600 ~ 0x0BCF (1488 bytes)
-		i32				padding[9];						// 0x0BD0 ~ 0x0BF3 (36 bytes)
-		u32				vblank_coutner;					// 0x0BF4 ~ 0x0BF7 (4 bytes)]
-		u32				*ptb_top;						// 0x0BF8 ~ 0x0BFB (4 bytes)
-		u32				*fb_top;						// 0x0BFC ~ 0x0BFF (4 bytes)
+		t_matrix		matrix_slot[30];				// 0x0600 ~ 0x0B9F (1440 bytes)
+		t_matrix		view_matrix;					// 0x0BA0 ~ 0x0BC9 (48 bytes)
+		i32				padding[7];						// 0x0BD0 ~ 0x0BEB (28 bytes)
+		u8 const*		background;						// 0x0BEC ~ 0x0BEF (4 bytes)
+		u32				background_offset;				// 0x0BF0 ~ 0x0BF3 (4 bytes)
+		u32				vblank_coutner;					// 0x0BF4 ~ 0x0BF7 (4 bytes)
+		u32*			ptb_top;						// 0x0BF8 ~ 0x0BFB (4 bytes)
+		u32*			fb_top;							// 0x0BFC ~ 0x0BFF (4 bytes)
 		u32				post_transform_buffer[2048];	// 0x0C00 ~ 0x2BFF (8192 bytes)
 		u32				face_buffer[2048];				// 0x2C00 ~ 0x4BFF (8192 bytes)
 	}; // sizeof(t_context) = 19464 bytes
 
 	struct s_vertex
 	{
-		i32 x;
-		i32 y;
-		i32 z;
+		u32 x;
+		u32 y;
+		u32 z;
 		u32 uv;
 	}; // sizeof(vertex) = 16 bytes
 
@@ -39,7 +49,9 @@ namespace mode8
 	extern u8			textures[32][4096] EWRAM;
 
 	void	init();
-	void	clear(u8 const* background, u32 offset_x, u32 offset_y); // 현재 render_target을 초기화
+	
+	void	setCamera(i32 x, i32 y, i32 z, i32 yaw, i32 pitch); // 카메라 정보 설정
+	void	clear(); // 현재 render_target을 초기화
 
 	// vertices는 정점 배열로, 정점의 위치와 uv를 가진다.
 	// vertex_count는 각 본의 정점 개수를 담는 배열로, 이 순서대로 변환 행렬이 결정된다. 0이 나올 때까지 읽는다.

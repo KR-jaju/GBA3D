@@ -1,15 +1,19 @@
 .extern _ZN5mode87contextE
 
 .section .iwram, "ax"
-.global _ZN5mode85clearEPKhjj
-_ZN5mode85clearEPKhjj:
+.global _ZN5mode85clearEv
+_ZN5mode85clearEv:
 	@ r0 = background
 	@ r1 = offset.x
 	@ r2 = offset.y
-	add		r1, r0, r1 @ r1 = background + background_offset.u;
-	mov		r12, #1200
-	mla		r1, r2, r12, r1 @ r1 = background + background_offset.v * 1200;
+	@ add		r1, r0, r1 @ r1 = background + background_offset.u;
+	@ mov		r12, #1200
+	@ mla		r1, r2, r12, r1 @ r1 = background + background_offset.v * 1200;
 
+	ldr		r0, =_ZN5mode87contextE @ r0 = &context
+	ldr		r1, [r0, #0x0BEC] @ r1 = context->background
+	ldr		r2, [r0, #0x0BF0] @ r2 = context->background_offset
+	add		r1, r1, r2 @ background += background_offset
 
 	mov		r2, #0x04000000 @ I/O register base
 	ldr		r12, [r2] @ r12 = REG_DISPCNT

@@ -8,6 +8,9 @@
 
 #include <cstdio>
 #include <cstring>
+#include "gbamath/fixed.h"
+
+#include "gbamath/gbamath.h"
 
 char log1[100];
 char log2[100];
@@ -26,7 +29,15 @@ SceneA::SceneA()
 
 	clock_init();
 	mode8::init();
-	sprintf(log3, "context (%p)", &mode8::context);
+	i32 s = 0;
+	i32 c = 0;
+	sincos(0, s, c);
+
+	fixed::sincos(0);
+	fixed::sqrt(1);
+
+	// sprintf(log3, "context (%d, %d)", s, c);
+	sprintf(log3, "%d %d %d", fixed::sqrt(0), fixed::sqrt(255), fixed::sqrt(1 << 16));
 	scroll = 0;
 
 	this->vertices[0].uv = (63<<5)<<16;
@@ -53,32 +64,24 @@ SceneA::SceneA()
 	this->indices[3] = -1;
 	this->indices[4] = -1;
 	this->indices[5] = -1;
-
-	for (int r = 0; r < 3; ++r)
-	{
-		for (int c = 0; c < 4; ++c)
-		{
-			if (r != c)
-				mode8::context.matrix_slot[0][r * 4 + c] = 0;
-			else
-				mode8::context.matrix_slot[0][r * 4 + c] = 32767;
-		}
-	}
 	memcpy(mode8::textures[0], mario_test, 4096);
+	mode8::context.background = skybg;
+	mode8::context.padding[5] = 0;
+	mode8::context.padding[6] = -1;
 }
 
 void	SceneA::update()
 {
 	InputState	input;
 
-	scroll += 1;
+	scroll += 180; // 프레임당 360/65536도 회전, 초당 약 0.33도 회전 * 30 -> 초당 10도 화전
 	pollInput(&input);
 	int t0 = clock_get();
-	mode8::clear(skybg, (scroll) & 0xFF, 160);
-	// mode8::context.matrix_slot[]
-	mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);
+	mode8::setCamera(0, 0, 0, scroll & 0xFFFF, 0);
+	mode8::clear();
+	// mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);
 	// mode8::drawIndexed(::vertices, ::vertex_count, ::indices, 0);
-	mode8::flush();
+	// mode8::flush();
 	// sprintf(log3, "triangle depth : %p, %p", value, &mode8::context.texture_slot);
 	// sprintf(log3, "triangle depth : %d, %p", value, (int)&mode8::context.texture_slot - (int)&mode8::context);
 	// mode8::clear(skybg, 50, 0);

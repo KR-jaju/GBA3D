@@ -14,7 +14,7 @@ public:
 private:
 	typedef bool (Lakitu::*LakituAction)(InputState *);
 	LakituAction action;
-	f32	position[3];
+	// f32	position[3];
 	short	yaw;
 	short	pitch;
 	mat4	view_matrix;

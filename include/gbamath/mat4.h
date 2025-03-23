@@ -4,7 +4,7 @@
 
 struct mat4
 {
-	f32 m[12];
+	u32 m[12];
 
 	mat4	operator*(mat4 const& other) const;
 

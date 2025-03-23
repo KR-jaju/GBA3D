@@ -1,8 +1,5 @@
 #pragma once
 
-#include "common/fixed16.h"
-#include "common/fixed32.h"
-
 typedef unsigned long long	u64;
 typedef unsigned int	u32;
 typedef unsigned short	u16;

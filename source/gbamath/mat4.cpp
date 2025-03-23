@@ -33,30 +33,31 @@ mat4	mat4::identity()
 	return (result);
 }
 
-mat4	mat4::createViewMatrix(f32 const *position, i32 yaw, i32 pitch)
-{
-	mat4	result;
-	f32		sin_yaw;
-	f32		cos_yaw;
-	f32		sin_pitch;
-	f32		cos_pitch;
+// mat4	mat4::createViewMatrix(f32 const *position, i32 yaw, i32 pitch)
+// {
+// 	mat4	result;
+// 	f32		sin_yaw;
+// 	f32		cos_yaw;
+// 	f32		sin_pitch;
+// 	f32		cos_pitch;
 
-	sincos(yaw, sin_yaw, cos_yaw);
-	sincos(pitch, sin_pitch, cos_pitch);
-	result.m[8] = sin_yaw * cos_pitch;
-	result.m[9] = sin_pitch;
-	result.m[10] = cos_yaw * cos_pitch; // z
-	result.m[11] = -(position[0] * result.m[8] + position[1] * result.m[9] + position[2] * result.m[10]);
+// 	sincos(yaw, sin_yaw, cos_yaw);
+// 	sincos(pitch, sin_pitch, cos_pitch);
+// 	result.m[8] = sin_yaw * cos_pitch;
+// 	result.m[9] = sin_pitch;
+// 	result.m[10] = cos_yaw * cos_pitch; // z
+// 	result.m[11] = -(position[0] * result.m[8] + position[1] * result.m[9] + position[2] * result.m[10]);
+// x cross z
+// result.m[10] * 
+// 	result.m[0] = result.m[10];
+// 	result.m[1] = 0;
+// 	result.m[2] = -result.m[8]; // x
+// 	result.m[3] = -(position[0] * result.m[0] + position[1] * result.m[1] + position[2] * result.m[2]);
 
-	result.m[0] = result.m[10];
-	result.m[1] = 0;
-	result.m[2] = -result.m[8]; // x
-	result.m[3] = -(position[0] * result.m[0] + position[1] * result.m[1] + position[2] * result.m[2]);
-
-	result.m[4] = result.m[8] * result.m[9];
-	result.m[5] = -(result.m[8] * result.m[8] + result.m[10] * result.m[10]);
-	result.m[6] = result.m[9] * result.m[10]; // y
-	result.m[7] = -(position[0] * result.m[4] + position[1] * result.m[5] + position[2] * result.m[6]);
+// 	result.m[4] = -result.m[8] * result.m[9];
+// 	result.m[5] = (result.m[8] * result.m[8] + result.m[10] * result.m[10]);
+// 	result.m[6] = -result.m[9] * result.m[10]; // y
+// 	result.m[7] = -(position[0] * result.m[4] + position[1] * result.m[5] + position[2] * result.m[6]);
 	
-	return (result);
-}
+// 	return (result);
+// }
