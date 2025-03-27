@@ -43,12 +43,11 @@ _ZN5mode85flushEv:
 .L1:
 	add		r12, r11, r12, LSL #3 @ r12 = &context->face_buffer + face_idx * sizeof(face)
 	ldmia	r12, {r0, r1} @ r0, r1 = *face
-	mov		r12, r1, ASR #21 @ r12 = next_face
-	push	{r2, r3, r12}
-.L2: @ rasterizer self modying code
-	@ nop
+	mov		r12, r0, ASR #21 @ r12 = next_face
+	push	{r2, r3, r11, r12}
+.L2:
 	bl		.rasterize
-	pop		{r2, r3, r12}
+	pop		{r2, r3, r11, r12}
 	cmp		r12, #-1
 	bne		.L1
 	pop		{r0, r1, r11}
@@ -69,12 +68,13 @@ _ZN5mode85flushEv:
 .rasterize:
 	mvn		r11, #0 @ r11 = 0xFFFFFFFF
 	and		r9, r0, r11, LSR #16 @ r9 = i0
-	mov		r10, r0, LSR #16 @ r10 = i1
+	mov		r10, r1, LSR #16 @ r10 = i1
 	and		r11, r1, r11, LSR #16 @ r11 = i2
+
 	add		r9, r2, r9, LSL #3 @ r9 = &context->ptb.vertex[i0]
 	add		r10, r2, r10, LSL #3 @ r10 = &context->ptb.vertex[i1]
 	add		r11, r2, r11, LSL #3 @ r11 = &context->ptb.vertex[i2]
-	and		r1, r1, #0x001F0000 @ r1 = texture_id << 16
+	and		r1, r0, #0x001F0000 @ r1 = texture_id << 16
 
 	@ texture_slot + (texture_id << 12)를 구해야함!
 	@ ldr		r12, [r3, r1, LSR #14] @ r12 = &context->texture_slot.textures[texture_id]
@@ -98,13 +98,19 @@ _ZN5mode85flushEv:
 	mov		r1, r0, LSL #12
 	mov		r5, r4, LSL #12
 	mov		r9, r8, LSL #12
+
 	mov		r11, #2048
-	rsb		r0, r11, r0, LSR #20 @ r0 = 0.x
-	rsb		r1, r11, r1, LSR #20 @ r1 = 0.y
-	rsb		r4, r11, r4, LSR #20 @ r4 = 1.x
-	rsb		r5, r11, r5, LSR #20 @ r5 = 1.y
-	rsb		r8, r11, r8, LSR #20 @ r8 = 2.x
-	rsb		r9, r11, r9, LSR #20 @ r9 = 2.y
+	rsb		r0, r11, r0, LSR #20 @ r0 = 0.y
+	rsb		r1, r11, r1, LSR #20 @ r1 = 0.x
+	rsb		r4, r11, r4, LSR #20 @ r4 = 1.y
+	rsb		r5, r11, r5, LSR #20 @ r5 = 1.x
+	rsb		r8, r11, r8, LSR #20 @ r8 = 2.y
+	rsb		r9, r11, r9, LSR #20 @ r9 = 2.x
+
+	cmp		r0, #160 @ 0.y >= 160
+	bxge	lr
+	cmp		r8, #0 @ 2.y < 0
+	bxlt	lr
 
 	mvn		r11, #0 @ 0xFFFFFFFF
 	and		r3, r2, r11, LSR #16 @ 0.v
@@ -230,14 +236,19 @@ _ZN5mode85flushEv:
 @ r10 = dudy_left (21bit fraction)
 @ r11 = dvdy_left (21bit fraction)
 @ r12 = &texture_slot[texture_id];
-	bic		r5, r0, r0, ASR #31 @ max(0.y, 0);
+	
+	and		r5, r9, r9, ASR #31 @ r5 = min(1.y, 0);
+	cmp		r0, r5
+	movgt	r5, r0 @ r5 = max(0.y, min(1.y, 0))
+	@ bic		r5, r0, r0, ASR #31 @ max(0.y, 0);
 
 	cmp		r9, #160
 	rsble	r9, r5, r9
-	rsbgt	r9, r5, #160 @ height = min(1.y, 160) - max(0.y, 0);
-
+	rsbgt	r9, r5, #160 @ height = min(1.y, 160) - max(0.y, min(0, 1.y));
 
 	sub		r14, r5, r0 @ clipped_y = max(0.y, 0) - 0.y;
+	@ max(0.y, min(1.y, 0)) - 0.y
+
 	@ r5 *= 15 -> (240 = 15 * 16)
 	mov		r1, r1, LSL #16 @ left_x
 	add		r1, r1, #0x00FF
@@ -283,12 +294,13 @@ _ZN5mode85flushEv:
 @ r10 = dudy_left (21bit fraction)
 @ r11 = dvdy_left (21bit fraction)
 @ r12 = &texture_slot[texture_id];
-	cmp		r9, #1 
+	cmp		r9, #1
 	ble		.L13 @ skip loop if (height >> 1) <= 0
 	sub		r9, r9, #2 @ 2를 미리 빼놔야 함.
 	@ height가 1인 경우, 플래그에 따라 10(2) 또는 11(3)이 되는데, 둘 다 루프를 한번만 돌아야한다.
 	@ subs로 2씩 뺀다고 가정했을 때, 2는 2를 빼면 0이 되지만, 3은 1이되므로 subs로 판단할 수가 없어진다.
-	@ 따라서 2를 먼저 빼 놓는다.
+	@ 2를 먼저 빼놓으면, 2는 -2, 3은 -1이 되어 0보다 작은 경우 루프를 탈출한다는 조건으로 정확한 횟수의 루프를 돌 수 있다.
+
 	bl		.scan_convert
 .L13:
 @ free registers(r14(lr))
@@ -312,55 +324,115 @@ _ZN5mode85flushEv:
 	tst		r9, #1 @ (height | flag) 의 flag를 확인
 	@ flag가 1이라면 02가 왼쪽
 	@ flag가 0이라면 01이 왼쪽
-	bne		.L14 @ 02가 왼쪽
+	bne		.L14 @ 02가 왼쪽인 경우로 점프
 	pop		{r4, r10, r11} @ {1.y, 1.x, 2.y}
+
+	cmp		r4, #160 @ skip if (1.y >= 160)
+	addge	sp, sp, #12
+	bge		.L16
 	push	{r1, r2}
 	sub		r0, r11, r4 @ r0 = dy12
 	bl		reciprocal_u16
-	bic		r4, r4, r4, ASR #31 @ r4 = max(y1, 0);
+
+	bic		r2, r4, r4, ASR #31 @ r2 = max(y1, 0);
+
 	cmp		r11, #160
-	rsblt	r9, r4, r11
-	rsbge	r9, r4, #160 @ r9 = min(y2, 160) - max(y1, 0) (height)
-	mov		r14, r0, ASR #15 @ r14 = 1/dy12
+	rsblt	r9, r2, r11
+	rsbge	r9, r2, #160 @ r9 = min(y2, 160) - max(y1, 0) (height)
+
+	push	{r0, r12}
+	ldr		r0, =value
+	str		r9, [r0]
+	pop		{r0, r12}	
+
+	@ push	{r0, r12}
+	@ ldr		r0, =value1
+	@ str		r11, [r0]
+	@ pop		{r0, r12}
+
+	sub		r2, r2, r4 @ clipped_y = max(1.y, 0) - 1.y;
+	orr		r9, r2, r9, LSL #16 @ r9 = (height << 16 | clipped_y)
+
+	mov		r14, r0, LSR #15 @ r14 = 1/dy12
 	mov		r0, r10 @ r0 = 1.x
 	pop		{r1, r2, r4, r10, r11} @ {2.x, 2.uv - 1.uv}
-	sub		r4, r4, r0 @ r10 = 2.x - 1.x = dx12
+	sub		r4, r4, r0 @ r4 = 2.x - 1.x = dx12
 	mul		r4, r14, r4 @ r4 = dx12 / dy12 = dxdy12
 	mul		r10, r14, r10 @ r10 = du12 / dy12 = dudy12
 	mul		r11, r14, r11 @ r11 = dv12 / dy12 = dvdy12
-	mov		r0, r0, LSL #16 @ r0 = x_left (to fixed point)
-	add		r0, r0, #0x00FF
-	add		r0, r0, #0x7F00 @ pixel center
+
+	mov		r0, r0, LSL #16 @ r0 = x_left = 1.x (to fixed point)
 @ 현재 스택
 @ {lr}
 	b		.L15
 .L14: @ 02가 왼쪽인 경우
 	pop		{r1, r8, r14} @ {1.y, 1.x, 2.y}
-	push	{r0, r2}
+	cmp		r1, #160 @ skip if (1.y >= 160)
+	addge	sp, sp, #12
+	bge		.L16
+	push	{r0, r2, r3}
+
 	sub		r0, r14, r1 @ r0 = dy12
-	bic		r9, r1, r1, ASR #31 @ r9 = max(y1, 0);
+
+	mov		r3, r1 @ r3 = 1.y
+	mov		r9, r14 @ r9 = 2.y
 	bl		reciprocal_u16
-	cmp		r14, #160
-	rsblt	r9, r9, r14
-	rsbge	r9, r9, #160 @ r9 = min(y2, 160) - max(y1, 0);
-	mov		r14, r0, ASR #15 @ r14 = 1/dy12
+
+	bic		r2, r3, r3, ASR #31 @ r2 = max(1.y, 0);
+
+	cmp		r9, #160
+	rsblt	r9, r2, r9
+	rsbge	r9, r2, #160 @ height(r9) = min(2.y, 160) - max(y1, 0);
+
+
+	sub		r2, r2, r3 @ clipped_y 	= max(1.y, 0) - 1.y;
+	orr		r9, r2, r9, LSL #16 @ r9 = (height << 16 | clipped_y)
+
+	mov		r14, r0, LSR #15 @ r14 = 1/dy12
 	mov		r1, r8 @ r1 = 1.x
-	pop		{r0, r2, r8} @ restore r0, r2 and {2.x}
+	pop		{r0, r2, r3, r8} @ restore r0, r2 and {2.x}
 	add		sp, #8 @ drop {2.uv - 1.uv}
 	sub		r8, r8, r1 @ r8 = 2.x - 1.x
 	mul		r8, r14, r8 @ r8 = dx12 / dy12 = dxdy12
+
 	mov		r1, r1, LSL #16 @ r1 = x_right (to fixed point)
-	add		r1, r1, #0x00FF
-	add		r1, r1, #0x7F00 @ pixel center
 .L15:
-	mov		r9, r9, LSL #1 @ 플래그를 저장할 필요는 없지만 코드를 공유하기 위해 0을 채운다.
-	cmp		r9, #0
-	sub		r9, r9, #2
+@ free registers(r14(lr))
+@ used registers(r0, r1, r2, r3, r4, r6, r7, r8, r9, r10, r11, r12(ip))
+@ r0 = x_left
+@ r1 = x_right
+@ r2 = u_left
+@ r3 = v_left
+@ r4 = dxdy_left
+@ r5 = context->render_target + 240 * top;
+@ r6 = dudx
+@ r7 = dvdx
+@ r8 = dxdy_right
+@ r9 = (height << 16 | clipped_y)
+@ r10 = dudy_left
+@ r11 = dvdy_left
+@ r12 = &texture_slot[texture_id];
+	mov		r14, r9, LSL #16
+	mov		r14, r14, LSR #16 @ r14 = clipped_y
+	mla		r0, r4, r14, r0 @ x_left = x_left + dxdy_left * clipped_y
+	mla		r1, r8, r14, r1 @ x_right = x_right + dxdy_right * clipped_y
+	mla		r2, r10, r14, r2 @ l_u = l_u + dudy12 * clipped_y
+	mla		r3, r11, r14, r3 @ l_v = l_v + dvdy12 * clipped_y
+	mov		r9, r9, LSR #15 @ 플래그를 저장할 필요는 없지만 코드를 공유하기 위해 0을 채운다.
+	
+	add		r14, r14, r14, LSL #1 @ r14 = r14 * 3
+	add		r14, r14, r14, LSL #2 @ r14 = r14 * 5
+	add		r5, r5, r14, LSL #4 @ render_target + clipped_y * 240
+
+	@ r9 = height << 1
+	cmp		r9, #1
 	ble		.L16 @ skip loop if height <= 0
+	cmp		r0, r1
+	bgt		.L16
+	sub		r9, r9, #2
 	bl		.scan_convert
 .L16:
 	pop		{pc}
-
 
 .scan_convert:
 	str		r14, [sp, #-4]! @ store lr
@@ -383,8 +455,8 @@ _ZN5mode85flushEv:
 	rsble	r1, r0, r1
 	rsbgt	r1, r0, #240 @ width = min(x_right_pixel, 240) - max(x_left_pixel, 0)
 
-	cmp		r1, #0 @ width == 0
-	ble		.L10
+	cmp		r1, #0 @ width <= 0
+	ble		.L10 @ skip
 	sub		r14, r0, r14 @ r14(clipped_x) = max(x_left_pixel, 0) - x_left_pixel
 	add		r5, r5, r0 @ render_target + 240 * height + max(x_left_pixel, 0)
 	mla		r2, r6, r14, r2 @ u += dudx * clipped_x;
@@ -419,7 +491,7 @@ _ZN5mode85flushEv:
 	strh	r14, [r5, r1] @ *(ptr + width - 1) = (texture[uv] | ptr[width] << 8);
 .L8:
 	cmp		r1, #0
-	ble		.L10 @ skip loop if (width < 0)
+	ble		.L10 @ skip loop if (width <= 0)
 .L9:
 	and		r0, r2, #0x07E00000 @ calculate u
 	and		r9, r3, #0x07E00000 @ calculate v
@@ -438,7 +510,7 @@ _ZN5mode85flushEv:
 	add		r3, r3, r7 @ v += dvdx
 	strh	r0, [r5], #2 @ *ptr = color; ptr += 2
 	subs	r1, r1, #2 @ width -= 2
-	bne		.L9 @ x loop
+	bgt		.L9 @ if (width > 0)
 .L10:
 	pop		{r0, r1, r2, r3, r5, r9}
 .L11:
@@ -448,6 +520,6 @@ _ZN5mode85flushEv:
 	add		r2, r2, r10 @ u_left += dudy_left
 	add		r3, r3, r11 @ v_left += dvdy_left
 	subs	r9, r9, #2 @ height -= 1, 2를 뺏을 때, 1보다 작으면 루프 탈출
-	bgt		.L6
+	bge		.L6
 .L12:
 	pop		{pc}

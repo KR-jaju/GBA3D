@@ -18,6 +18,8 @@ char log3[100];
 int	scroll;
 extern int value;
 int	value;
+extern int value1;
+int	value1;
 
 SceneA::SceneA()
 {
@@ -29,31 +31,24 @@ SceneA::SceneA()
 
 	clock_init();
 	mode8::init();
-	i32 s = 0;
-	i32 c = 0;
-	sincos(0, s, c);
 
-	fixed::sincos(0);
-	fixed::sqrt(1);
-
-	// sprintf(log3, "context (%d, %d)", s, c);
 	sprintf(log3, "%d %d %d", fixed::sqrt(0), fixed::sqrt(255), fixed::sqrt(1 << 16));
 	scroll = 0;
 
 	this->vertices[0].uv = (63<<5)<<16;
-	this->vertices[0].x = -2 << 8;
-	this->vertices[0].y = 0 << 7;
-	this->vertices[0].z = (1 << 8);
+	this->vertices[0].x = -256;
+	this->vertices[0].y = 0;
+	this->vertices[0].z = (1 << 9);
 
 	this->vertices[1].uv = (63<<5);
-	this->vertices[1].x = 1 << 8;
-	this->vertices[1].y = 1 << 8; //1 0000 0000 
-	this->vertices[1].z = 1 << 8;
+	this->vertices[1].x = 256;
+	this->vertices[1].y = -256; //1 0000 0000 
+	this->vertices[1].z = 1 << 9;
 
 	this->vertices[2].uv = 0;
 	this->vertices[2].x = 0;
-	this->vertices[2].y = 1 << 8; //1010 1111
-	this->vertices[2].z = 1 << 8;
+	this->vertices[2].y = 256;
+	this->vertices[2].z = 1 << 9;
 
 	this->vertex_count[0] = 3;
 	this->vertex_count[1] = 0;
@@ -74,14 +69,29 @@ void	SceneA::update()
 {
 	InputState	input;
 
-	scroll += 180; // 프레임당 360/65536도 회전, 초당 약 0.33도 회전 * 30 -> 초당 10도 화전
+	// scroll += 1; // 프레임당 360/65536도 회전, 초당 약 0.33도 회전 * 30 -> 초당 10도 화전
+	scroll += 2; // 프레임당 360/65536도 회전, 초당 약 0.33도 회전 * 30 -> 초당 10도 화전
+
+	for (int r = 0; r < 3; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (r == c)
+				mode8::context.matrix_slot[0].data[r * 4 + c] = 16384;
+			else
+				mode8::context.matrix_slot[0].data[r * 4 + c] = 0;
+		}
+	}
+
 	pollInput(&input);
 	int t0 = clock_get();
-	mode8::setCamera(0, 0, 0, scroll & 0xFFFF, 0);
+	// mode8::setCamera(0, 0, 0, scroll & 0xFFFF, 0);
+	mode8::setCamera(0, -(scroll & 0xFFFF), 0, 0, 0);
+	// mode8::setCamera(0, 0, 0, 0, 0);
 	mode8::clear();
-	// mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);
+	mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);
 	// mode8::drawIndexed(::vertices, ::vertex_count, ::indices, 0);
-	// mode8::flush();
+	mode8::flush();
 	// sprintf(log3, "triangle depth : %p, %p", value, &mode8::context.texture_slot);
 	// sprintf(log3, "triangle depth : %d, %p", value, (int)&mode8::context.texture_slot - (int)&mode8::context);
 	// mode8::clear(skybg, 50, 0);
@@ -92,6 +102,7 @@ void	SceneA::update()
 	mode8::flip();
 	int t2 = clock_get();
 	sprintf(log2, "Frametime: %dus", t2 - t0);
+	sprintf(log3, "context : %p, value : %d, value1 : %d", &mode8::context, value, value1);
 
 	// this->mario.update(&input);
 	// this->lakitu.update(&input);

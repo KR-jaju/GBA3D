@@ -19,7 +19,6 @@ _ZN5mode89setCameraEiiiii:
 	ldr		r4, [sp, #36] @ TODO : 5번째 인자 (pitch) 로드 오프셋
 
 	mov		r8, #960
-	@ add		r5, r3, #32768 @ -32768 ~ 32767 -> 0 ~ 65535
 	mov		r5, r3, LSL #16
 	mov		r5, r5, LSR #16
 

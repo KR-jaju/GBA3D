@@ -46,11 +46,31 @@ namespace mode8
 	}; // sizeof(vertex) = 16 bytes
 
 	extern t_context	context;
+	/**
+	 * @brief ewram texture storage which mode8 fetches texture data from
+	 * @var u8 textures[32][4096];
+	 */
 	extern u8			textures[32][4096] EWRAM;
 
+	/**
+	 * @brief initialize mode8 library
+	 * @return none
+	 */
 	void	init();
-	
+	/**
+	 * @brief set camera position and rotation
+	 * @param x Q15.16
+	 * @param y Q15.16
+	 * @param z Q15.16
+	 * @param yaw Q15.16
+	 * @param pitch Q15.16 (-0.5 ~ 0.5)
+	 * @return none
+	 */
 	void	setCamera(i32 x, i32 y, i32 z, i32 yaw, i32 pitch); // 카메라 정보 설정
+	/**
+	 * @brief clear current render target
+	 * @return none
+	 */
 	void	clear(); // 현재 render_target을 초기화
 
 	// vertices는 정점 배열로, 정점의 위치와 uv를 가진다.
