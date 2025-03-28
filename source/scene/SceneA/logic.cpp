@@ -35,30 +35,41 @@ SceneA::SceneA()
 	sprintf(log3, "%d %d %d", fixed::sqrt(0), fixed::sqrt(255), fixed::sqrt(1 << 16));
 	scroll = 0;
 
-	this->vertices[0].uv = (63<<5)<<16;
+	this->vertices[0].uv = 0;
 	this->vertices[0].x = -256;
-	this->vertices[0].y = 0;
+	this->vertices[0].y = 256;
 	this->vertices[0].z = (1 << 9);
 
-	this->vertices[1].uv = (63<<5);
+	this->vertices[1].uv = (63<<5) << 16;
 	this->vertices[1].x = 256;
-	this->vertices[1].y = -256; //1 0000 0000 
+	this->vertices[1].y = 256;
 	this->vertices[1].z = 1 << 9;
 
-	this->vertices[2].uv = 0;
-	this->vertices[2].x = 0;
-	this->vertices[2].y = 256;
+	this->vertices[2].uv = 63 << 5;
+	this->vertices[2].x = -256;
+	this->vertices[2].y = -256;
 	this->vertices[2].z = 1 << 9;
 
-	this->vertex_count[0] = 3;
+	this->vertices[3].uv = ((63 << (5 + 16)) | 63 << 5);
+	this->vertices[3].x = 256;
+	this->vertices[3].y = -256;
+	this->vertices[3].z = 1 << 9;
+
+	this->vertex_count[0] = 4;
 	this->vertex_count[1] = 0;
 
 	this->indices[0] = 0;
-	this->indices[1] = 1;
-	this->indices[2] = 2;
-	this->indices[3] = -1;
-	this->indices[4] = -1;
-	this->indices[5] = -1;
+	this->indices[1] = 2;
+	this->indices[2] = 1;
+	this->indices[3] = 1;
+	this->indices[4] = 2;
+	this->indices[5] = 3;
+	this->indices[6] = -1;
+	this->indices[7] = -1;
+	this->indices[8] = -1;
+	// this->indices[3] = -1;
+	// this->indices[4] = -1;
+	// this->indices[5] = -1;
 	memcpy(mode8::textures[0], mario_test, 4096);
 	mode8::context.background = skybg;
 	mode8::context.padding[5] = 0;
@@ -85,8 +96,8 @@ void	SceneA::update()
 
 	pollInput(&input);
 	int t0 = clock_get();
-	// mode8::setCamera(0, 0, 0, scroll & 0xFFFF, 0);
-	mode8::setCamera(0, -(scroll & 0xFFFF), 0, 0, 0);
+	mode8::setCamera(0, 0, 0, 0, 0);
+	// mode8::setCamera(0, -(scroll & 0xFFFF), 0, 0, 0);
 	// mode8::setCamera(0, 0, 0, 0, 0);
 	mode8::clear();
 	mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);

@@ -302,8 +302,8 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	eorhi	r6, r6, r5
 	eorhi	r5, r6, r5
 
-	cmp		r9, r10
-	cmpls	r8, r10 @ if (!c1 || !c2)
+	cmp		r9, r10 @ hi -> !c1, ls -> c1
+	cmphi	r8, r10 @ if (!c1 && !c2)
 	orrhi	r6, r5, r6, LSL #16 @ swap(0, 2);
 	movhi	r5, r7 @ r5 = i[2]
 	orrls	r6, r7, r6, LSL #16 @ no swap
@@ -311,7 +311,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	@ r6는 i[1]을 상위 16비트에, i[2]을 하위 16비트에 담게 된다.
 
 	cmp		r9, r10
-	cmphi	r8, r10 @ if (!c1 && !c2)
+	cmpls	r8, r10 @ if (!c1 || !c2)
 	movhi	r6, r6, ROR #16 @ swap(i[1], i[2])
 
 	orr		r5, r5, r2, LSL #16 @ ((texture_id << 16) | i0);

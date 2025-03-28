@@ -12,9 +12,9 @@ public:
 private:
 	static const u16 palette[256];
 
-	mode8::t_vertex	vertices[3];
+	mode8::t_vertex	vertices[4];
 	i32				vertex_count[4];
-	i32				indices[6];
+	i32				indices[9];
 	
 	// Mario	mario;
 
