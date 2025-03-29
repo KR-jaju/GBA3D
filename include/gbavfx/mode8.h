@@ -5,16 +5,10 @@
 
 namespace mode8
 {
-	typedef struct s_texture_slot	t_texture_slot;
 	typedef struct s_ptb			t_ptb;
 	typedef struct s_context 		t_context;
 	typedef struct s_vertex			t_vertex;
 	typedef struct s_matrix			t_matrix;
-
-	struct s_texture_slot
-	{
-		u8 const	*textures[32]; // 0x0000 ~ 0x0080 (128 bytes)
-	};
 
 	struct s_matrix
 	{
@@ -43,8 +37,27 @@ namespace mode8
 		u32 y;
 		u32 z;
 		u32 uv;
+		
+		constexpr s_vertex(float x, float y, float z, float u, float v)
+			: x(0), y(0), z(0), uv(0)
+		{
+			i32 ix = static_cast<i32>(x * 256 + 0.5f);
+			i32 iy = static_cast<i32>(y * 256 + 0.5f);
+			i32 iz = static_cast<i32>(z * 256 + 0.5f);
+			i32	iu = static_cast<i32>(u * 32 + 0.5f);
+			i32 iv = static_cast<i32>(v * 32 + 0.5f);
+			
+			this->x = ix;
+			this->y = iy;
+			this->z = iz;
+			this->uv = ((iv << 16) | ((u16)iu));
+		}
 	}; // sizeof(vertex) = 16 bytes
 
+	/**
+	 * @brief rendering context, contains all the data needed for rendering
+	 * @var t_context context;
+	 */
 	extern t_context	context;
 	/**
 	 * @brief ewram texture storage which mode8 fetches texture data from
@@ -57,6 +70,7 @@ namespace mode8
 	 * @return none
 	 */
 	void	init();
+
 	/**
 	 * @brief set camera position and rotation
 	 * @param x Q15.16
@@ -67,17 +81,33 @@ namespace mode8
 	 * @return none
 	 */
 	void	setCamera(i32 x, i32 y, i32 z, i32 yaw, i32 pitch); // 카메라 정보 설정
+
 	/**
 	 * @brief clear current render target
 	 * @return none
 	 */
 	void	clear(); // 현재 render_target을 초기화
 
-	// vertices는 정점 배열로, 정점의 위치와 uv를 가진다.
-	// vertex_count는 각 본의 정점 개수를 담는 배열로, 이 순서대로 변환 행렬이 결정된다. 0이 나올 때까지 읽는다.
-	// indices는 삼각형을 정의하는 세 점을 담는 배열로, 모든 면들이 나온 후 마지막에 추가로 -1이 3개 붙어야한다.
+	/**
+	 * @brief request to draw indexed vertices
+	 * @param vertices array of vertices
+	 * @param vertex_count array of vertex count, 0 indicates end of bone
+	 * @param indices array of indices, (three consecutive) -1 indicates end of face
+	 * @param texture_id texture id, 0 ~ 31
+	 * @return none
+	 */
 	void	drawIndexed(t_vertex const* vertices, i32 const* vertex_count, i32 const* indices, u32 texture_id);
+
+	/**
+	 * @brief flush all the rendering data to the framebuffer
+	 * @return none
+	 */
 	void	flush();
+
+	/**
+	 * @brief mode4 page flip and etc
+	 * @return none
+	 */
 	void	flip();
 }
 

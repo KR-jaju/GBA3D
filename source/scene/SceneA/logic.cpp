@@ -96,8 +96,8 @@ void	SceneA::update()
 
 	pollInput(&input);
 	int t0 = clock_get();
-	mode8::setCamera(0, 0, 0, 0, 0);
-	// mode8::setCamera(0, -(scroll & 0xFFFF), 0, 0, 0);
+	// mode8::setCamera(0, 0, 0, 0, 0);
+	mode8::setCamera(0, -(scroll & 0xFFFF), 0, 0, 0);
 	// mode8::setCamera(0, 0, 0, 0, 0);
 	mode8::clear();
 	mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);

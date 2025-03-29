@@ -140,6 +140,18 @@ _ZN5mode85flushEv:
 	@ r12 = &texture_slot[texture_id];
 	@ r14 = return address
 
+
+	push	{r0, r12}
+	ldr		r12, =value
+	str		r1, [r12]
+	pop		{r0, r12}
+
+	push	{r0, r12}
+	ldr		r0, =value1
+	str		r5, [r0]
+	pop		{r0, r12}
+
+
 	push	{r0-r3, r4, r5, r8-r11, lr} @ {0.yxuv, 1.yx, 2.yx, 2.uv - 1.uv, lr}
 
 	@ pushed 11 * 4 bytes
@@ -246,6 +258,7 @@ _ZN5mode85flushEv:
 	rsble	r9, r5, r9
 	rsbgt	r9, r5, #160 @ height = min(1.y, 160) - max(0.y, min(0, 1.y));
 
+
 	sub		r14, r5, r0 @ clipped_y = max(0.y, 0) - 0.y;
 	@ max(0.y, min(1.y, 0)) - 0.y
 
@@ -294,6 +307,7 @@ _ZN5mode85flushEv:
 @ r10 = dudy_left (21bit fraction)
 @ r11 = dvdy_left (21bit fraction)
 @ r12 = &texture_slot[texture_id];
+
 	cmp		r9, #1
 	ble		.L13 @ skip loop if (height >> 1) <= 0
 	sub		r9, r9, #2 @ 2를 미리 빼놔야 함.
@@ -339,16 +353,6 @@ _ZN5mode85flushEv:
 	cmp		r11, #160
 	rsblt	r9, r2, r11
 	rsbge	r9, r2, #160 @ r9 = min(y2, 160) - max(y1, 0) (height)
-
-	push	{r0, r12}
-	ldr		r0, =value
-	str		r9, [r0]
-	pop		{r0, r12}	
-
-	@ push	{r0, r12}
-	@ ldr		r0, =value1
-	@ str		r11, [r0]
-	@ pop		{r0, r12}
 
 	sub		r2, r2, r4 @ clipped_y = max(1.y, 0) - 1.y;
 	orr		r9, r2, r9, LSL #16 @ r9 = (height << 16 | clipped_y)
