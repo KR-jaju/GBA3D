@@ -23,6 +23,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	ldr		r12, [r1], #4 @ r12 = vertex_count[0]
 	cmp 	r12, #0 @ if vertex_count == 0?
 	beq 	.L5 @ return;
+
 	push	{r1-r11, lr} @ store (vertex_count, indices, texture_id and others)
 @ prepare pointer to ptb (post transform buffer(vertex, face))
 	mov		r6, r0 @ r6 = vertices
@@ -39,6 +40,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	@ r6 = vertices
 	@ r12 = vertex count(loop variable)
 @ stack = (vertex_count, indices, texture_id, ...)
+
 	push	{r4, r6, r12}
 	mov		r12, r5
 	add		r14, r0, #0x0BA0 @ r14 = &context->view_matrix
@@ -64,7 +66,9 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	mov		r2, r2, ASR #14
 	ldmia	r14!, {r8}
 	add		sp, sp, #36 @ move sp to 4th column
+
 	pop		{r3, r4, r5} @ object transform matrix 4th column
+
 
 	mul		r3, r9, r3
 	mla		r3, r10, r4, r3
@@ -149,15 +153,9 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	mla r0, r10, r3, r0 @ r0 += matrix[2, 1] * y
 	mla r0, r11, r7, r0 @ r0 += matrix[2, 2] * z
 	add r0, r14, r0, ASR #14 @ r0 = (r0 >> 14) + matrix[2, 3]
+
 	
 @ 문서에 의하면 r8, r9, r0은 소수부 8비트의 부호있는 고정소수점 값으로 분류됨
-
-	@ push	{r0, r1}
-	@ ldr		r1, =value
-	@ str		r0, [r1]
-	@ pop		{r0, r1}
-
-
 @ free registers = ()
 @ used registers = (r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12(ip), r14(lr))
 @ stack = (vertex_count, indices, texture_id, ...)
@@ -217,6 +215,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	subs	ip, ip, #1 @ ip -= 1;
 	subne	r5, r5, #48 @ r5 = &context->matrix_slot[n] 위에서 읽으면서 (12 * 4 = )48바이트 증가됐으므로 그만큼 줄임
 	bne		.L1 @ while (ip > 0)
+
 @ ------------------------------ vertex transformation end (per bone) ------------------------------------------------------------
 @ stack = (vertex_count, indices, texture_id, ...)
 	ldr		r2, [sp] @ r2 = vertex_count
@@ -248,7 +247,9 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	ldmia	r1!, {r5, r6, r7} @ r5 = i0, r6 = i1, r7 = i2
 	cmp		r5, #-1 @ terminator found
 	beq		.L5 @ if i0 == -1, return
+
 .L2: @ loop indices
+
 	ldr		r8, [r4, r5, LSL #3] @ r9 = v[i0 * 2]
 	ldr		r9, [r4, r6, LSL #3] @ r10 = v[i1 * 2]
 	ldr		r10, [r4, r7, LSL #3] @ r11 = v[i2 * 2]
@@ -316,6 +317,8 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 
 	orr		r5, r5, r2, LSL #16 @ ((texture_id << 16) | i0);
 
+
+
 @ free registers = (r7, r11, r12(ip))
 @ used registers = (r0, r1, r2, r3, r4, r5, r6, r8, r9, r10, r14(lr))
 @ r0 = &context (&context->ordering_table)
@@ -352,9 +355,13 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	mov		r11, r10, LSL #12 @ r11 = 2.x << 12
 	rsb		r11, r12, r11, LSR #20 @ r11 = 2.x - 0.x
 	rsb		r10, r8, r9, LSR #20 @ r10 = 1.y - 0.y = dy01
+
 	mul		r10, r11, r10 @ dx02 * dy01
 
 	cmp		r2, r10 @ if(dx01 * dy02 <= dx02 * dy01)
+
+
+
 	bge		.L3 @ continue; @ cull if winding order == clockwise
 	
 @ free registers = (r2, r8, r9, r10, r11, r12(ip))
@@ -366,15 +373,20 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 @ r5 = (texture_id << 16 | i0)
 @ r6 = (i1 | i2)
 @ r7 = approximate depth of triangle
+@ r14 = &context->face_buffer
 @ stack = (vertex_count, indices, texture_id, ...)
 	mov		r7, r7, LSL #1 @ r7 = z * sizeof(uint16_t)
 	ldrsh	r11, [r0, r7] @ r11 = ordering_table[z]
+
 	orr		r5, r5, r11, LSL #21 @ r5 = (next << 21) | (texture_id << 16) | (i2)
 	sub		r11, r3, r14 @ r11 = fb_top - face_buffer
 	mov		r11, r11, LSR #3 @ r11 = face_id
+
 	strh	r11, [r0, r7] @ ordering_table[z] = face_id
 	stmia	r3!, {r5, r6} @ *(fb_top++) = face;
 .L3:
+	mov		r2, r5, LSR #16
+	and		r2, r2, #0x001F @ r2 = texture_id
 	ldmia	r1!, {r5, r6, r7} @ r5 = i0, r6 = i1, r7 = i2
 	cmp		r5, #-1
 	bne		.L2 @ if i0 != -1, continue
