@@ -38,6 +38,7 @@ namespace mode8
 		u32 z;
 		u32 uv;
 		
+		constexpr s_vertex() = default;
 		constexpr s_vertex(float x, float y, float z, float u, float v)
 			: x(0), y(0), z(0), uv(0)
 		{
@@ -50,7 +51,7 @@ namespace mode8
 			this->x = ix;
 			this->y = iy;
 			this->z = iz;
-			this->uv = ((iv << 16) | ((u16)iu));
+			this->uv = ((iu << 16) | ((u16)iv));
 		}
 	}; // sizeof(vertex) = 16 bytes
 
