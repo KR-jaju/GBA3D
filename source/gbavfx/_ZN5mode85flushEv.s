@@ -54,7 +54,9 @@ _ZN5mode85flushEv:
 .L3:
 	subs	r0, r0, #1
 	bne		.L0
+
 	pop		{r4-r11, lr}
+
 	bx		lr
 
 @ r0 = face_data[0]
@@ -139,17 +141,6 @@ _ZN5mode85flushEv:
 	@ r11 = 2.v - 1.v
 	@ r12 = &texture_slot[texture_id];
 	@ r14 = return address
-
-
-	push	{r0, r12}
-	ldr		r12, =value
-	str		r1, [r12]
-	pop		{r0, r12}
-
-	push	{r0, r12}
-	ldr		r0, =value1
-	str		r5, [r0]
-	pop		{r0, r12}
 
 
 	push	{r0-r3, r4, r5, r8-r11, lr} @ {0.yxuv, 1.yx, 2.yx, 2.uv - 1.uv, lr}
@@ -280,7 +271,6 @@ _ZN5mode85flushEv:
 	add		r5, r5, r5, LSL #1 @ r5 = r5 * 3
 	add		r5, r5, r5, LSL #2 @ r5 = r5 * 5
 	add		r5, r14, r5, LSL #4 @ context->render_target + 240 * top
-
 
 	cmp		r4, r8 @ 왼쪽 변은 01인가 02인가?
 	eorlt	r0, r0, r1
@@ -416,6 +406,7 @@ _ZN5mode85flushEv:
 @ r10 = dudy_left
 @ r11 = dvdy_left
 @ r12 = &texture_slot[texture_id];
+
 	mov		r14, r9, LSL #16
 	mov		r14, r14, LSR #16 @ r14 = clipped_y
 	mla		r0, r4, r14, r0 @ x_left = x_left + dxdy_left * clipped_y
@@ -434,6 +425,7 @@ _ZN5mode85flushEv:
 	cmp		r0, r1
 	bgt		.L16
 	sub		r9, r9, #2
+
 	bl		.scan_convert
 .L16:
 	pop		{pc}

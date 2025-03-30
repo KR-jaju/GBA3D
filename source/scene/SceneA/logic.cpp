@@ -78,10 +78,35 @@ SceneA::SceneA()
 
 void	SceneA::update()
 {
+	static i32 angle = 0;
 	InputState	input;
 
 	// scroll += 1; // 프레임당 360/65536도 회전, 초당 약 0.33도 회전 * 30 -> 초당 10도 화전
-	scroll += 2; // 프레임당 360/65536도 회전, 초당 약 0.33도 회전 * 30 -> 초당 10도 화전
+	scroll += 2;
+	angle += 60;
+	{
+		i32 sine, cosine;
+
+		u32 value = fixed::sincos(angle);
+		sine = (((i32)value) >> 16) >> 6; // 14비트 소수점을 8비트로 낮추기
+		cosine = (((i32)value << 16) >> 16) >> 6;
+		
+		this->vertices[0].x = -cosine - sine;
+		this->vertices[0].y = -sine + cosine;
+		this->vertices[0].z = (1 << 9);
+	
+		this->vertices[1].x = cosine - sine;
+		this->vertices[1].y = sine + cosine;
+		this->vertices[1].z = 1 << 9;
+	
+		this->vertices[2].x = -cosine + sine;
+		this->vertices[2].y = -sine - cosine;
+		this->vertices[2].z = 1 << 9;
+	
+		this->vertices[3].x = cosine + sine;
+		this->vertices[3].y = sine - cosine;
+		this->vertices[3].z = 1 << 9;
+	}
 
 	for (int r = 0; r < 3; ++r)
 	{
@@ -96,9 +121,8 @@ void	SceneA::update()
 
 	pollInput(&input);
 	int t0 = clock_get();
-	// mode8::setCamera(0, 0, 0, 0, 0);
-	mode8::setCamera(0, -(scroll & 0xFFFF), 0, 0, 0);
-	// mode8::setCamera(0, 0, 0, 0, 0);
+	mode8::setCamera(0, 0, 0, 0, 0);
+	// mode8::setCamera(0, -(scroll & 0xFFFF), -300, 0, 0);
 	mode8::clear();
 	mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);
 	// mode8::drawIndexed(::vertices, ::vertex_count, ::indices, 0);
