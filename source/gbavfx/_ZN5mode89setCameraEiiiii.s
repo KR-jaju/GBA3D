@@ -53,7 +53,7 @@ _ZN5mode89setCameraEiiiii:
 
 	mul		r8, r0, r3 @ r8 = sin_yaw * cos_pitch
 	mov		r8, r8, ASR #14
-	mov		r9, r2 @ r9 = sin_pitch
+	rsb		r9, r2, #0 @ r9 = -sin_pitch
 	mul		r10, r1, r3 @ r10 = cos_yaw * cos_pitch
 	mov		r10, r10, ASR #14
 
@@ -86,8 +86,5 @@ _ZN5mode89setCameraEiiiii:
 	mov		r3, r3, ASR #14
 	mov		r0, r10
 	mov		r1, #0
-
 	stmia	r12, {r0-r11} @ save matrix
-
-	pop		{r4-r11, r14}
-	bx		lr
+	pop		{r4-r11, pc}

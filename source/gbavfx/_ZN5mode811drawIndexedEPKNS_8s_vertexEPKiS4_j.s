@@ -41,6 +41,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	@ r12 = vertex count(loop variable)
 @ stack = (vertex_count, indices, texture_id, ...)
 
+	sub		sp, sp, #48 @ result matrix base
 	push	{r4, r6, r12}
 	mov		r12, r5
 	add		r14, r0, #0x0BA0 @ r14 = &context->view_matrix
@@ -48,8 +49,8 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	ldmia	r12!, {r1, r4, r7, r10}
 	ldmia	r12!, {r2, r5, r8, r11}
 
-	sub		r12, r12, #48
 	push	{r0-r11} @ save transposed matrix
+	@ top
 	ldmia	r14!, {r9, r10, r11} @ view matrix 1st row
 
 	mul		r0, r9, r0
@@ -66,19 +67,52 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	mov		r2, r2, ASR #14
 	ldmia	r14!, {r8}
 	add		sp, sp, #36 @ move sp to 4th column
-
+	@ top + 36
 	pop		{r3, r4, r5} @ object transform matrix 4th column
-
-
+	@ top + 48
 	mul		r3, r9, r3
 	mla		r3, r10, r4, r3
 	mla		r3, r11, r5, r3
 	mov		r3, r3, ASR #14
 	add		r3, r8, r3
-	stmia	r12!, {r0, r1, r2, r3} @ 1행 계산 완료
-
-	sub		sp, sp, #48 @ move sp to 1st column
+	add		sp, sp, #28
+	@ top + 48 + 12 + 16 = top + 76
+	push	{r0, r1, r2, r3} @ 1행 계산 완료
+	@ top + 60
+	sub		sp, sp, #60 @ move sp to 1st column
+	@ top
 	pop		{r0-r8} @ restore transposed matrix
+	@ top + 36
+
+	ldmia	r14!, {r9, r10, r11}
+	mul		r0, r9, r0
+	mla		r0, r10, r1, r0
+	mla		r0, r11, r2, r0
+	mov		r0, r0, ASR #14
+	mul		r1, r9, r3
+	mla		r1, r10, r4, r1
+	mla		r1, r11, r5, r1
+	mov		r1, r1, ASR #14
+	mul		r2, r9, r6
+	mla		r2, r10, r7, r2
+	mla		r2, r11, r8, r2
+	mov		r2, r2, ASR #14
+	ldmia	r14!, {r8}
+	pop		{r3, r4, r5} @ 4th column
+	@ top + 48
+	mul		r3, r9, r3
+	mla		r3, r10, r4, r3
+	mla		r3, r11, r5, r3
+	mov		r3, r3, ASR #14
+	add		r3, r8, r3
+	add		sp, sp, #44
+	@ top + 48 + 12 + 16 * 2 = top + 92
+	push	{r0, r1, r2, r3} @ 2행 계산 완료
+	@ top + 76
+	sub		sp, sp, #76
+	@ top
+	pop		{r0-r8} @ move sp to 1st column
+	@ top + 36
 
 	ldmia	r14!, {r9, r10, r11}
 	mul		r0, r9, r0
@@ -95,66 +129,52 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	mov		r2, r2, ASR #14
 	ldmia	r14!, {r8}
 	pop		{r3, r4, r5}
+	@ top + 48
 	mul		r3, r9, r3
 	mla		r3, r10, r4, r3
 	mla		r3, r11, r5, r3
 	mov		r3, r3, ASR #14
 	add		r3, r8, r3
-	stmia	r12!, {r0, r1, r2, r3} @ 2행 계산 완료
-
-	sub		sp, sp, #48
-	pop		{r0-r8} @ restore transposed matrix
-
-	ldmia	r14!, {r9, r10, r11}
-	mul		r0, r9, r0
-	mla		r0, r10, r1, r0
-	mla		r0, r11, r2, r0
-	mov		r0, r0, ASR #14
-	mul		r1, r9, r3
-	mla		r1, r10, r4, r1
-	mla		r1, r11, r5, r1
-	mov		r1, r1, ASR #14
-	mul		r2, r9, r6
-	mla		r2, r10, r7, r2
-	mla		r2, r11, r8, r2
-	mov		r2, r2, ASR #14
-	ldmia	r14!, {r8}
-	pop		{r3, r4, r5}
-	mul		r3, r9, r3
-	mla		r3, r10, r4, r3
-	mla		r3, r11, r5, r3
-	mov		r3, r3, ASR #14
-	add		r3, r8, r3
-	stmia	r12!, {r0, r1, r2, r3} @ 3행 계산 완료
-
-	sub		r5, r12, #48
+	add		sp, sp, #60
+	@ top + 48 + 12 + 16 * 3 = top + 108
+	push	{r0, r1, r2, r3} @ 3행 계산 완료
+	@ top + 92
+	sub		sp, sp, #44
+	@ top + 48
+	@ sub		r5, r12, #48
+	mov		r5, r12 @ next matrix
 	pop		{r4, r6, r12}
+	@ top + 60
 .L1: @ loop vertices
 @ ------------------------------------------------------------ matrix multiplication ------------------------------------------------------------
 	ldmia r6!, {r1, r3, r7} @ vector x, y, z
 	@ 벡터가 Q7.8, 행렬의 회전부가 Q1.14, 평행이동부가 Q7.8
 	@ x 계산하기 (1행)
-	ldmia r5!, {r8, r9, r10, r11} @ matrix[0, 0:3]
-	mul	r8, r1, r8 @ r8 = matrix[0, 0] * x
-	mla r8, r9, r3, r8 @ r8 += matrix[0, 1] * y
-	mla r8, r10, r7, r8 @ r8 += matrix[0, 2] * z
-	add r8, r11, r8, ASR #14 @ r8 = (r8 >> 14) + matrix[0, 3]
+	@ ldmia r5!, {r8, r9, r10, r11} @ matrix[0, 0:3]
+	pop		{r8, r9, r10, r11} @ matrix 1th row
+	mul		r8, r1, r8 @ r8 = matrix[0, 0] * x
+	mla		r8, r9, r3, r8 @ r8 += matrix[0, 1] * y
+	mla		r8, r10, r7, r8 @ r8 += matrix[0, 2] * z
+	add		r8, r11, r8, ASR #14 @ r8 = (r8 >> 14) + matrix[0, 3]
 
 	@ y 계산하기 (2행)
-	ldmia r5!, {r9, r10, r11, r14} @ matrix[1, 0:3]
-	mul	r9, r1, r9 @ r9 = matrix[1, 0] * x
-	mla r9, r10, r3, r9 @ r9 += matrix[1, 1] * y
-	mla r9, r11, r7, r9 @ r9 += matrix[1, 2] * z
-	add r9, r14, r9, ASR #14 @ r9 = (r9 >> 14) + matrix[1, 3]
+	@ ldmia r5!, {r9, r10, r11, r14} @ matrix[1, 0:3]
+	pop		{r9, r10, r11, r14} @ matrix 2nd row
+	mul		r9, r1, r9 @ r9 = matrix[1, 0] * x
+	mla		r9, r10, r3, r9 @ r9 += matrix[1, 1] * y
+	mla		r9, r11, r7, r9 @ r9 += matrix[1, 2] * z
+	add		r9, r14, r9, ASR #14 @ r9 = (r9 >> 14) + matrix[1, 3]
 
 	@ z 계산하기 (3행)
-	ldmia r5!, {r0, r10, r11, r14} @ matrix[2, 0:3]
-	mul	r0, r1, r0 @ r0 = matrix[2, 0] * x
-	mla r0, r10, r3, r0 @ r0 += matrix[2, 1] * y
-	mla r0, r11, r7, r0 @ r0 += matrix[2, 2] * z
-	add r0, r14, r0, ASR #14 @ r0 = (r0 >> 14) + matrix[2, 3]
-
+	@ ldmia r5!, {r0, r10, r11, r14} @ matrix[2, 0:3]
+	pop		{r0, r10, r11, r14} @ matrix 3rd row
+	mul		r0, r1, r0 @ r0 = matrix[2, 0] * x
+	mla		r0, r10, r3, r0 @ r0 += matrix[2, 1] * y
+	mla		r0, r11, r7, r0 @ r0 += matrix[2, 2] * z
+	add		r0, r14, r0, ASR #14 @ r0 = (r0 >> 14) + matrix[2, 3]
 	
+	@ sp = result matrix base
+
 @ 문서에 의하면 r8, r9, r0은 소수부 8비트의 부호있는 고정소수점 값으로 분류됨
 @ free registers = ()
 @ used registers = (r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12(ip), r14(lr))
@@ -177,7 +197,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 
 	cmp		r0, #1
 	movlt	r0, #1 @ clamp z
-	mov		r7, r0, ASR #6 @ z의 소수부를 2진수 2자리만 남김
+	mov		r7, r0, LSR #6 @ z의 소수부를 2진수 2자리만 남김
 	cmp		r7, #0xFF @ 정수부가 64를 넘기면 제한 (총 8비트)
 	movgt	r7, #0xFF @ clamp z
 	bl	reciprocal_u16 @ reciprocal_u16(post transform z)
@@ -213,7 +233,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	ldr		r8, [r6], #4 @ read vertex uv, move to next
 	stmia	r4!, {r7, r8} @ append to ptb (v[0] = r7, v[1] = r8)
 	subs	ip, ip, #1 @ ip -= 1;
-	subne	r5, r5, #48 @ r5 = &context->matrix_slot[n] 위에서 읽으면서 (12 * 4 = )48바이트 증가됐으므로 그만큼 줄임
+	subne	sp, sp, #48 @ sp = result matrix base + 48
 	bne		.L1 @ while (ip > 0)
 
 @ ------------------------------ vertex transformation end (per bone) ------------------------------------------------------------
@@ -249,7 +269,6 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	beq		.L5 @ if i0 == -1, return
 
 .L2: @ loop indices
-
 	ldr		r8, [r4, r5, LSL #3] @ r9 = v[i0 * 2]
 	ldr		r9, [r4, r6, LSL #3] @ r10 = v[i1 * 2]
 	ldr		r10, [r4, r7, LSL #3] @ r11 = v[i2 * 2]
@@ -317,8 +336,6 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 
 	orr		r5, r5, r2, LSL #16 @ ((texture_id << 16) | i0);
 
-
-
 @ free registers = (r7, r11, r12(ip))
 @ used registers = (r0, r1, r2, r3, r4, r5, r6, r8, r9, r10, r14(lr))
 @ r0 = &context (&context->ordering_table)
@@ -359,10 +376,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	mul		r10, r11, r10 @ dx02 * dy01
 
 	cmp		r2, r10 @ if(dx01 * dy02 <= dx02 * dy01)
-
-
-
-	bge		.L3 @ continue; @ cull if winding order == clockwise
+	ble		.L3 @ continue; @ cull if winding order == clockwise
 	
 @ free registers = (r2, r8, r9, r10, r11, r12(ip))
 @ used registers = (r0, r1, r3, r4, r5, r6, r7, r14(lr))
