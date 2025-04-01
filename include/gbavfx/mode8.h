@@ -8,19 +8,12 @@ namespace mode8
 	typedef struct s_ptb			t_ptb;
 	typedef struct s_context 		t_context;
 	typedef struct s_vertex			t_vertex;
-	typedef struct s_matrix			t_matrix;
-
-	struct s_matrix
-	{
-		u32	data[12];
-		// t_matrix	operator*(t_matrix const& other) const;
-	};
 
 	struct s_context
 	{
 		u16				ordering_table[768];			// 0x0000 ~ 0x05FF (1536 bytes)
-		t_matrix		matrix_slot[30];				// 0x0600 ~ 0x0B9F (1440 bytes)
-		t_matrix		view_matrix;					// 0x0BA0 ~ 0x0BC9 (48 bytes)
+		u32				matrix_slot[30][12];			// 0x0600 ~ 0x0B9F (1440 bytes)
+		u32				view_matrix[12];				// 0x0BA0 ~ 0x0BC9 (48 bytes)
 		i32				padding[7];						// 0x0BD0 ~ 0x0BEB (28 bytes)
 		u8 const*		background;						// 0x0BEC ~ 0x0BEF (4 bytes)
 		u32				background_offset;				// 0x0BF0 ~ 0x0BF3 (4 bytes)
@@ -45,8 +38,8 @@ namespace mode8
 			i32 ix = static_cast<i32>(x * 256 + 0.5f);
 			i32 iy = static_cast<i32>(y * 256 + 0.5f);
 			i32 iz = static_cast<i32>(z * 256 + 0.5f);
-			i32	iu = static_cast<i32>(u * 32 + 0.5f);
-			i32 iv = static_cast<i32>(v * 32 + 0.5f);
+			i32	iu = static_cast<i32>((u * 64 + 0.5f) * 32);
+			i32 iv = static_cast<i32>(((1-v) * 64 + 0.5f) * 32);
 			
 			this->x = ix;
 			this->y = iy;
