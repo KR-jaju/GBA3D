@@ -443,13 +443,17 @@ _ZN5mode85flushEv:
 	ble		.L11 @ x_right < 0
 
 	push	{r0, r1, r2, r3, r5, r9} @ x_left, x_right, u_left, v_left, rtv, height
+
 	mov		r14, r0, ASR #16 @ r14 = x_left_pixel
 	bic		r0, r14, r14, ASR #31 @ r0 = max(x_left_pixel, 0)
 
+
+	add		r1, r1, #0x8000
 	mov		r1, r1, ASR #16 @ r1 = x_right_pixel
 	cmp		r1, #240
 	rsble	r1, r0, r1
 	rsbgt	r1, r0, #240 @ width = min(x_right_pixel, 240) - max(x_left_pixel, 0)
+
 
 	cmp		r1, #0 @ width <= 0
 	ble		.L10 @ skip

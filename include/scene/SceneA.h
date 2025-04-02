@@ -2,7 +2,7 @@
 
 #include "mario/Mario.h"
 #include "lakitu/Lakitu.h"
-#include "gbavfx/mode8.h"
+#include "mode8/mode8.h"
 
 class SceneA
 {

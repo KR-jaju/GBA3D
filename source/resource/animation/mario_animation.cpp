@@ -2,7 +2,7 @@
 #include "resource/animation.h"
 
 // 17 bones
-AnimationMatrix const mario_animation0[] = { // 29 frames
+AnimationMatrix const mario_animation_idle_left[] = { // 29 frames
 	{
 	-0.000001f, 0.000096f, -1.000000f, -0.000049f,
 	-0.999881f, -0.015435f, 0.000000f, 0.511360f,
@@ -2470,7 +2470,7 @@ AnimationMatrix const mario_animation0[] = { // 29 frames
 	},
 };
 
-AnimationMatrix const mario_animation1[] = { // 29 frames
+AnimationMatrix const mario_animation_idle_right[] = { // 29 frames
 	{
 	-0.000002f, 0.000096f, -1.000000f, -0.000049f,
 	-0.999873f, -0.015914f, 0.000000f, 0.514368f,
@@ -4938,7 +4938,7 @@ AnimationMatrix const mario_animation1[] = { // 29 frames
 	},
 };
 
-AnimationMatrix const mario_animation2[] = { // 29 frames
+AnimationMatrix const mario_animation_idle_center[] = { // 29 frames
 	{
 	-0.000002f, 0.000096f, -1.000000f, -0.000049f,
 	-0.999873f, -0.015914f, 0.000000f, 0.514368f,

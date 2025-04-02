@@ -1,4 +1,4 @@
-#include "gbavfx/mode8.h"
+#include "mode8/mode8.h"
 
 namespace mode8
 {

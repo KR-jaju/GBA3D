@@ -1,8 +1,7 @@
 #pragma once
 
 #include "common.h"
-#include "gbavfx/mode8.h"
-#include "gbavfx/TestVertex.h"
+#include "mode8/mode8.h"
 
 extern const mode8::t_vertex vertices[];
 extern const i32 indices[];

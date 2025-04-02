@@ -25,8 +25,8 @@ extern const f32 mario_turning_around[][17][7];
 // 
 // extern const f32 double_jump_land[][17][7];
 
-extern AnimationMatrix const mario_animation0[];
-extern AnimationMatrix const mario_animation1[];
-extern AnimationMatrix const mario_animation2[];
+extern AnimationMatrix const mario_animation_idle_left[];
+extern AnimationMatrix const mario_animation_idle_right[];
+extern AnimationMatrix const mario_animation_idle_center[];
 
 

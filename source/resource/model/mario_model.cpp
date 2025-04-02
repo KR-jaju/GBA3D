@@ -1,5 +1,5 @@
 #include "resource/model.h"
-#include "gbavfx/mode8.h"
+#include "mode8/mode8.h"
 
 mode8::t_vertex const vertices[] = 
 {

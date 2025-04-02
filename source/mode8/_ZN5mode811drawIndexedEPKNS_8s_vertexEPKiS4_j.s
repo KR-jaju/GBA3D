@@ -1,4 +1,4 @@
-@ .extern gbavfx_drawSkinned
+@ .extern mode8_drawSkinned
 .extern reciprocal_u16
 .extern _ZN5mode87contextE
 

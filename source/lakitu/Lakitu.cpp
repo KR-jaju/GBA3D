@@ -1,5 +1,5 @@
 // #include "lakitu/Lakitu.h"
-// #include "gbavfx/gbavfx.h"
+// #include "mode8/mode8.h"
 // #include "resource/texture.h"
 // #include "gbamath/mat4.h"
 
@@ -26,7 +26,7 @@
 // 			break;
 // 	}
 // 	// this->view_matrix = mat4::createViewMatrix(this->position, this->yaw, this->pitch);
-// 	// gbavfx_background = background + ((u16(this->yaw) * 960) >> 16) + (((this->pitch * 320) >> 15) + 160) * 1200;
+// 	// mode8_background = background + ((u16(this->yaw) * 960) >> 16) + (((this->pitch * 320) >> 15) + 160) * 1200;
 // }
 
 // bool	Lakitu::actionRHold(InputState *input)
