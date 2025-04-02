@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gbamath/gbamath.h"
+#include "component/Animator.h"
 
 extern const f32 mario_idle_center[][17][7];
 
@@ -23,5 +24,9 @@ extern const f32 mario_single_jump[][17][7];
 extern const f32 mario_turning_around[][17][7];
 // 
 // extern const f32 double_jump_land[][17][7];
+
+extern AnimationMatrix const mario_animation0[];
+extern AnimationMatrix const mario_animation1[];
+extern AnimationMatrix const mario_animation2[];
 
 

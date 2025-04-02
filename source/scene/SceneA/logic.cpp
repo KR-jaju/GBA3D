@@ -107,21 +107,10 @@ void	SceneA::update()
 		this->vertices[3].y = sine - cosine;
 		this->vertices[3].z = 1 << 9;
 	}
-
-	// for (int r = 0; r < 3; ++r)
-	// {
-	// 	for (int c = 0; c < 4; ++c)
-	// 	{
-	// 		if (r == c)
-	// 			mode8::context.matrix_slot[0][r * 4 + c] = 16384;
-	// 		else
-	// 			mode8::context.matrix_slot[0][r * 4 + c] = 0;
-	// 	}
-	// }
-
 	pollInput(&input);
 	int t0 = clock_get();
-	mode8::setCamera(-(scroll & 0xFF), (scroll & 0xFF) + 200, -200, 0, 8192);
+	// mode8::setCamera(-(scroll & 0xFF), (scroll & 0xFF) + 200, -200, 0, 8192);
+	mode8::setCamera(0, 400, -500, 0, 0);
 	this->mario.update(&input);
 	mode8::clear();
 	this->mario.render();
@@ -133,10 +122,4 @@ void	SceneA::update()
 	int t2 = clock_get();
 	sprintf(log2, "Frametime: %dus", t2 - t0);
 	sprintf(log3, "context : %p, value : %d, value1 : %d", &mode8::context, value, value1);
-
-	// this->mario.update(&input);
-	// this->lakitu.update(&input);
-	// gbavfx_clear();
-	// this->mario.render(&this->lakitu);
-	// gbavfx_flip_interlaced();
 }

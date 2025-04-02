@@ -28,7 +28,7 @@ LIBTONC := $(DEVKITPRO)/libtonc
 TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
 SOURCES		:= source source/gbavfx source/animation source/model source/texture source/mario source/lakitu source/scene source/gbamath\
-source/scene/SceneA source/mode8 source/component
+source/scene/SceneA source/mode8 source/component source/component/Animator
 INCLUDES	:= include
 DATA		:=
 MUSIC		:=

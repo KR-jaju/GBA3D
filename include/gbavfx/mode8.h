@@ -5,7 +5,6 @@
 
 namespace mode8
 {
-	typedef struct s_ptb			t_ptb;
 	typedef struct s_context 		t_context;
 	typedef struct s_vertex			t_vertex;
 
