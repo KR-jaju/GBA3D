@@ -8,6 +8,7 @@ Mario::Mario()
 	: transform()
 {
 	this->animator.state.next_state = &Mario::animationEntry;
+	this->animator.parameter = &this->control;
 }
 
 /*
@@ -21,7 +22,8 @@ void	Mario::update()
     this->control.update();
     this->transform.x += this->control.velocity_x;
     this->transform.z += this->control.velocity_z;
-    sprintf(log4, "controller: %d", this->control.forward_vel);
+	this->transform.yaw = this->control.yaw;
+    sprintf(log4, "controller: %d %d", this->control.forward_vel, this->control.yaw);
 }
 
 

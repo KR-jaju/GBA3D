@@ -28,5 +28,6 @@ extern const f32 mario_turning_around[][17][7];
 extern AnimationMatrix const mario_animation_idle_left[];
 extern AnimationMatrix const mario_animation_idle_right[];
 extern AnimationMatrix const mario_animation_idle_center[];
+extern AnimationMatrix const mario_animation_running[];
 
 

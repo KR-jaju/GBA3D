@@ -36,6 +36,10 @@ struct MarioControl
 	MarioControl();
 	void	update();
 private:
+	void	updateInputs();
+	void	updateJoystickInputs();
+	
+
 	// bool	executeStationary();
 	bool	actGroupStationary();
 

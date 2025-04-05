@@ -24,6 +24,7 @@ MarioControl::MarioControl()
 	: yaw(0), intended_mag(0), intended_yaw(0), squish_timer(0),
 	  forward_vel(0), velocity_x(0), velocity_y(0), velocity_z(0)
 {
+    this->action = ACT_FLAG_MOVING;
 }
 
 void	MarioControl::update()
@@ -37,42 +38,54 @@ void	MarioControl::update()
 	// mario_handle_special_floors(gMarioState);
 	// mario_process_interactions(gMarioState);
 
+    this->updateInputs();
+
 	// If Mario is OOB, stop executing actions.
 	// if (gMarioState->floor == NULL) {
 	// 	return 0;
 	// }
+    
 
 	// The function can loop through many action shifts in one frame,
 	// which can lead to unexpected sub-frame behavior. Could potentially hang
 	// if a loop of actions were found, but there has not been a situation found.
-
-	bool	loop = false;
-	do
-	{
-		switch (this->action & ACT_GROUP_MASK) {
-			case ACT_GROUP_STATIONARY:
-				loop = this->actGroupStationary();
-				break;
-			case ACT_GROUP_MOVING:
-				loop = this->actGroupMoving();
-				break;
-			// case ACT_GROUP_AIRBORNE:
-			// 	loop = mario_execute_airborne_action(gMarioState);
-			// 	break;
-			// case ACT_GROUP_SUBMERGED:
-			// 	loop = mario_execute_submerged_action(gMarioState);
-			// 	break;
-			// case ACT_GROUP_CUTSCENE:
-			// 	loop = mario_execute_cutscene_action(gMarioState);
-			// 	break;
-			// case ACT_GROUP_AUTOMATIC:
-			// 	loop = mario_execute_automatic_action(gMarioState);
-			// 	break;
-			// case ACT_GROUP_OBJECT:
-			// 	loop = mario_execute_object_action(gMarioState);
-			// 	break;
-		}
-	} while(loop);
+    // switch (this->action & ACT_GROUP_MASK)
+    // {
+    // // case ACT_GROUP_STATIONARY:
+    // //     this->actGroupStationary();
+    // //     break;
+    // case ACT_GROUP_MOVING:
+    //     this->actGroupMoving();
+    //     break;
+    // }
+    this->actGroupMoving();
+	// bool	loop = false;
+	// do
+	// {
+	// 	switch (this->action & ACT_GROUP_MASK) {
+	// 		case ACT_GROUP_STATIONARY:
+	// 			loop = this->actGroupStationary();
+	// 			break;
+	// 		case ACT_GROUP_MOVING:
+	// 			loop = this->actGroupMoving();
+	// 			break;
+	// 		// case ACT_GROUP_AIRBORNE:
+	// 		// 	loop = mario_execute_airborne_action(gMarioState);
+	// 		// 	break;
+	// 		// case ACT_GROUP_SUBMERGED:
+	// 		// 	loop = mario_execute_submerged_action(gMarioState);
+	// 		// 	break;
+	// 		// case ACT_GROUP_CUTSCENE:
+	// 		// 	loop = mario_execute_cutscene_action(gMarioState);
+	// 		// 	break;
+	// 		// case ACT_GROUP_AUTOMATIC:
+	// 		// 	loop = mario_execute_automatic_action(gMarioState);
+	// 		// 	break;
+	// 		// case ACT_GROUP_OBJECT:
+	// 		// 	loop = mario_execute_object_action(gMarioState);
+	// 		// 	break;
+	// 	}
+	// } while(loop);
 
 	// sink_mario_in_quicksand(gMarioState);
 	// squish_mario_model(gMarioState);
@@ -95,9 +108,28 @@ void	MarioControl::update()
 	// gMarioState->marioObj->oInteractStatus = 0;
 }
 
-bool	MarioControl::actGroupStationary()
+void	MarioControl::updateInputs()
 {
 
+    // update_mario_button_inputs(m);
+    this->updateJoystickInputs();
+    // update_mario_geometry_inputs(m);
+}
+
+void	MarioControl::updateJoystickInputs()
+{
+    Controller *controller = &g_controller;
+	i32 mag = (controller->stick_mag * controller->stick_mag) >> 14; // Q7.8, 64 * mag^2
+
+	if (this->squish_timer == 0)
+		this->intended_mag = mag >> 1;
+	else
+		this->intended_mag = mag >> 3;
+
+	if (intended_mag != 0)
+		this->intended_yaw = controller->stick_angle; // 카메라가 필요하다
+	else
+		this->intended_yaw = this->yaw;
 }
 
 bool	MarioControl::actGroupMoving()
@@ -109,10 +141,10 @@ bool	MarioControl::actGroupMoving()
 
     // if (mario_update_quicksand(m, 0.25f))
 	// 	return true;
-
+    this->actWalking();
     /* clang-format off */
-    switch (this->action) {
-        case ACT_WALKING:                  cancel = this->actWalking();                  break;
+    // switch (this->action) {
+        // case ACT_WALKING:                  cancel = this->actWalking();                  break;
         // case ACT_HOLD_WALKING:             cancel = act_hold_walking(m);             break;
         // case ACT_HOLD_HEAVY_WALKING:       cancel = act_hold_heavy_walking(m);       break;
         // case ACT_TURNING_AROUND:           cancel = act_turning_around(m);           break;
@@ -150,7 +182,7 @@ bool	MarioControl::actGroupMoving()
         // case ACT_QUICKSAND_JUMP_LAND:      cancel = act_quicksand_jump_land(m);      break;
         // case ACT_HOLD_QUICKSAND_JUMP_LAND: cancel = act_hold_quicksand_jump_land(m); break;
         // case ACT_LONG_JUMP_LAND:           cancel = act_long_jump_land(m);           break;
-    }
+    // }
     /* clang-format on */
 
     // if (!cancel && (m->input & INPUT_IN_WATER)) {
@@ -201,7 +233,7 @@ bool	MarioControl::actWalking()
 
     // vec3f_copy(startPos, m->pos);
 	this->updateWalkingSpeed();
-
+    // this
     // switch (perform_ground_step(m)) {
     //     case GROUND_STEP_LEFT_GROUND:
     //         set_mario_action(m, ACT_FREEFALL, 0);
@@ -227,18 +259,21 @@ bool	MarioControl::actWalking()
 
 void	MarioControl::updateWalkingSpeed()
 {
-	i32	target_speed = std::max(this->intended_mag, 32 * 256);
+	i32	target_speed = std::min(this->intended_mag, 32 * 256);
 
 	// if (m->quicksandDepth > 10.0f) {
     //     targetSpeed *= 6.25 / m->quicksandDepth;
     // }
 
-	if (this->forward_vel <= 0)
-		this->forward_vel += 282; // += 1.1f;
+    if (this->intended_mag == 0) // ACT_BRAKING
+        this->forward_vel = approach_i32(forward_vel, 0, 4 * 256, 4 * 256);
+
+	if (this->forward_vel < 0)
+        this->forward_vel = std::min(this->forward_vel + 282, 0); // += 1.1f
 	else if (this->forward_vel < target_speed)
 		this->forward_vel += 282 - this->forward_vel / 43; // 1.1f - vel / 43
 	else //if (m->floor->normal.y >= 0.95f)
-		this->forward_vel -= 256; // -= 1.0f
+        this->forward_vel = std::max(this->forward_vel - 256, 0);
 	
 	if (this->forward_vel > 12288) // 48.0f
 		this->forward_vel = 12288;
