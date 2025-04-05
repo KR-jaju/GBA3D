@@ -19,17 +19,17 @@ void	Transform::update(u32* result)
 	i32 cos_pitch = ((i32)sincos_pitch << 16) >> 16; // Q1.14
 
 	result[0] = cos_yaw;
-	result[1] = (-sin_yaw * sin_pitch) >> 14;
-	result[2] = (-sin_yaw * cos_pitch) >> 14;
+	result[1] = 0;
+	result[2] = sin_yaw;
 	result[3] = this->x >> 8;
 
-	result[4] = 0;
+	result[4] = (sin_yaw * sin_pitch) >> 14;
 	result[5] = cos_pitch;
-	result[6] = -sin_pitch;
+	result[6] = -(cos_yaw * sin_pitch) >> 14;
 	result[7] = this->y >> 8;
 
-	result[8] = sin_yaw;
-	result[9] = (cos_yaw * sin_pitch) >> 14;
+	result[8] = -(sin_yaw * cos_pitch) >> 14;
+	result[9] = sin_pitch;
 	result[10] = (cos_yaw * cos_pitch) >> 14;
 	result[11] = this->z >> 8;
 }
