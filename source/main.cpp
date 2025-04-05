@@ -1,19 +1,13 @@
 
-//#include "Mesh.hpp"
-//#include "Rasterizer.hpp"
-#include "control.hpp"
-// #include <gba_systemcalls.h>
-#include "debug.hpp"
-
-#include "mode8/mode8.h"
-#include "resource/model.h"
-#include "resource/texture.h"
-#include "resource/animation.h"
-#include "scene/Scene.h"
-#include "scene/SceneA.h"
-#include "gbadef.h"
+#include "gba/mode8/mode8.h"
+#include "game/resource/model.h"
+#include "game/resource/texture.h"
+#include "game/resource/animation.h"
+#include "game/scene/Scene.h"
+#include "game/scene/SceneA.h"
+#include "gba/gbadef.h"
 #include <stdio.h>
-#include "mode8/mode8.h"
+#include "gba/mode8/mode8.h"
 
 void optimize_ewram() {
     REG_WAITCNT = (REG_WAITCNT & ~0x0030) | 0x000E;  // EWRAM wait state를 0x0E로 설정

@@ -27,9 +27,17 @@ LIBTONC := $(DEVKITPRO)/libtonc
 #---------------------------------------------------------------------------------
 TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
-SOURCES		:= source source/mode8 source/mario source/lakitu source/scene source/gbamath\
-source/scene/SceneA source/component source/component/Animator\
-source/resource/animation source/resource/model source/resource/texture
+SOURCES		:= source\
+source/game/component source/game/entity\
+source/game/resource/animation source/game/resource/model source/game/resource/texture\
+source/game/scene/SceneA\
+source/gba/math source/gba/io\
+source/mode8
+
+#  source/mode8 source/mario source/lakitu source/scene source/math\
+# source/scene/SceneA source/component source/component/Animator\
+# source/resource/animation source/resource/model source/resource/texture\
+# source/io
 
 INCLUDES	:= include
 DATA		:=

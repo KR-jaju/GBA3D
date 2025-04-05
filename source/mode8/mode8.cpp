@@ -1,4 +1,4 @@
-#include "mode8/mode8.h"
+#include "gba/mode8/mode8.h"
 
 namespace mode8
 {
