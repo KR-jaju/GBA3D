@@ -20,8 +20,8 @@ char log4[100];
 void	Mario::update()
 {
     this->control.update();
-    this->transform.x += this->control.velocity_x;
-    this->transform.z += this->control.velocity_z;
+    this->transform.x += this->control.velocity_x << 1;
+    this->transform.z += this->control.velocity_z << 1;
 	this->transform.yaw = this->control.yaw;
     sprintf(log4, "controller: %d %d", this->control.forward_vel, this->control.yaw);
 }

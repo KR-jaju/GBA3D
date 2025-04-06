@@ -3,27 +3,16 @@
 #include "gba/math/math.h"
 #include "game/component/Animator.h"
 
-extern const f32 mario_idle_center[][17][7];
+extern AnimationMatrix const mario_animation_crouch_start[];
+extern AnimationMatrix const mario_animation_crouching[];
+extern AnimationMatrix const mario_animation_crouch_end[];
 
-extern const f32 mario_idle_left[][17][7];
+extern AnimationMatrix const mario_animation_single_jump[];
+extern AnimationMatrix const mario_animation_double_jump_start[];
+extern AnimationMatrix const mario_animation_double_jump_end[];
+extern AnimationMatrix const mario_animation_triple_jump[];
 
-extern const f32 mario_idle_right[][17][7];
-
-extern const f32 mario_running[][17][7];
-
-extern const f32 mario_stopping[][17][7];
-
-extern const f32 mario_walking[][17][7];
-
-extern const f32 mario_double_jump_rise[][17][7];
-
-extern const f32 mario_double_jump_fall[][17][7];
-
-extern const f32 mario_single_jump[][17][7];
-
-extern const f32 mario_turning_around[][17][7];
-// 
-// extern const f32 double_jump_land[][17][7];
+extern AnimationMatrix const mario_animation_skid_on_ground[];
 
 extern AnimationMatrix const mario_animation_idle_left[];
 extern AnimationMatrix const mario_animation_idle_right[];

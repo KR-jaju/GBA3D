@@ -120,7 +120,7 @@ void	MarioControl::updateJoystickInputs()
 {
     Controller *controller = &g_controller;
 	i32 mag = (controller->stick_mag * controller->stick_mag) >> 14; // Q7.8, 64 * mag^2
-
+    //  >> (6 + 8)
 	if (this->squish_timer == 0)
 		this->intended_mag = mag >> 1;
 	else
@@ -266,8 +266,17 @@ void	MarioControl::updateWalkingSpeed()
     // }
 
     if (this->intended_mag == 0) // ACT_BRAKING
-        this->forward_vel = approach_i32(forward_vel, 0, 4 * 256, 4 * 256);
+        this->forward_vel = approach_i32(forward_vel, 0, 2 * 256, 2 * 256);
 
+    {
+        i16 dyaw = (i16)(this->intended_yaw - this->yaw);
+
+        if ((dyaw < -0x471C || dyaw > 0x471C) && this->forward_vel >= 16 * 256)
+            
+    }
+
+    if (this->forward_vel == 0)
+        this->yaw = this->intended_yaw;
 	if (this->forward_vel < 0)
         this->forward_vel = std::min(this->forward_vel + 282, 0); // += 1.1f
 	else if (this->forward_vel < target_speed)
@@ -333,97 +342,3 @@ void	MarioControl::applySlopeAccel()
 	// mario_update_moving_sand(m);
     // mario_update_windy_ground(m);
 }
-
-// {	
-// 	Controller *controller = &g_controller;
-// 	i32 mag = (controller->stick_mag * controller->stick_mag) >> 14; // Q7.8, 64 * mag^2
-
-// 	if (this->squish_timer == 0)
-// 		this->intended_mag = mag >> 1;
-// 	else
-// 		this->intended_mag = mag >> 3;
-
-// 	if (intended_mag != 0)
-// 		this->intended_yaw = controller->stick_angle; // 카메라가 필요하다
-// 	else
-// 		this->intended_yaw = this->yaw;
-// 	i32	targetSpeed = std::min(this->intended_mag, 8192); // max(mag, 32.0f)
-
-// 	// if (m->quicksandDepth > 10.0f) {
-// 	//     targetSpeed *= 6.25 / m->quicksandDepth;
-// 	// }
-
-// 	if (this->forward_vel < 0)
-// 	{
-// 		this->forward_vel = std::min(this->forward_vel + 282, 0); // 1.1f
-// 	}
-// 	else if (this->forward_vel < targetSpeed)
-// 	{
-// 		// this->forward_vel += 1.1f - this->forward_vel / 43.0f;
-// 		this->forward_vel += 282 - this->forward_vel / 43;
-// 	}
-// 	else //if (m->floor->normal.y >= 0.95f)
-// 	{
-// 		this->forward_vel = std::max(this->forward_vel - 256, 0); // 1.0f
-// 	}
-// 	if (this->forward_vel > 12288) // 48.0f
-// 		this->forward_vel = 12288;
-
-// 	this->yaw = this->intended_yaw - approach_i32((i16)(this->intended_yaw - this->yaw), 0, 0x800, 0x800);
-// 	// apply_slope_accel(m);
-// 	this->applyAcceleration();
-// 	}
-
-// 	void	MarioControl::applyAcceleration() {
-// 	i32 slopeAccel;
-// 	// struct Surface *floor = m->floor;
-// 	// f32 steepness = sqrtf(floor->normal.x * floor->normal.x + floor->normal.z * floor->normal.z);
-
-// 	// UNUSED f32 normalY = floor->normal.y;
-// 	// s16 floorDYaw = m->floorAngle - m->faceAngle[1];
-
-// 	// if (mario_floor_is_slope(m)) {
-// 	//     s16 slopeClass = 0;
-
-// 	//     // if (m->action != ACT_SOFT_BACKWARD_GROUND_KB && m->action != ACT_SOFT_FORWARD_GROUND_KB) {
-// 	//     //     slopeClass = mario_get_floor_class(m);
-// 	//     // }
-
-// 	//     // switch (slopeClass) {
-// 	//     //     case SURFACE_CLASS_VERY_SLIPPERY:
-// 	//     //         slopeAccel = 5.3f;
-// 	//     //         break;
-// 	//     //     case SURFACE_CLASS_SLIPPERY:
-// 	//     //         slopeAccel = 2.7f;
-// 	//     //         break;
-// 	//     //     default:
-// 	//     //         slopeAccel = 1.7f;
-// 	//     //         break;
-// 	//     //     case SURFACE_CLASS_NOT_SLIPPERY:
-// 	//     //         slopeAccel = 0.0f;
-// 	//     //         break;
-// 	//     // }
-// 	// 	slopeAccel = 435; // 1.7f
-
-// 	//     if (floorDYaw > -0x4000 && floorDYaw < 0x4000) {
-// 	//         m->forwardVel += slopeAccel * steepness;
-// 	//     } else {
-// 	//         m->forwardVel -= slopeAccel * steepness;
-// 	//     }
-// 	// }
-
-// 	// m->slideYaw = m->faceAngle[1];
-
-// 	// m->slideVelX = m->forwardVel * sins(m->faceAngle[1]);
-// 	// m->slideVelZ = m->forwardVel * coss(m->faceAngle[1]);
-
-// 	i32 sin = fixed::sincos(this->yaw);
-// 	i32 cos = (sin << 16) >> 16;
-
-// 	sin >>= 16;
-// 	this->velocity_x = (this->forward_vel * sin) >> 14;
-// 	this->velocity_z = (this->forward_vel * cos) >> 14;
-
-// 	// mario_update_moving_sand(m);
-// 	// mario_update_windy_ground(m);
-// }
