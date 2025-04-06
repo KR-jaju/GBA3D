@@ -268,12 +268,12 @@ void	MarioControl::updateWalkingSpeed()
     if (this->intended_mag == 0) // ACT_BRAKING
         this->forward_vel = approach_i32(forward_vel, 0, 2 * 256, 2 * 256);
 
-    {
-        i16 dyaw = (i16)(this->intended_yaw - this->yaw);
+    // {
+    //     i16 dyaw = (i16)(this->intended_yaw - this->yaw);
 
-        if ((dyaw < -0x471C || dyaw > 0x471C) && this->forward_vel >= 16 * 256)
-            
-    }
+    //     if ((dyaw < -0x471C || dyaw > 0x471C) && this->forward_vel >= 16 * 256)
+
+    // }
 
     if (this->forward_vel == 0)
         this->yaw = this->intended_yaw;
