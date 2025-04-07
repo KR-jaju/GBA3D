@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "game/entity/MarioAction.h"
 
 #define ACT_GROUP_MASK 0x000001C0
 
@@ -12,26 +13,23 @@
 #define ACT_GROUP_AUTOMATIC (5 << 6)
 #define ACT_GROUP_OBJECT (6 << 6)
 
-// enum class GroupStep
-// {
-// 	LeftGround,
-// 	StepNone,
-// 	StepHitWall
-// };
-
 struct MarioControl
 {
-	i32		yaw;
-	i32		intended_mag;
-	i32		intended_yaw;
-	i32		squish_timer;
-	i32		forward_vel;
+	i32			yaw;
+	i32			intended_mag;
+	i32			intended_yaw;
+	i32			squish_timer;
+	i32			forward_vel;
 
-	i32		velocity_x;
-	i32		velocity_y;
-	i32		velocity_z;
+	i32			action_state;
+	// i32			action_argument;
 
-	u32		action;
+
+	i32			velocity_x;
+	i32			velocity_y;
+	i32			velocity_z;
+
+	MarioAction	action;
 
 	MarioControl();
 	void	update();
@@ -46,6 +44,14 @@ private:
 
 	bool	actGroupMoving();
 	bool	actWalking();
+	void	actBraking();
+	void	actDecelerating();
+
+	void	setMarioAction(MarioAction action);
+	void	setMarioActionMoving(MarioAction action);
+
+
+	void	beginBraking();
 	void	updateWalkingSpeed();
 	void	applySlopeAccel();
 
