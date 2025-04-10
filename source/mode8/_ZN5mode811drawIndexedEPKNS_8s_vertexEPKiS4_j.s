@@ -382,7 +382,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	pop		{r1, r2}
 
 	cmp		r2, r10 @ if(dx01 * dy02 <= dx02 * dy01)
-	bge		.L3 @ continue; @ cull if winding order == clockwise
+	ble		.L3 @ continue; @ cull if winding order == counter-clockwise
 	
 	push	{r1}
 	ldr		r1, =value
