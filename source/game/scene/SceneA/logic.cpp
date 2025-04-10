@@ -36,6 +36,17 @@ SceneA::SceneA()
 	sprintf(log3, "%d %d %d", fixed::sqrt(0), fixed::sqrt(255), fixed::sqrt(1 << 16));
 	scroll = 0;
 
+	for (int row = 0; row < 3; ++row)
+	{
+		for (int col = 0; col < 4; ++col)
+		{
+			if (row == col)
+				mode8::context.matrix_slot[0][row * 4 + col] = 1<<14;
+			else
+				mode8::context.matrix_slot[0][row * 4 + col] = 0;
+		}
+	}
+
 	this->vertices[0].uv = 0;
 	this->vertices[0].x = -256;
 	this->vertices[0].y = 256;
@@ -86,7 +97,7 @@ void	SceneA::update()
 
 	// scroll += 1; // 프레임당 360/65536도 회전, 초당 약 0.33도 회전 * 30 -> 초당 10도 화전
 	scroll += 2;
-	angle += 60;
+	// angle += 60;
 	{
 		i32 sine, cosine;
 
@@ -113,16 +124,20 @@ void	SceneA::update()
 	// pollInput(&input);
 	int t0 = clock_get();
 	// mode8::setCamera(-(scroll & 0xFF), (scroll & 0xFF) + 200, -200, 0, 8192);
-	mode8::setCamera(0, 400, -500, 0, 0);
-	this->mario.update();
+	// mode8::setCamera(0, 400, -500, 0, 0);
+	mode8::setCamera(0, 0, -500, 0, 0);
+	// this->mario.update();
 	mode8::clear();
-	this->mario.render();
-	mode8::flush();
+	mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);
+	// this->mario.render();
 
+	// int t1 = clock_get();
+	// sprintf(log1, "Frametime: %dus", t1 - t0);
 	int t1 = clock_get();
 	sprintf(log1, "Frametime: %dus", t1 - t0);
-	mode8::flip();
+	mode8::flush();
 	int t2 = clock_get();
 	sprintf(log2, "Frametime: %dus", t2 - t0);
+	mode8::flip();
 	sprintf(log3, "context : %p, value : %d, value1 : %d", &mode8::context, value, value1);
 }

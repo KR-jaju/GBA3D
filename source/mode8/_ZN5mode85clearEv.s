@@ -30,8 +30,11 @@ _ZN5mode85clearEv:
 	@ control = (r12)
 	@ src, dst, control (r13, r12, r0)
 	@ r2 = I/O + #0xF0
-	mvn		r0, #0 @ r0 = -1
-	str		r0, [sp, #-4]! @ save -1
+	@ mvn		r0, #0 @ r0 = -1
+	mov		r0, #2048
+	sub		r0, r0, #1 @ r0 <- 2047
+	orr		r0, r0, r0, LSL #16 @ r0 = 0x07FF07FF
+	str		r0, [sp, #-4]! @ save 0x07FF07FF
 	ldr		r0, =_ZN5mode87contextE @ r0 = &context->ordering_table
 
 	add		r12, r0, #0x0C00

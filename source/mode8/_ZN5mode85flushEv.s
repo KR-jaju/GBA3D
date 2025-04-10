@@ -24,15 +24,17 @@ _ZN5mode85flushEv:
 	eoreq	r6, r6, #0x10000000 @ beq -> bne (back_buffer == buffer[1])
 	str		r6, [r5]
 
-	add		r11, r0, #0x2C00 @ r11 = &context->face_buffer
+	add		r11, r1, #0x2C00 @ r11 = &context->face_buffer
 	
 	mov		r0, #768
 	sub		r0, r0, #1 @ r0 = 767 (depth, loop variable)
 .L0:
 	add		r12, r1, r0, LSL #1 @ &context->ordering_table + depth * sizeof(u16)
-	ldrsh	r12, [r12] @ r12 = ordering_table[depth]
-	cmp		r12, #-1
-	beq		.L3
+	ldrh	r12, [r12] @ r12 = ordering_table[depth]
+	sub		r12, r12, #0x0700
+	cmp		r12, #0x00FF
+	add		r12, r12, #0x0700
+	bge		.L3 @ next_face가 2047 이상이면 루프 스킵
 	push	{r0, r1, r11}
 	@ r0 = depth
 	@ r1 = &context->ordering_table
@@ -43,20 +45,22 @@ _ZN5mode85flushEv:
 .L1:
 	add		r12, r11, r12, LSL #3 @ r12 = &context->face_buffer + face_idx * sizeof(face)
 	ldmia	r12, {r0, r1} @ r0, r1 = *face
-	mov		r12, r0, ASR #21 @ r12 = next_face
+	mov		r12, r0, LSR #21 @ r12 = next_face
 	push	{r2, r3, r11, r12}
 .L2:
 	bl		.rasterize
 	pop		{r2, r3, r11, r12}
-	cmp		r12, #-1
-	bne		.L1
+
+	sub		r12, r12, #0x0700
+	cmp		r12, #0x00FF
+	add		r12, r12, #0x0700
+	blt		.L1 @ 2047미만이라면 계속 루프
 	pop		{r0, r1, r11}
 .L3:
 	subs	r0, r0, #1
-	bne		.L0
+	bge		.L0
 
 	pop		{r4-r11, lr}
-
 	bx		lr
 
 @ r0 = face_data[0]
