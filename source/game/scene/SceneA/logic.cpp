@@ -126,10 +126,9 @@ void	SceneA::update()
 	// mode8::setCamera(-(scroll & 0xFF), (scroll & 0xFF) + 200, -200, 0, 8192);
 	// mode8::setCamera(0, 400, -500, 0, 0);
 	mode8::setCamera(0, 0, -500, 0, 0);
-	// this->mario.update();
+	this->mario.update();
 	mode8::clear();
-	mode8::drawIndexed(this->vertices, this->vertex_count, this->indices, 0);
-	// this->mario.render();
+	this->mario.render();
 
 	// int t1 = clock_get();
 	// sprintf(log1, "Frametime: %dus", t1 - t0);
