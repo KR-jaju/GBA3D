@@ -375,9 +375,20 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 
 	mul		r10, r11, r10 @ dx02 * dy01
 
+	push	{r1, r2}
+	ldr		r1, =value1
+	sub		r2, r2, r10
+	str		r2, [r1]
+	pop		{r1, r2}
+
 	cmp		r2, r10 @ if(dx01 * dy02 <= dx02 * dy01)
-	ble		.L3 @ continue; @ cull if winding order == clockwise
+	bge		.L3 @ continue; @ cull if winding order == clockwise
 	
+	push	{r1}
+	ldr		r1, =value
+	str		r7, [r1]
+	pop		{r1}
+
 @ free registers = (r2, r8, r9, r10, r11, r12(ip))
 @ used registers = (r0, r1, r3, r4, r5, r6, r7, r14(lr))
 @ r0 = &context (&context->ordering_table)
@@ -390,7 +401,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 @ r14 = &context->face_buffer
 @ stack = (vertex_count, indices, texture_id, ...)
 	mov		r7, r7, LSL #1 @ r7 = z * sizeof(uint16_t)
-	ldrsh	r11, [r0, r7] @ r11 = ordering_table[z]
+	ldrh	r11, [r0, r7] @ r11 = ordering_table[z]
 
 	orr		r5, r5, r11, LSL #21 @ r5 = (next << 21) | (texture_id << 16) | (i2)
 	sub		r11, r3, r14 @ r11 = fb_top - face_buffer
