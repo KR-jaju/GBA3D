@@ -31,6 +31,7 @@ SOURCES		:= source\
 source/game/component source/game/entity\
 source/game/resource/animation source/game/resource/model source/game/resource/texture\
 source/game/scene/SceneA\
+source/gba\
 source/gba/math source/gba/io\
 source/mode8
 

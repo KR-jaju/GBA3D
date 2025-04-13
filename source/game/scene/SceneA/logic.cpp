@@ -7,6 +7,8 @@
 #include "clock.h"
 #include "gba/io/Controller.h"
 
+#include "gba/gbadef.h"
+
 #include <cstdio>
 #include <cstring>
 #include "gba/math/fixed.h"
@@ -29,11 +31,6 @@ SceneA::SceneA()
 	for (i32 i = 0; i < 256; ++i) {
 		palette[i] = SceneA::palette[i];
 	}
-
-	clock_init();
-	mode8::init();
-
-	sprintf(log3, "%d %d %d", fixed::sqrt(0), fixed::sqrt(255), fixed::sqrt(1 << 16));
 	scroll = 0;
 
 	this->vertices[0].uv = 0;
@@ -75,6 +72,13 @@ SceneA::SceneA()
 	mode8::context.background = skybg;
 	mode8::context.padding[5] = 0;
 	mode8::context.padding[6] = -1;
+
+
+	SOUNDCNT_X = 0;          // 반드시 0 → 0x0080 순서
+    SOUNDCNT_X = 0x0080;     // bit7 = 1 : 사운드 회로 전원 ON
+
+    SOUNDCNT_L = (7<<8)|(7<<12)|(1<<1)|(1<<5);  // CH2 L/R 연결 + 볼륨 7/7
+	SOUNDCNT_H = 0x01;
 }
 
 void	SceneA::update()
@@ -82,7 +86,19 @@ void	SceneA::update()
 	static i32 angle = 0;
 
 	g_controller.update();
+	sprintf(log3, "KEY DOWN : %p", g_controller.button_pressed);
 	// sprintf(log3, "controller: %d %d %d", g_controller.stick_x, g_controller.stick_y, g_controller.stick_angle);
+
+	if (g_controller.button_pressed & KEY_A)
+	{
+		/* NR21/NR22 : duty 50%(2), length 32, init vol 15, env hold */
+		REG_SND2_CNT_L = (2<<6)        // duty 50 %
+						| (64-32)      // length
+						| (0xF<<12);   // initial volume 15, env dir 0, step 0
+	
+		/* NR23/NR24 : freq + start */
+		REG_SND2_CNT_H = 1911 | (1 << 14) | (1<<15);
+	}
 
 	// scroll += 1; // 프레임당 360/65536도 회전, 초당 약 0.33도 회전 * 30 -> 초당 10도 화전
 	scroll += 2;
@@ -111,7 +127,7 @@ void	SceneA::update()
 		this->vertices[3].z = 1 << 9;
 	}
 	// pollInput(&input);
-	int t0 = clock_get();
+	// int t0 = clock_get();
 	// mode8::setCamera(-(scroll & 0xFF), (scroll & 0xFF) + 200, -200, 0, 8192);
 	mode8::setCamera(0, 400, -500, 0, 0);
 	this->mario.update();
@@ -119,10 +135,10 @@ void	SceneA::update()
 	this->mario.render();
 	mode8::flush();
 
-	int t1 = clock_get();
-	sprintf(log1, "Frametime: %dus", t1 - t0);
+	// int t1 = clock_get();
+	// sprintf(log1, "Frametime: %dus", t1 - t0);
 	mode8::flip();
-	int t2 = clock_get();
-	sprintf(log2, "Frametime: %dus", t2 - t0);
-	sprintf(log3, "context : %p, value : %d, value1 : %d", &mode8::context, value, value1);
+	// int t2 = clock_get();
+	// sprintf(log2, "Frametime: %dus", t2 - t0);
+	sprintf(log2, "context : %p, value : %d, value1 : %d", &mode8::context, value, value1);
 }

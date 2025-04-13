@@ -20,6 +20,8 @@ namespace mode8
 		u32*			fb_top;							// 0x0BFC ~ 0x0BFF (4 bytes)
 		u32				post_transform_buffer[2048];	// 0x0C00 ~ 0x2BFF (8192 bytes)
 		u32				face_buffer[2048];				// 0x2C00 ~ 0x4BFF (8192 bytes)
+
+		// constexpr s_context()
 	}; // sizeof(t_context) = 19464 bytes
 
 	struct s_vertex

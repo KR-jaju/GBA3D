@@ -95,6 +95,86 @@ typedef short       COLOR;
 #define REG_VCOUNT			*(unsigned short*)(REG_BASE+0x0006)	//!< Scanline count
 //\}
 
+/**
+ * @brief Timer0 I/O Register
+ * @param FREQUENCY
+ * @param CASCADE
+ * @param INTERRUPT_REQUEST
+ * @param ENABLE
+ */
+#define REG_TIMER0          (*(unsigned int *)0x04000100)
+/**
+ * @brief Timer1 I/O Register
+ * @param FREQUENCY
+ * @param CASCADE
+ * @param INTERRUPT_REQUEST
+ * @param ENABLE
+ */
+#define REG_TIMER1          (*(unsigned int *)0x04000104)
+/**
+ * @brief Timer2 I/O Register
+ * @param FREQUENCY
+ * @param CASCADE
+ * @param INTERRUPT_REQUEST
+ * @param ENABLE
+ */
+#define REG_TIMER2          (*(unsigned int *)0x04000108)
+/**
+ * @brief Timer3 I/O Register
+ * @param FREQUENCY
+ * @param CASCADE
+ * @param INTERRUPT_REQUEST
+ * @param ENABLE
+ */
+#define REG_TIMER3          (*(unsigned int *)0x0400010C)
+
+#define TIMER_FREQUENCY_1_BIT       0
+#define TIMER_FREQUENCY_64_BIT      1
+#define TIMER_FREQUENCY_256_BIT     2
+#define TIMER_FREQUENCY_1024_BIT    3
+#define TIMER_CASCADE_BIT       (1 << 2)
+#define TIMER_INTERRUPT_REQUEST_BIT (1 << 6)
+#define TIMER_ENABLE_BIT            (1 << 7)
+
+
+
+
+
+
+
+
+
+
+
+
+
+#define SOUNDCNT_X  *(volatile unsigned int*)0x4000084
+#define SOUNDCNT_L  *(volatile unsigned short*)0x4000080
+#define SOUNDCNT_H  *(volatile unsigned short*)0x4000082
+
+// --- PSG CH1 (Square + Sweep) ----------------------------------------
+#define REG_SND1_SWEEP  *(unsigned short*)0x4000060  // NR10
+#define REG_SND1_DUTY   *(unsigned short*)0x4000062  // NR11
+#define REG_SND1_ENV    *(unsigned short*)0x4000064  // NR12
+#define REG_SND1_FREQ   *(unsigned short*)0x4000066  // NR13/14
+
+// --- PSG CH2 (Square) -------------------------------------------------
+#define REG_SND2_CNT_L  *(volatile u16*)0x4000068  // NR21/22
+#define REG_SND2_CNT_H  *(volatile u16*)0x400006C  // NR23/24
+
+
+// --- PSG CH3 (Wavetable) ---------------------------------------------
+#define REG_SND3_SEL    *(unsigned short*)0x400006E  // NR30
+#define REG_SND3_LEN    *(unsigned short*)0x4000070  // NR31
+#define REG_SND3_VOL    *(unsigned short*)0x4000072  // NR32
+#define REG_SND3_FREQ   *(unsigned short*)0x4000074  // NR33/34
+#define REG_WAVE_RAM    ((unsigned int*)0x4000090) // 32 bytes (16×nibbles)
+
+// --- PSG CH4 (Noise) --------------------------------------------------
+#define REG_SND4_ENV    *(unsigned short*)0x4000078  // NR41/42
+#define REG_SND4_FREQ   *(unsigned short*)0x400007C  // NR43/44
+
+
 #define DCNT_MODE0				 0	//!< Mode 0; bg 0-4: reg
 #define DCNT_MODE1			0x0001	//!< Mode 1; bg 0-1: reg; bg 2: affine
 #define DCNT_MODE2			0x0002	//!< Mode 2; bg 2-3: affine
