@@ -14,6 +14,7 @@
 #include "gba/math/fixed.h"
 
 #include "gba/math/math.h"
+#include "gba/gba.h"
 
 char log1[100];
 char log2[100];

@@ -24,7 +24,6 @@ int	main() {
 	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
 	gba::init();
 
-
 	SceneId scene_id = SCENE_A;
 
 	mode8::init();
