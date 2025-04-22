@@ -50,7 +50,6 @@ _ZN5mode85flushEv:
 .L2:
 	bl		.rasterize
 	pop		{r2, r3, r11, r12}
-
 	sub		r12, r12, #0x0700
 	cmp		r12, #0x00FF
 	add		r12, r12, #0x0700
@@ -59,9 +58,7 @@ _ZN5mode85flushEv:
 .L3:
 	subs	r0, r0, #1
 	bge		.L0
-
-	pop		{r4-r11, lr}
-	bx		lr
+	pop		{r4-r11, pc}
 
 @ r0 = face_data[0]
 @ r1 = face_data[1]
@@ -417,7 +414,7 @@ _ZN5mode85flushEv:
 	mla		r1, r8, r14, r1 @ x_right = x_right + dxdy_right * clipped_y
 	mla		r2, r10, r14, r2 @ l_u = l_u + dudy12 * clipped_y
 	mla		r3, r11, r14, r3 @ l_v = l_v + dvdy12 * clipped_y
-	mov		r9, r9, LSR #15 @ 플래그를 저장할 필요는 없지만 코드를 공유하기 위해 0을 채운다.
+	mov		r9, r9, LSR #15 @ 플래그를 저장할 필요는 없지만 scan_convert를 공유하기 위해 0을 채운다.
 	
 	add		r14, r14, r14, LSL #1 @ r14 = r14 * 3
 	add		r14, r14, r14, LSL #2 @ r14 = r14 * 5
@@ -435,7 +432,7 @@ _ZN5mode85flushEv:
 	pop		{pc}
 
 .scan_convert:
-	str		r14, [sp, #-4]! @ store lr
+	push	{lr}
 .L6: @ 윗 삼각형 y 루프
 	@ 렌더타겟은 무조건 0x06000000 또는 0x0600A000 이고, 한 줄이 240(0x00F0)바이트 이므로
 	@ r5(현재 스캔라인의 x=0위치에서 주소)
@@ -458,6 +455,9 @@ _ZN5mode85flushEv:
 	rsble	r1, r0, r1
 	rsbgt	r1, r0, #240 @ width = min(x_right_pixel, 240) - max(x_left_pixel, 0)
 
+	@ r0, r1, r2, r3, r5, r9 사용 가능
+	@ r4, r6, r7, r8, r10, r11, r12 중
+	@ r4, r8, r10, r11이 저장을 한다면 사용가능
 
 	cmp		r1, #0 @ width <= 0
 	ble		.L10 @ skip

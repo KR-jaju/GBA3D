@@ -22,7 +22,7 @@
 _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	ldr		r12, [r1], #4 @ r12 = vertex_count[0]
 	cmp 	r12, #0 @ if vertex_count == 0?
-	beq 	.L5 @ return;
+	bxeq	lr @ return;
 
 	push	{r1-r11, lr} @ store (vertex_count, indices, texture_id and others)
 @ prepare pointer to ptb (post transform buffer(vertex, face))
@@ -266,7 +266,7 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 
 	ldmia	r1!, {r5, r6, r7} @ r5 = i0, r6 = i1, r7 = i2
 	cmp		r5, #-1 @ terminator found
-	beq		.L5 @ if i0 == -1, return
+	bxeq	lr @ if i0 == -1, return
 
 .L2: @ loop indices
 	ldr		r8, [r4, r5, LSL #3] @ r9 = v[i0 * 2]
@@ -375,19 +375,8 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 
 	mul		r10, r11, r10 @ dx02 * dy01
 
-	push	{r1, r2}
-	ldr		r1, =value1
-	sub		r2, r2, r10
-	str		r2, [r1]
-	pop		{r1, r2}
-
 	cmp		r2, r10 @ if(dx01 * dy02 <= dx02 * dy01)
 	ble		.L3 @ continue; @ cull if winding order == counter-clockwise
-	
-	push	{r1}
-	ldr		r1, =value
-	str		r7, [r1]
-	pop		{r1}
 
 @ free registers = (r2, r8, r9, r10, r11, r12(ip))
 @ used registers = (r0, r1, r3, r4, r5, r6, r7, r14(lr))
@@ -418,6 +407,4 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	str		r3, [r0, #0x0BFC] @ context->fb_top = fb_top
 .L4:
 	@ stack = (...)
-	pop		{r4-r11, lr} @ restore r4-r11, lr
-.L5:
-	bx		lr
+	pop		{r4-r11, pc} @ restore r4-r11, lr
