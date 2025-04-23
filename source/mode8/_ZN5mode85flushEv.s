@@ -244,15 +244,12 @@ _ZN5mode85flushEv:
 	and		r5, r9, r9, ASR #31 @ r5 = min(1.y, 0);
 	cmp		r0, r5
 	movgt	r5, r0 @ r5 = max(0.y, min(1.y, 0))
-	@ bic		r5, r0, r0, ASR #31 @ max(0.y, 0);
 
 	cmp		r9, #160
 	rsble	r9, r5, r9
 	rsbgt	r9, r5, #160 @ height = min(1.y, 160) - max(0.y, min(0, 1.y));
 
-
-	sub		r14, r5, r0 @ clipped_y = max(0.y, 0) - 0.y;
-	@ max(0.y, min(1.y, 0)) - 0.y
+	sub		r14, r5, r0 @ clipped_y = max(0.y, min(1.y, 0)) - 0.y;
 
 	@ r5 *= 15 -> (240 = 15 * 16)
 	mov		r1, r1, LSL #16 @ left_x
@@ -421,12 +418,18 @@ _ZN5mode85flushEv:
 	add		r5, r5, r14, LSL #4 @ render_target + clipped_y * 240
 
 	@ r9 = height << 1
+	@ cmp		r9, #1
+	@ ble		.L16 @ skip loop if height <= 0
+	@ cmp		r0, r1
+	@ bgt		.L16
 	cmp		r9, #1
+	cmpgt	r1, r0
 	ble		.L16 @ skip loop if height <= 0
-	cmp		r0, r1
-	bgt		.L16
-	sub		r9, r9, #2
+	@ bgt		.L16
 
+
+
+	sub		r9, r9, #2
 	bl		.scan_convert
 .L16:
 	pop		{pc}
@@ -482,7 +485,7 @@ _ZN5mode85flushEv:
 	@ r2 = u_left
 	@ r3 = v_left
 	@ r4 = dxdy_left
-	@ r5 = context->render_ta
+	@ r5 = context->render_target
 	@ r6 = dudx
 	@ r7 = dvdx
 
