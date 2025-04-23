@@ -41,15 +41,22 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 	@ r12 = vertex count(loop variable)
 @ stack = (vertex_count, indices, texture_id, ...)
 
+@ result_matrix = stack_base
+@ model_matrix = &context->matrix_slot
+@ transposed_model_matrix = stack_base + 12 * 4
+@ view_matrix = &context->view_matrix
+
+@ result = view_matrix * transposed_model_matrix
+
 	sub		sp, sp, #48 @ result matrix base
 	push	{r4, r6, r12}
 	mov		r12, r5
 	add		r14, r0, #0x0BA0 @ r14 = &context->view_matrix
 	ldmia	r12!, {r0, r3, r6, r9}
 	ldmia	r12!, {r1, r4, r7, r10}
-	ldmia	r12!, {r2, r5, r8, r11}
+	ldmia	r12!, {r2, r5, r8, r11} @ transposed model matrix
 
-	push	{r0-r11} @ save transposed matrix
+	push	{r0-r11} @ save transposed model(bone) matrix
 	@ top
 	ldmia	r14!, {r9, r10, r11} @ view matrix 1st row
 
