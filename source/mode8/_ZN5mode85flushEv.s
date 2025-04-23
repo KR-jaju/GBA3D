@@ -418,16 +418,9 @@ _ZN5mode85flushEv:
 	add		r5, r5, r14, LSL #4 @ render_target + clipped_y * 240
 
 	@ r9 = height << 1
-	@ cmp		r9, #1
-	@ ble		.L16 @ skip loop if height <= 0
-	@ cmp		r0, r1
-	@ bgt		.L16
-	cmp		r9, #1
-	cmpgt	r1, r0
-	ble		.L16 @ skip loop if height <= 0
-	@ bgt		.L16
-
-
+	cmp		r9, #1 @ skip loop if height <= 0
+	cmpgt	r1, r0 @ or x_right <= x_left
+	ble		.L16
 
 	sub		r9, r9, #2
 	bl		.scan_convert
