@@ -431,8 +431,25 @@ _ZN5mode85flushEv:
 .L16:
 	pop		{pc}
 
+@ r4 = dxdy_left
+@ r6 = dudv
+@ r7 = dvdx
+@ r8 = dxdy_right
+@ r9 = (flag | height)
+@ r10 = dudy_left
+@ r11 = dvdy_left
+@ r12 = texture pointer
 .scan_convert:
 	push	{lr}
+
+	mov		r14, r4 @ r14_system = dxdy_left
+	mov		r4, r12 @ r4 = texture_pointer
+	@ r4 = texture pointer
+	@ r8_system = dxdy_right
+	@ r9_system = (flag | height)
+	@ r10_system = dudy_left
+	@ r11_system = dvdy_left
+	@ r14_system = dxdy_left
 .L6: @ 윗 삼각형 y 루프
 	@ 렌더타겟은 무조건 0x06000000 또는 0x0600A000 이고, 한 줄이 240(0x00F0)바이트 이므로
 	@ r5(현재 스캔라인의 x=0위치에서 주소)
@@ -443,87 +460,134 @@ _ZN5mode85flushEv:
 	cmp		r1, #0
 	ble		.L11 @ x_right < 0
 
-	push	{r0, r1, r2, r3, r5, r9} @ x_left, x_right, u_left, v_left, rtv, height
+	@ r0, r1, r2, r3, r5는 값을 유지해야하고, r9는 값을 임시 저장하는 용도
+	@ r6, r7, r8, r9, r10, r11, r12
+	@ 루프 밖 상수로 사용되는 레지스터 : r4, r8, r9, r10, r11
+	@ read-only 레지스터 : r6, r7, r12
+	@ write-only 레지스터 : r14
+	@ read-write 레지스터 : r0, r1, r2, r3, r5
+
+	msr		cpsr_c, #0xD1 @ Enter FIQ mode
+
+	@ r14_system에 dxdy_right(r4)를 넣고, r4에 texture pointer(r12), r12_system은 유지시켜둠.
+	@ System mode -> FIQ mode
+	@ 루프 밖 상수로 사용되는 레지스터 : r8_system, r9_system, r10_system, r11_system, r14_system
+	@ read-only 레지스터 : r0, r1, r2, r3, r4, r5, r6, r7
+	@ write-only 레지스터 : r8_fiq, r9_fiq, r10_fiq, r11_fiq, r12_fiq, r14_fiq
+
+	@ free registers(r4, r8, r9, r10, r11, r12(ip), r14(lr))
+	@ used registers(r0, r1, r2, r3, r5, r6, r7)
+	@ r0 = x_left
+	@ r1 = x_right
+	@ r2 = u_left
+	@ r3 = v_left
+	@ r4 = dxdy_left
+	@ r5 = context->render_ta
+	@ r6 = dudx
+	@ r7 = dvdx
 
 	mov		r14, r0, ASR #16 @ r14 = x_left_pixel
-	bic		r0, r14, r14, ASR #31 @ r0 = max(x_left_pixel, 0)
+	bic		r8, r14, r14, ASR #31 @ r8 = max(x_left_pixel, 0)
 
+	@ r0 -> r8
 
-	add		r1, r1, #0x8000
-	mov		r1, r1, ASR #16 @ r1 = x_right_pixel
-	cmp		r1, #240
-	rsble	r1, r0, r1
-	rsbgt	r1, r0, #240 @ width = min(x_right_pixel, 240) - max(x_left_pixel, 0)
+	add		r9, r1, #0x8000 @ 0.5픽셀 오프셋 보정
+	mov		r9, r9, ASR #16 @ r9 = x_right_pixel
+	cmp		r9, #240
+	rsble	r9, r8, r9
+	rsbgt	r9, r8, #240 @ width = min(x_right_pixel, 240) - max(x_left_pixel, 0)
 
-	@ r0, r1, r2, r3, r5, r9 사용 가능
-	@ r4, r6, r7, r8, r10, r11, r12 중
-	@ r4, r8, r10, r11이 저장을 한다면 사용가능
+	@ r0 -> r8
+	@ r1 -> r9
 
-	cmp		r1, #0 @ width <= 0
+	cmp		r9, #0 @ width <= 0
 	ble		.L10 @ skip
-	sub		r14, r0, r14 @ r14(clipped_x) = max(x_left_pixel, 0) - x_left_pixel
-	add		r5, r5, r0 @ render_target + 240 * height + max(x_left_pixel, 0)
-	mla		r2, r6, r14, r2 @ u += dudx * clipped_x;
-	mla		r3, r7, r14, r3 @ v += dvdx * clipped_x;
+	sub		r14, r8, r14 @ r14(clipped_x) = max(x_left_pixel, 0) - x_left_pixel
+	add		r10, r5, r8 @ render_target + 240 * height + max(x_left_pixel, 0)
+	mla		r11, r6, r14, r2 @ u += dudx * clipped_x;
+	mla		r12, r7, r14, r3 @ v += dvdx * clipped_x;
 
-	tst		r5, #1 @ if (ptr & 1 == 1), 홀수번째 픽셀에서 시작
+	@ r0 -> r8
+	@ r1 -> r9
+	@ r5 -> r10
+	@ r2 -> r11
+	@ r3 -> r12
+
+	tst		r10, #1 @ if (ptr & 1 == 1), 홀수번째 픽셀에서 시작
 	beq		.L7
-	and		r0, r2, #0x07E00000 @ uv의 픽셀 좌표 (21bit fraction)
-	mov		r14, r0, LSR #21 @ r14 = u
-	and		r0, r3, #0x07E00000 @ v의 픽셀 좌표
-	orr		r14, r14, r0, LSR #15 @ r14 = (v | u)
-	ldrb	r0, [r5, #-1]! @ pixel[0]
-	ldrb	r14, [r12, r14] @ texture of pixel[1]
-	orr		r0, r0, r14, LSL #8 @ (texture[uv] << 8 | pixel[0])
-	strh	r0, [r5], #2 @ pixels[i] = (pixel[0] | texture[uv] << 8);
-	add		r2, r2, r6 @ u += dudx;
-	add		r3, r3, r7 @ v += dvdx;
-	sub		r1, r1, #1 @ width -= 1;
+	and		r8, r11, #0x07E00000 @ uv의 픽셀 좌표 (21bit fraction)
+	mov		r14, r8, LSR #21 @ r14 = u
+	and		r8, r12, #0x07E00000 @ v의 픽셀 좌표
+	orr		r14, r14, r8, LSR #15 @ r14 = (v | u)
+	ldrb	r8, [r10, #-1]! @ pixel[0]
+	ldrb	r14, [r4, r14] @ texture of pixel[1]
+	orr		r8, r8, r14, LSL #8 @ (texture[uv] << 8 | pixel[0])
+	strh	r8, [r10], #2 @ pixels[i] = (pixel[0] | texture[uv] << 8);
+	add		r11, r11, r6 @ u += dudx;
+	add		r12, r12, r7 @ v += dvdx;
+	sub		r9, r9, #1 @ width -= 1;
+
+	@ r0 -> r8
+	@ r1 -> r9
+	@ r5 -> r10
+	@ r2 -> r11
+	@ r3 -> r12
+
 .L7:
-	tst		r1, #1 @ 홀수 마지막 픽셀
+	tst		r9, #1 @ 홀수 마지막 픽셀
 	beq		.L8 @ skip if (width & 1 == 0)
-	ldrb	r9, [r5, r1] @ r9 = ptr[width]
-	sub		r1, r1, #1 @ width -= 1
-	mla		r14, r1, r6, r2 @ pixel_u = (width - 1) * dudx + u
-	mla		r0, r1, r7, r3 @ pixel_v = (width - 1) * dvdx + v
+	ldrb	r13, [r10, r9] @ r13 = ptr[width]
+	sub		r9, r9, #1 @ width -= 1
+	mla		r14, r9, r6, r11 @ pixel_u = (width - 1) * dudx + u
+	mla		r8, r9, r7, r12 @ pixel_v = (width - 1) * dvdx + v
 	and		r14, r14, #0x07E00000 @ u의 픽셀좌표
 	mov		r14, r14, LSR #21
-	and		r0, r0, #0x07E00000 @ v의 픽셀좌표
-	orr		r14, r14, r0, LSR #15 @ uv
-	ldrb	r14, [r12, r14] @ texture[uv]
-	orr		r14, r14, r9, LSL #8 @ (texture[uv] | ptr[width] << 8)
-	strh	r14, [r5, r1] @ *(ptr + width - 1) = (texture[uv] | ptr[width] << 8);
+	and		r8, r8, #0x07E00000 @ v의 픽셀좌표
+	orr		r14, r14, r8, LSR #15 @ uv
+	ldrb	r14, [r4, r14] @ texture[uv]
+	orr		r14, r14, r13, LSL #8 @ (texture[uv] | ptr[width] << 8)
+	strh	r14, [r10, r9] @ *(ptr + width - 1) = (texture[uv] | ptr[width] << 8);
+
+	@ r0 -> r8
+	@ r1 -> r9
+	@ r5 -> r10
+	@ r2 -> r11
+	@ r3 -> r12
+	@ r12 -> r4
+	@ r9 -> r13
+
 .L8:
-	cmp		r1, #0
+	cmp		r9, #0
 	ble		.L10 @ skip loop if (width <= 0)
 .L9:
-	and		r0, r2, #0x07E00000 @ calculate u
-	and		r9, r3, #0x07E00000 @ calculate v
-	mov		r0, r0, LSR #21 @ u
-	orr		r0, r0, r9, LSR #15 @ (v << 6 | u)
-	ldrb	r0, [r12, r0] @ texture(uv)
-	add		r2, r2, r6 @ u += dudx
-	add		r3, r3, r7 @ v += dvdx
-	and		r9, r2, #0x07E00000 @ calculate u
-	and		r14, r3, #0x07E00000 @ calculate v
-	mov		r9, r9, LSR #21 @ r9 = u
-	orr		r9, r9, r14, LSR #15 @ (v << 6 | u)
-	ldrb	r9, [r12, r9]
-	orr		r0, r0, r9, LSL #8
-	add		r2, r2, r6 @ u += dudx
-	add		r3, r3, r7 @ v += dvdx
-	strh	r0, [r5], #2 @ *ptr = color; ptr += 2
-	subs	r1, r1, #2 @ width -= 2
+	and		r8, r11, #0x07E00000 @ calculate u
+	and		r13, r12, #0x07E00000 @ calculate v
+	mov		r8, r8, LSR #21 @ u
+	orr		r8, r8, r13, LSR #15 @ (v << 6 | u)
+	ldrb	r8, [r4, r8] @ texture(uv)
+	add		r11, r11, r6 @ u += dudx
+	add		r12, r12, r7 @ v += dvdx
+	and		r13, r11, #0x07E00000 @ calculate u
+	and		r14, r12, #0x07E00000 @ calculate v
+	mov		r13, r13, LSR #21 @ r13 = u
+	orr		r13, r13, r14, LSR #15 @ (v << 6 | u)
+	ldrb	r13, [r4, r13]
+	orr		r8, r8, r13, LSL #8
+	add		r11, r11, r6 @ u += dudx
+	add		r12, r12, r7 @ v += dvdx
+	strh	r8, [r10], #2 @ *ptr = color; ptr += 2
+	subs	r9, r9, #2 @ width -= 2
 	bgt		.L9 @ if (width > 0)
 .L10:
-	pop		{r0, r1, r2, r3, r5, r9}
+	msr		cpsr_c, #0x1F
 .L11:
 	add		r5, r5, #240 @ base += 240
-	add		r0, r0, r4 @ x_left += dxdy_left
+	add		r0, r0, r14 @ x_left += dxdy_left
 	add		r1, r1, r8 @ x_right += dxdy_right
 	add		r2, r2, r10 @ u_left += dudy_left
 	add		r3, r3, r11 @ v_left += dvdy_left
 	subs	r9, r9, #2 @ height -= 1, 2를 뺏을 때, 1보다 작으면 루프 탈출
 	bge		.L6
 .L12:
+	mov		r4, r14
 	pop		{pc}
