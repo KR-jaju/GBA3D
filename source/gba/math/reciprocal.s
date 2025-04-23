@@ -3,25 +3,22 @@
 .section .iwram, "ax"
 .global reciprocal
 reciprocal:
-	cmp		r0, #1 @ if (i == 1)
-	@ cmpne	r0, #-1 @ if (i == -1)
-	cmpne	r0, #0
-	moveq	r0, #0x7FFFFFFF
-	bxeq	lr
+	cmp		r0, #1 @ if (i == 1) -> return INF				1 cycle
+	movls	r0, #0x7FFFFFFF
+	bxeq	lr @											1 cycle
 
-	cmp		r0, #1
-	moveq	r0, #-1
-	bxeq	lr
+	cmp		r0, #1 @										1 cycle
+	moveq	r0, #-1 @										1 cycle
+	bxeq	lr @											1 cycle
 
-
-	rsblt	r1, r0, #0 @ i' = -i;
-	movgt	r1, r0 @ i' = i
-	bxeq	lr
-	mov		r3, #0 @ i32 lz = 0;
-	cmp		r3, r1, LSR #16 @ if ((i' >> 16) == 0)
-	moveq	r2, r1, LSL #16 @ x = (i' << 16);
-	movne	r2, r1 @ x = i'
-	addeq	r3, r3, #16
+	rsblt	r1, r0, #0 @ i' = -i;							1 cycle
+	movgt	r1, r0 @ i' = i									1 cycle
+	bxeq	lr @											1 cycle
+	mov		r3, #0 @ i32 lz = 0;							1 cycle
+	cmp		r3, r1, LSR #16 @ if ((i' >> 16) == 0)			1 cycle
+	moveq	r2, r1, LSL #16 @ x = (i' << 16);				1 cycle
+	movne	r2, r1 @ x = i'									1 cycle
+	addeq	r3, r3, #16	@									1 cycle
 	tst		r2, #0xFF000000
 	moveq	r2, r2, LSL #8
 	addeq	r3, r3, #8
