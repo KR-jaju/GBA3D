@@ -7,10 +7,6 @@ reciprocal:
 	movls	r0, #0x7FFFFFFF
 	bxeq	lr @											1 cycle
 
-	cmp		r0, #1 @										1 cycle
-	moveq	r0, #-1 @										1 cycle
-	bxeq	lr @											1 cycle
-
 	rsblt	r1, r0, #0 @ i' = -i;							1 cycle
 	movgt	r1, r0 @ i' = i									1 cycle
 	bxeq	lr @											1 cycle
