@@ -5,8 +5,8 @@
 reciprocal_i16:
 	adds	r1, r0, #1 @ r1 = r0 + 1											1 cycle
 	cmp		r1, #2 @															1 cycle
-	movle	r0, #0x7FFFFFFF @ 0x7FFFFFFF if -1 + 1 <= r0 + 1 <= 1 + 1			1 cycle
-	bxle	lr @ divide by (almost) zero										1 or 3 cycle
+	movls	r0, #0x7FFFFFFF @ 0x7FFFFFFF if -1 + 1 <= r0 + 1 <= 1 + 1			1 cycle
+	bxls	lr @ divide by (almost) zero										1 or 3 cycle
 	@ total 6 cycles (early return)
 	@ --------- count leading zero ---------
 	cmp		r0, #0 @ if r0 < 0													1 cycle
