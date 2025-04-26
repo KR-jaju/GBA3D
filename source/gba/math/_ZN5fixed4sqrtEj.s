@@ -5,11 +5,13 @@
 
 .global _ZN5fixed4sqrtEj
 _ZN5fixed4sqrtEj:
-	str		lr, [sp, #-4]! @ push {lr}
+	push	{lr}
 	mov		r1, #0 @ l = 0
-	cmp		r0, #0x10000 @ f < 1 ?
+	cmp		r0, #0x10000 @ f < 1(Q16.16) ?
 	movlt	r2, #0x10000 @ r = 1
-	addge	r2, r0, #1 @ r = f + delta
+	cmpge	r0, #0x01000000 @ 256(Q16.16) <= f ?
+	movge	r2, #0x01000000 @ 
+	addle	r2, r0, #1 @ r = f + delta
 
 	add		r3, r1, r2
 	mov		r3, r3, LSR #1 @ r3 = (l + r) / 2
