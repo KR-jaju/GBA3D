@@ -103,6 +103,12 @@ namespace mode8
 	 * @return none
 	 */
 	void	flip();
+
+	/**
+	 * @brief private vblank ISR, DO NOT CALL THIS DIRECTLY
+	 * @return none
+	 */
+	void	vblankISR();
 }
 
 /*

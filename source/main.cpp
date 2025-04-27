@@ -26,7 +26,7 @@ int	main() {
 
 	SceneId scene_id = SCENE_A;
 
-	mode8::init();
+	// mode8::init();
 	while (true)
 	{
 		if (scene_id == SCENE_A)
