@@ -33,7 +33,7 @@ source/game/resource/animation source/game/resource/model source/game/resource/t
 source/game/scene/SceneA\
 source/gba\
 source/gba/math source/gba/io\
-source/mode8
+source/gba/mode8
 
 #  source/mode8 source/mario source/lakitu source/scene source/math\
 # source/scene/SceneA source/component source/component/Animator\
