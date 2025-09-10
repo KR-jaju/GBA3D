@@ -19,6 +19,9 @@ void optimize_ewram() {
 char debug_buffer[200];
 
 int	main() {
+    REG_WAITCNT = (1u<<14)   /* Prefetch enable */
+                | (1u<<4)    /* WS0 Second access = 1 cycle */
+                | (1u<<2);   /* WS0 First access  = 3 cycles (bits 3..2 = 01) */
 	// optimize_ewram(); // mgba에서는 더 느려짐!
 	REG_DISPCNT = DCNT_MODE4 | DCNT_BG2; // 화면 모드 설정
 	SceneId scene_id = SCENE_A;
