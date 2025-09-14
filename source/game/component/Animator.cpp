@@ -42,5 +42,6 @@ void	Animator::update(u32 const* base_matrix, u32* matrix_slot)
 		matrix_slot[11] = ((i03 * base_matrix[8] + i13 * base_matrix[9] + i23 * base_matrix[10]) >> 14) + base_matrix[11];
 		matrix_slot += 12;
 	}
-	state->frame_left -= 1; // one frame consumed
+	state->animation -= state->bone_count;
+	// state->frame_left -= 1; // one frame consumed
 }

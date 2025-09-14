@@ -47,6 +47,19 @@ _ZN5mode811drawIndexedEPKNS_8s_vertexEPKiS4_j:
 @ view_matrix = &context->view_matrix
 
 @ result = view_matrix * transposed_model_matrix
+@ 1. 본 행렬을 전치한다.
+@ 2. 전치한 본 행렬을 스택에 저장한다.
+@ 3. 뷰 행렬을 한 행 로드한다. (마지막 열을 바꿔치기)
+@ 4. 계산 결과가 되는 행을 구한다.
+@ 5. 전치한 봉 행렬의 마지막 열을 로드한다.
+@ 6. 행에 더하고 스택에 저장한다.
+@ 7. 마지막 행까지 다시 3으로 돌아간다.
+
+@ 1. 본 행렬을 전치한다. (12개, r2-r12, r14)
+@ 2. FIQ모드로 전환한다.
+@ 3. 뷰 행렬의 행 하나를 로드한다. (r0, r1, r8, r9)
+@ 4. 1행 (r2-r5) 계산 완료
+@ 5. 
 
 	sub		sp, sp, #48 @ result matrix base
 	push	{r4, r6, r12}

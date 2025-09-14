@@ -29,6 +29,7 @@ void	Mario::update()
 
 void	Mario::render()
 {
+
 	u32	base_matrix[12];
 
 	this->transform.update(base_matrix);

@@ -95,6 +95,7 @@ namespace mode8
 	 * @return none
 	 */
 	void	flush();
+	void	render();
 
 	/**
 	 * @brief mode4 page flip and etc
