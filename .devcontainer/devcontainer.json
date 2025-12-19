@@ -1,0 +1,10 @@
+{
+  "name": "GBA (devkitPro)",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": {
+      "version": "latest"
+    }
+  },
+  "postStartCommand": "bash .devcontainer/setup-devkitpro.sh"
+}
