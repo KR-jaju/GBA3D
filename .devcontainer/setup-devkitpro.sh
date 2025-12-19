@@ -1,29 +1,85 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
 
-# 이미 설치돼 있으면 스킵(재실행 안전)
-if command -v arm-none-eabi-gcc >/dev/null 2>&1 && [[ -d "${DEVKITPRO:-/opt/devkitpro}" ]]; then
-  echo "[devkitPro] already installed"
+# ---- paths / flags ----
+WORKDIR="/workspaces"
+LOG="$WORKDIR/.devkitpro_setup.log"
+FLAG="$WORKDIR/.devkitpro_setup_done"
+
+log() { echo "[devkitPro] $*" | tee -a "$LOG"; }
+
+# ---- wait for apt/dpkg lock ----
+wait_for_apt() {
+  local start
+  start=$(date +%s)
+  while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 \
+     || sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 \
+     || sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1; do
+    log "apt/dpkg lock held, waiting..."
+    sleep 2
+    if (( $(date +%s) - start > 600 )); then
+      log "ERROR: timeout waiting for apt lock"
+      exit 1
+    fi
+  done
+}
+
+log "===== setup start $(date -Is) ====="
+
+# ---- already installed? ----
+if command -v arm-none-eabi-gcc >/dev/null 2>&1 && [[ -d /opt/devkitpro ]]; then
+  log "devkitPro already installed"
+  touch "$FLAG"
   exit 0
 fi
 
-echo "[devkitPro] installing prerequisites..."
-sudo apt-get update
-sudo apt-get install -y wget ca-certificates gnupg build-essential make git
+# ---- prerequisites ----
+wait_for_apt
+log "installing prerequisites..."
+sudo apt-get update -y
+sudo apt-get install -y --no-install-recommends \
+  ca-certificates wget curl gnupg dirmngr \
+  build-essential make git \
+  xz-utils bzip2 unzip tar
 
-echo "[devkitPro] installing dkp-pacman..."
+# ---- devkitPro pacman bootstrap ----
+log "installing devkitPro pacman..."
 wget -q https://apt.devkitpro.org/install-devkitpro-pacman -O /tmp/install-devkitpro-pacman
 chmod +x /tmp/install-devkitpro-pacman
 sudo /tmp/install-devkitpro-pacman
 
-# dkp-pacman 설치 후에는 보통 /opt/devkitpro 아래로 깔림
-# 이 환경변수는 셸 세션에서 계속 필요하니 profile에 박아둠
-echo 'export DEVKITPRO=/opt/devkitpro' | sudo tee /etc/profile.d/devkitpro.sh >/dev/null
-echo 'export DEVKITARM=/opt/devkitpro/devkitARM' | sudo tee -a /etc/profile.d/devkitpro.sh >/dev/null
-echo 'export PATH="$PATH:$DEVKITARM/bin"' | sudo tee -a /etc/profile.d/devkitpro.sh >/dev/null
+# ---- environment (system-wide) ----
+log "configuring environment variables..."
+sudo tee /etc/profile.d/devkitpro.sh >/dev/null <<'PROFILE'
+export DEVKITPRO=/opt/devkitpro
+export DEVKITARM=/opt/devkitpro/devkitARM
+export PATH="$PATH:$DEVKITARM/bin:$DEVKITPRO/tools/bin"
+PROFILE
 
-echo "[devkitPro] installing gba-dev..."
+# ---- apply env to current shell ----
+export DEVKITPRO=/opt/devkitpro
+export DEVKITARM=/opt/devkitpro/devkitARM
+export PATH="$PATH:$DEVKITARM/bin:$DEVKITPRO/tools/bin"
+
+# ---- keyring (defensive) ----
+if command -v dkp-pacman-key >/dev/null 2>&1; then
+  log "initializing pacman keyring..."
+  sudo dkp-pacman-key --init || true
+  sudo dkp-pacman-key --populate devkitpro || true
+fi
+
+# ---- install gba-dev ----
+wait_for_apt
+log "installing gba-dev..."
 sudo dkp-pacman -Syu --noconfirm
 sudo dkp-pacman -S --noconfirm gba-dev
 
-echo "[devkitPro] done"
+# ---- verification ----
+log "verifying installation..."
+command -v arm-none-eabi-gcc | tee -a "$LOG"
+arm-none-eabi-gcc --version | head -n 1 | tee -a "$LOG"
+
+# ---- done ----
+touch "$FLAG"
+log "===== setup done $(date -Is) ====="
